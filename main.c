@@ -196,10 +196,10 @@
     int j;
     j = 0;
     i = 0;
-    while (j < g_data.reso_two / g_data.ver)
+    while (j < g_data.reso_two / 23)
     {
         i = 0;
-        while (i < g_data.reso_one / g_data.hor)
+        while (i < g_data.reso_one / 27)
         {
             mlx_pixel_put(g_mlx.mlx_ptr, g_mlx.win_ptr, X + i, Y + j, color);
             i++;
@@ -215,9 +215,11 @@
   g_mlx.win_ptr = mlx_new_window(g_mlx.mlx_ptr,g_data.reso_one,g_data.reso_two,"Maro");
   int i;
   int j;
+  int b; 
+  b = 0;
   j = 0;
   i = 0;
-  /*int map[23][27] =  { 
+  int map[23][27] =  { 
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -238,7 +240,7 @@
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
-  };*/
+  };
   /*while (i < 13)
   {
   while (j < 28)
@@ -253,11 +255,11 @@
   i++;
 }*/
 
-      while (i < 14)
+      while (i < 23)
       {
-        while (j < 29)
+        while (j < 27)
         {
-          if (g_data.map[i][j] == 1)
+          if (map[i][j] == 1)
           {
             ft_drawsqr(i, j, 0XFFFFF);
           }
