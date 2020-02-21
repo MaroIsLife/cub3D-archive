@@ -179,15 +179,15 @@ int print_wall(int i, int j, void *mlx_ptr, void *win_ptr)
       }
   }
 
-void player2()
+void playerSettings()
 {
   g_player.x = g_data.reso_one / 2;
   g_player.y = g_data.reso_two / 2;
   g_player.radius = 3;
   g_player.turnDirection = 0;
   g_player.walkDirection = 0;
-  g_player.rotationAngle = -M_PI / 2;
-  g_player.moveSpeed = 3.0;
+  g_player.rotationAngle = -M_PI / 2; // -M_PI to face UP
+  g_player.moveSpeed = 8.0;
   g_player.rotationSpeed = 10;
 }
 
@@ -195,7 +195,6 @@ void draw_player()
 {
   int i;
   i = 0;
-  int y;
 
 
      int ang = 1;
@@ -204,11 +203,9 @@ void draw_player()
        mlx_pixel_put(g_mlx.mlx_ptr,g_mlx.win_ptr, circle_size * cos(ang * PI / 180) + g_player.x, circle_size * sin(ang * PI / 180) + g_player.y, RED);
        ang++;
    }
-  y = g_player.y;
    while (i < 20)
    {
      mlx_pixel_put(g_mlx.mlx_ptr,g_mlx.win_ptr,g_player.x + cos(g_player.rotationAngle)* i,g_player.y + sin(g_player.rotationAngle) * i,RED);
-     y++;
      i++;
    }
 }
@@ -250,10 +247,10 @@ void draw()
    {  
     while (j < 27)
     {
-      tile_i = i * tile_size + 90;
-      tile_j = j * tile_size + 90;
+      tile_i = i * tile_size;
+      tile_j = j * tile_size;
         if (map[i][j] == 1)       
-          sqr(tile_i,tile_j,AQUA);
+          sqr(tile_i,tile_j,WHITE);
         // else if (map[i][j] == 3)
         //   player(tile_i,tile_j,RED);
         j++;
@@ -268,7 +265,7 @@ int keyPress(int key)
 {
 
 if (key == 126) //UP
-      g_player.walkDirection = +1;
+      g_player.walkDirection = 1;
 
 if (key == 125) //D
       g_player.walkDirection = -1;
@@ -277,12 +274,23 @@ if (key == 123) //L
       g_player.turnDirection = -1;
 
 if (key == 124) //R
-      g_player.turnDirection = +1;
+      g_player.turnDirection = 1;
 
+if (key == 53)
+      {
+        mlx_destroy_window(g_mlx.mlx_ptr,g_mlx.win_ptr);
+        exit(1);
+      }
+  
       return (0);
-
 }
-
+int is_wall(double x, double y)
+{
+  if ((int)x >= map_cols * tile_size || (int)x <= 0 ||
+      (int)y >= map_rows * tile_size || (int)y <= 0)
+      return (1);
+    return(map[(int)floor(y/tile_size)][(int)floor(x / tile_size)]);
+}
 int keyRelease(int key)
 {
   if (key == 126) //UP
@@ -296,6 +304,7 @@ int keyRelease(int key)
 
     if (key == 124) //R
       g_player.turnDirection = 0;
+    
 
       return (0);
 }
@@ -303,26 +312,35 @@ int keyRelease(int key)
 
  int update()
   {
-    
+    double x;
+    double y;
+
     mlx_hook(g_mlx.win_ptr,2,0,keyPress,0);
     mlx_hook(g_mlx.win_ptr,3,0,keyRelease,0);
     mlx_clear_window(g_mlx.mlx_ptr,g_mlx.win_ptr);
-    /*while (key == 53)
-    { 
-      mlx_destroy_window(g_mlx.mlx_ptr,g_mlx.win_ptr);
-      exit(1);
-    }*/
+
     g_player.rotationAngle += g_player.turnDirection * g_player.rotationSpeed * (M_PI/180);
-    g_player.rotationAngle = fmod(g_player.rotationAngle,360);
-    //draw();
+    g_player.rotationAngle = fmod(g_player.rotationAngle,360); // Unable to exceed 360 on RotationAngle
+    g_player.moveStep = g_player.walkDirection * g_player.moveSpeed;
+    x = g_player.x + cos(g_player.rotationAngle) * g_player.moveStep;
+    y = g_player.y + sin(g_player.rotationAngle) * g_player.moveStep;
+    printf("%d\n", is_wall(x, y));
+    if (!is_wall(x, y))
+    {
+      g_player.x = x;
+      g_player.y = y;
+    }
     draw();
     draw_player();
+
+  
+
 
 
 
    //mlx_pixel_put(g_mlx.win_ptr,g_mlx.win_ptr,0,0,AQUA);
   	//printf("%d\n",g_player.walkDirection);
-    printf("%f\n",g_player.rotationAngle);
+    // printf("%f\n",g_player.rotationAngle);
     
   return(0);
   }
@@ -332,7 +350,7 @@ int keyRelease(int key)
   g_mlx.mlx_ptr = mlx_init();
   g_mlx.win_ptr = mlx_new_window(g_mlx.mlx_ptr,g_data.reso_one,g_data.reso_two,"Maro");
 
-  player2();
+  playerSettings();
   //draw();
   //draw_player();
  //Put everything on deal_key
