@@ -28,13 +28,13 @@ typedef struct s_mlx {
 
 typedef struct s_player {
 	int x;
-	int y;
+  int y;
 	int radius;
 	int turnDirection;
 	int walkDirection;
-	int rotationAngle;
+	float rotationAngle;
 	int moveSpeed;
-	int rotationSpeed;
+	float rotationSpeed;
 }	t_player;
 
 

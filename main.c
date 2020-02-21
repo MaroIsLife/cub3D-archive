@@ -110,7 +110,7 @@ int print_wall(int i, int j, void *mlx_ptr, void *win_ptr)
       i++;
     }
   }
-  int getarray(char **content, int ab, int aa, int ia)
+  int getarray(char **content, int ab, int aa)
   {
     int hor;
     int ver;
@@ -167,7 +167,7 @@ int print_wall(int i, int j, void *mlx_ptr, void *win_ptr)
           g_data.S = get_texture(content, ab);
         else if (content[ab][0] == '1')
         {
-         aa = getarray(content, ab, aa, ia);
+         aa = getarray(content, ab, aa);
           removespace(content, ab, ia);
          
          ia++;
@@ -186,21 +186,31 @@ void player2()
   g_player.radius = 3;
   g_player.turnDirection = 0;
   g_player.walkDirection = 0;
-  g_player.rotationAngle = PI / 2;
+  g_player.rotationAngle = -M_PI / 2;
   g_player.moveSpeed = 3.0;
-  g_player.rotationSpeed = 3 * (PI / 180);
+  g_player.rotationSpeed = 10;
 }
 
 void draw_player()
 {
-    player2();
+  int i;
+  i = 0;
+  int y;
+
+
      int ang = 1;
    while (ang < 360)
    {
        mlx_pixel_put(g_mlx.mlx_ptr,g_mlx.win_ptr, circle_size * cos(ang * PI / 180) + g_player.x, circle_size * sin(ang * PI / 180) + g_player.y, RED);
        ang++;
    }
-   
+  y = g_player.y;
+   while (i < 20)
+   {
+     mlx_pixel_put(g_mlx.mlx_ptr,g_mlx.win_ptr,g_player.x + cos(g_player.rotationAngle)* i,g_player.y + sin(g_player.rotationAngle) * i,RED);
+     y++;
+     i++;
+   }
 }
 
 
@@ -235,7 +245,6 @@ void draw()
   j = 0;
   i = 0;
 
-  int color;
 
    while (i < 23)
    {  
@@ -261,16 +270,16 @@ int keyPress(int key)
 if (key == 126) //UP
       g_player.walkDirection = +1;
 
-    else if (key == 125) //D
+if (key == 125) //D
       g_player.walkDirection = -1;
 
-    else if (key == 123) //L
+if (key == 123) //L
       g_player.turnDirection = -1;
 
-    else if (key == 124) //R
+if (key == 124) //R
       g_player.turnDirection = +1;
 
-      return (key);
+      return (0);
 
 }
 
@@ -279,33 +288,42 @@ int keyRelease(int key)
   if (key == 126) //UP
       g_player.walkDirection = 0;
 
-    else if (key == 125) //D
+    if (key == 125) //D
       g_player.walkDirection = 0;
 
-    else if (key == 123) //L
+    if (key == 123) //L
       g_player.turnDirection = 0;
 
-    else if (key == 124) //R
+    if (key == 124) //R
       g_player.turnDirection = 0;
 
-      return (key);
+      return (0);
 }
 
 
- int update(int key,void *param)
+ int update()
   {
-    mlx_hook(g_mlx.win_ptr,2,0,keyPress,(void *)0);
-    mlx_hook(g_mlx.win_ptr,3,0,keyRelease,(void *)0);
-
-    while (key == 53)
-    {
+    
+    mlx_hook(g_mlx.win_ptr,2,0,keyPress,0);
+    mlx_hook(g_mlx.win_ptr,3,0,keyRelease,0);
+    mlx_clear_window(g_mlx.mlx_ptr,g_mlx.win_ptr);
+    /*while (key == 53)
+    { 
       mlx_destroy_window(g_mlx.mlx_ptr,g_mlx.win_ptr);
       exit(1);
-    }
+    }*/
+    g_player.rotationAngle += g_player.turnDirection * g_player.rotationSpeed * (M_PI/180);
+    g_player.rotationAngle = fmod(g_player.rotationAngle,360);
+    //draw();
+    draw();
+    draw_player();
+
+
+
+   //mlx_pixel_put(g_mlx.win_ptr,g_mlx.win_ptr,0,0,AQUA);
+  	//printf("%d\n",g_player.walkDirection);
+    printf("%f\n",g_player.rotationAngle);
     
-  
-  	printf("%d\n",g_player.walkDirection);
-    mlx_loop(g_mlx.mlx_ptr);
   return(0);
   }
   int main()
@@ -314,10 +332,11 @@ int keyRelease(int key)
   g_mlx.mlx_ptr = mlx_init();
   g_mlx.win_ptr = mlx_new_window(g_mlx.mlx_ptr,g_data.reso_one,g_data.reso_two,"Maro");
 
-  draw();
-  draw_player();
+  player2();
+  //draw();
+  //draw_player();
  //Put everything on deal_key
-	mlx_key_hook(g_mlx.win_ptr,update,(void *)0);
+	mlx_loop_hook(g_mlx.mlx_ptr,update,(void *)0);
 	mlx_loop(g_mlx.mlx_ptr);
 return(0);
 }
