@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#define BUFFER_SIZE 32
+#define BUFFER_SIZE 128
 int		ft_counter(char *s)
 {
 	int i;

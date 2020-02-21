@@ -20,6 +20,7 @@
 # include <sys/stat.h>
 # include <fcntl.h>
 # include <sys/types.h>
+# include <math.h>
 
 char	*ft_substr(char *s, unsigned int start, size_t len);
 char	*ftt_substr(char *s, unsigned int start, size_t len);

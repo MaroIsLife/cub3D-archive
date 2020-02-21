@@ -1,7 +1,9 @@
 # include "mlx.h"
 # include <unistd.h>
+#include <math.h>
 # include <stdio.h>
 # include "cub3d.h"
+# include "get_next_line.h"
 
 int print_wall(int i, int j, void *mlx_ptr, void *win_ptr)
   {
@@ -24,17 +26,6 @@ int print_wall(int i, int j, void *mlx_ptr, void *win_ptr)
   y++;
   }
   return 0;
-  }
-
-  int deal_key(int key,void *param)
-  {
-    if (key == 53)
-    {
-      mlx_destroy_window(g_mlx.mlx_ptr,g_mlx.win_ptr);
-      exit(1);
-    }
-  	printf("%d\n",key);
-  return(0);
   }
 
   void get_resolution(char **content, int ab)
@@ -186,49 +177,33 @@ int print_wall(int i, int j, void *mlx_ptr, void *win_ptr)
         else if (content[ab][0] == 'C')*/
         ab++;
       }
-      //printf("%s",content[21]); 
-      //get_resolution(content);
-      //get_textures(content);
   }
-//   int sqr(int X, int Y, int color)
-// {
-//     int i;
-//     int j;
-//     j = 0;
-//     i = 0;
-//     while (j < g_data.reso_two / 23)
-//     {
-//         i = 0;
-//         while (i < g_data.reso_one / 27)
-//         {
-//             mlx_pixel_put(g_mlx.mlx_ptr, g_mlx.win_ptr, X + i, Y + j, color);
-//             i++;
-//         }
-//         j++;
-//     }
-//     return (i);
-// }
 
-void player(int Y, int X, int color)
+void player2()
 {
-    int x = X;
-    int y = Y;
-    int lenx = 0;
-    int leny = 0;
-    while (lenx < 6)
-    {
-      while (leny < 6)
-      {
-        mlx_pixel_put(g_mlx.mlx_ptr, g_mlx.win_ptr, x, y, color);
-        leny++;
-        y++;
-      }
-      leny = 0;
-      y = Y;
-      lenx++;
-      x++;
-    }
+  g_player.x = g_data.reso_one / 2;
+  g_player.y = g_data.reso_two / 2;
+  g_player.radius = 3;
+  g_player.turnDirection = 0;
+  g_player.walkDirection = 0;
+  g_player.rotationAngle = PI / 2;
+  g_player.moveSpeed = 3.0;
+  g_player.rotationSpeed = 3 * (PI / 180);
 }
+
+void draw_player()
+{
+    player2();
+     int ang = 1;
+   while (ang < 360)
+   {
+       mlx_pixel_put(g_mlx.mlx_ptr,g_mlx.win_ptr, circle_size * cos(ang * PI / 180) + g_player.x, circle_size * sin(ang * PI / 180) + g_player.y, RED);
+       ang++;
+   }
+   
+}
+
+
 
 void sqr(int Y, int X, int color)
 {
@@ -250,64 +225,99 @@ void sqr(int Y, int X, int color)
       x++;
     }
 }
-  int main()
-  {
-  get_settings();
-  g_mlx.mlx_ptr = mlx_init();
-  g_mlx.win_ptr = mlx_new_window(g_mlx.mlx_ptr,g_data.reso_one,g_data.reso_two,"Maro");
+void draw()
+{
+
   int i;
   int j;
-  int b;
   int tile_i;
   int tile_j;
-  int a = a;
-  b = 0;
   j = 0;
   i = 0;
-  int map[23][27] =  { 
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-  {1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,1,0,0,0,0,1,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,1,0,0,0,0,0,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,1,1,1,0,1,1,1,1,1,0,0,1,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,1,0,0,0,1,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,1},
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
-  };
+
+  int color;
 
    while (i < 23)
    {  
     while (j < 27)
     {
-      tile_i = i * tile_size + 80;
-      tile_j = j * tile_size + 80;
-        if (map[i][j] == 1)
-        {
+      tile_i = i * tile_size + 90;
+      tile_j = j * tile_size + 90;
+        if (map[i][j] == 1)       
           sqr(tile_i,tile_j,AQUA);
-        }
-        if (map[i][j] == 3)
-        {
-          player(tile_i,tile_j,RED);
-        }
+        // else if (map[i][j] == 3)
+        //   player(tile_i,tile_j,RED);
         j++;
     }
    j = 0;
    i++;
  }
- 
-	mlx_key_hook(g_mlx.win_ptr,deal_key,(void *)0);
+
+}
+
+int keyPress(int key)
+{
+
+if (key == 126) //UP
+      g_player.walkDirection = +1;
+
+    else if (key == 125) //D
+      g_player.walkDirection = -1;
+
+    else if (key == 123) //L
+      g_player.turnDirection = -1;
+
+    else if (key == 124) //R
+      g_player.turnDirection = +1;
+
+      return (key);
+
+}
+
+int keyRelease(int key)
+{
+  if (key == 126) //UP
+      g_player.walkDirection = 0;
+
+    else if (key == 125) //D
+      g_player.walkDirection = 0;
+
+    else if (key == 123) //L
+      g_player.turnDirection = 0;
+
+    else if (key == 124) //R
+      g_player.turnDirection = 0;
+
+      return (key);
+}
+
+
+ int update(int key,void *param)
+  {
+    mlx_hook(g_mlx.win_ptr,2,0,keyPress,(void *)0);
+    mlx_hook(g_mlx.win_ptr,3,0,keyRelease,(void *)0);
+
+    while (key == 53)
+    {
+      mlx_destroy_window(g_mlx.mlx_ptr,g_mlx.win_ptr);
+      exit(1);
+    }
+    
+  
+  	printf("%d\n",g_player.walkDirection);
+    mlx_loop(g_mlx.mlx_ptr);
+  return(0);
+  }
+  int main()
+  {
+  get_settings();
+  g_mlx.mlx_ptr = mlx_init();
+  g_mlx.win_ptr = mlx_new_window(g_mlx.mlx_ptr,g_data.reso_one,g_data.reso_two,"Maro");
+
+  draw();
+  draw_player();
+ //Put everything on deal_key
+	mlx_key_hook(g_mlx.win_ptr,update,(void *)0);
 	mlx_loop(g_mlx.mlx_ptr);
 return(0);
 }
