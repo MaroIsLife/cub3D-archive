@@ -5,29 +5,13 @@
 # include "cub3d.h"
 # include "get_next_line.h"
 
-int print_wall(int i, int j, void *mlx_ptr, void *win_ptr)
-  {
-  int x;
-  int y;
-  int X;
-  int Y;
-  x = j * 35;
-  y = i * 35;
-  X = x + 35;
-  Y = y + 35;
-  while(y < Y)
-  {
-  while(x < X)
-  {
-  mlx_pixel_put(mlx_ptr, win_ptr, x, y, 255);
-  x++;
-  }
-  x = j * 35;
-  y++;
-  }
-  return 0;
-  }
+ void            my_mlx_pixel_put(t_mg *data, int x, int y, int color)
+{
+    char    *dst;
 
+    dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
+    *(unsigned int*)dst = color;
+}
   void get_resolution(char **content, int ab)
   {
     int i;
@@ -187,9 +171,12 @@ void playerSettings()
   g_player.turnDirection = 0;
   g_player.walkDirection = 0;
   g_player.rotationAngle = -M_PI / 2; // -M_PI to face UP
-  g_player.moveSpeed = 8.0;
+  g_player.moveSpeed = 5.0;
   g_player.rotationSpeed = 10;
 }
+
+
+
 
 void draw_player()
 {
@@ -200,12 +187,15 @@ void draw_player()
      int ang = 1;
    while (ang < 360)
    {
-       mlx_pixel_put(g_mlx.mlx_ptr,g_mlx.win_ptr, circle_size * cos(ang * PI / 180) + g_player.x, circle_size * sin(ang * PI / 180) + g_player.y, RED);
+       //mlx_pixel_put(g_mlx.mlx_ptr,g_mlx.win_ptr, circle_size * cos(ang * PI / 180) + g_player.x, circle_size * sin(ang * PI / 180) + g_player.y, RED);
+        my_mlx_pixel_put(&g_mg, circle_size * cos(ang * PI / 180) + g_player.x, circle_size * sin(ang * PI / 180) + g_player.y, RED);
+
        ang++;
    }
    while (i < 20)
    {
-     mlx_pixel_put(g_mlx.mlx_ptr,g_mlx.win_ptr,g_player.x + cos(g_player.rotationAngle)* i,g_player.y + sin(g_player.rotationAngle) * i,RED);
+          //mlx_pixel_put(g_mlx.mlx_ptr,g_mlx.win_ptr,g_player.x + cos(g_player.rotationAngle)* i,g_player.y + sin(g_player.rotationAngle) * i,RED);
+        my_mlx_pixel_put(&g_mg,g_player.x + cos(g_player.rotationAngle)* i,g_player.y + sin(g_player.rotationAngle) * i,RED);
      i++;
    }
 }
@@ -218,11 +208,12 @@ void sqr(int Y, int X, int color)
     int y = Y;
     int lenx = 0;
     int leny = 0;
-    while (lenx < tile_size)
+    while (lenx < TILE_SIZE)
     {
-      while (leny < tile_size)
+      while (leny < TILE_SIZE)
       {
-        mlx_pixel_put(g_mlx.mlx_ptr, g_mlx.win_ptr, x, y, color);
+        //mlx_pixel_put(g_mlx.mlx_ptr, g_mlx.win_ptr, x, y, color);
+        my_mlx_pixel_put(&g_mg,x,y,color);
         leny++;
         y++;
       }
@@ -242,17 +233,14 @@ void draw()
   j = 0;
   i = 0;
 
-
    while (i < 23)
    {  
     while (j < 27)
     {
-      tile_i = i * tile_size;
-      tile_j = j * tile_size;
+      tile_i = i * TILE_SIZE;
+      tile_j = j * TILE_SIZE;
         if (map[i][j] == 1)       
           sqr(tile_i,tile_j,WHITE);
-        // else if (map[i][j] == 3)
-        //   player(tile_i,tile_j,RED);
         j++;
     }
    j = 0;
@@ -286,10 +274,12 @@ if (key == 53)
 }
 int is_wall(double x, double y)
 {
-  if ((int)x >= map_cols * tile_size || (int)x <= 0 ||
-      (int)y >= map_rows * tile_size || (int)y <= 0)
+  if ((int)x >= MAP_HOR * TILE_SIZE || (int)x <= 0 ||
+      (int)y >= MAP_VER * TILE_SIZE || (int)y <= 0)
       return (1);
-    return(map[(int)floor(y/tile_size)][(int)floor(x / tile_size)]);
+
+    return(map[(int)floor(y/TILE_SIZE)][(int)floor(x / TILE_SIZE)]);
+    
 }
 int keyRelease(int key)
 {
@@ -325,7 +315,7 @@ int keyRelease(int key)
     x = g_player.x + cos(g_player.rotationAngle) * g_player.moveStep;
     y = g_player.y + sin(g_player.rotationAngle) * g_player.moveStep;
     printf("%d\n", is_wall(x, y));
-    if (!is_wall(x, y))
+    if (is_wall(x, y) == 0 || is_wall(x, y) == 3)
     {
       g_player.x = x;
       g_player.y = y;
@@ -334,6 +324,12 @@ int keyRelease(int key)
     draw_player();
 
   
+
+    mlx_put_image_to_window(g_mlx.mlx_ptr, g_mlx.win_ptr, g_mg.img, 0, 0);
+    mlx_destroy_image(g_mlx.mlx_ptr,g_mg.img);
+    g_mg.img = mlx_new_image(g_mlx.mlx_ptr, g_data.reso_one, g_data.reso_two);
+    g_mg.addr = mlx_get_data_addr(g_mg.img, &g_mg.bits_per_pixel, &g_mg.line_length,&g_mg.endian);
+
 
 
 
@@ -349,6 +345,9 @@ int keyRelease(int key)
   get_settings();
   g_mlx.mlx_ptr = mlx_init();
   g_mlx.win_ptr = mlx_new_window(g_mlx.mlx_ptr,g_data.reso_one,g_data.reso_two,"Maro");
+  g_mg.img = mlx_new_image(g_mlx.mlx_ptr, g_data.reso_one, g_data.reso_two);
+  g_mg.addr = mlx_get_data_addr(g_mg.img, &g_mg.bits_per_pixel, &g_mg.line_length,&g_mg.endian);
+
 
   playerSettings();
   //draw();
