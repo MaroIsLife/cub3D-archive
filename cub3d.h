@@ -19,6 +19,7 @@
 #define circle_size 10
 #define FOV_ANGLE 60 * (M_PI / 180)
 #define WALL_STRIP_WIDTH 4
+#define NUM_RAYS 1000/WALL_STRIP_WIDTH
 
 
 
@@ -40,6 +41,20 @@ typedef struct s_player {
   float moveStep;
 }	t_player;
 
+typedef struct s_ray
+{
+float rayAngle;
+float wallhitX;
+float wallhitY;
+int wasHitVertical;
+int isRayFacingUp;
+int isRayFacingDown;
+int isRayFacingLeft;
+int isRayFacingRight;
+int wallHitContent;
+
+} t_ray;
+
 
 
 typedef struct s_data {
@@ -58,13 +73,15 @@ typedef struct s_data {
 
 
 typedef struct  s_mg {
-    void        *img;
-    char        *addr;
-    int         bits_per_pixel;
-    int         line_length;
-    int         endian;
+	void        *img;
+	char        *addr;
+	int         bits_per_pixel;
+	int         line_length;
+	int         endian;
+	
 }               t_mg;
 
+t_ray g_ray;
 t_mg g_mg;
 t_mlx g_mlx;
 t_player g_player;
@@ -80,7 +97,7 @@ int map[23][27] =  {
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,1,0,0,0,0,1,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -99,5 +116,5 @@ int map[23][27] =  {
 
 
   int		ft_atoi(const char *str);
-  void			*ft_calloc(size_t n, size_t size);
+  void	*ft_calloc(size_t n, size_t size);
 #endif 

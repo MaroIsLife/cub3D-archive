@@ -10,6 +10,7 @@
     char    *dst;
 
     dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
+    if (x < g_data.reso_one && y < g_data.reso_two && x > 0 && y > 0)
     *(unsigned int*)dst = color;
 }
   void get_resolution(char **content, int ab)
@@ -148,7 +149,7 @@
         else if (content[ab][0] == 'E' && content[ab][1] == 'A')
           g_data.EA = get_texture(content, ab);
         else if (content[ab][0] == 'S')
-          g_data.S = get_texture(content, ab);
+          g_data.S = get_texture(content, ab);  
         else if (content[ab][0] == '1')
         {
          aa = getarray(content, ab, aa);
@@ -170,18 +171,16 @@ void playerSettings()
   g_player.radius = 3;
   g_player.turnDirection = 0;
   g_player.walkDirection = 0;
-  g_player.rotationAngle = -M_PI / 2; // -M_PI to face UP
-  g_player.moveSpeed = 5.0;
-  g_player.rotationSpeed = 10;
+  g_player.rotationAngle = 270.0;
+  g_player.moveSpeed = 3;
+  g_player.rotationSpeed = 3.0;
 }
-
-
 
 
 void draw_player()
 {
   int i;
-  i = 0;
+  i = 1;
 
 
      int ang = 1;
@@ -192,11 +191,18 @@ void draw_player()
 
        ang++;
    }
-   while (i < 20)
-   {
-          //mlx_pixel_put(g_mlx.mlx_ptr,g_mlx.win_ptr,g_player.x + cos(g_player.rotationAngle)* i,g_player.y + sin(g_player.rotationAngle) * i,RED);
-        my_mlx_pixel_put(&g_mg,g_player.x + cos(g_player.rotationAngle)* i,g_player.y + sin(g_player.rotationAngle) * i,RED);
-     i++;
+   float x = g_player.rotationAngle - 30;
+   float fov = 60;
+  while(fov >= 0)
+  {
+      while (i < 300)
+      {
+        my_mlx_pixel_put(&g_mg, g_player.x + cos(x * PI / 180) * i, g_player.y + sin(x* PI / 180) * i, GOLD);
+        i++;
+      }
+      x+= (60.0 / g_data.reso_one);
+      i = 0;
+      fov = fov - (60.0 / g_data.reso_one);
    }
 }
 
@@ -277,9 +283,8 @@ int is_wall(double x, double y)
   if ((int)x >= MAP_HOR * TILE_SIZE || (int)x <= 0 ||
       (int)y >= MAP_VER * TILE_SIZE || (int)y <= 0)
       return (1);
-
+      
     return(map[(int)floor(y/TILE_SIZE)][(int)floor(x / TILE_SIZE)]);
-    
 }
 int keyRelease(int key)
 {
@@ -294,62 +299,55 @@ int keyRelease(int key)
 
     if (key == 124) //R
       g_player.turnDirection = 0;
-    
-
       return (0);
 }
 
 
  int update()
   {
-    double x;
-    double y;
+    double fakex;
+    double fakey;
 
     mlx_hook(g_mlx.win_ptr,2,0,keyPress,0);
     mlx_hook(g_mlx.win_ptr,3,0,keyRelease,0);
     mlx_clear_window(g_mlx.mlx_ptr,g_mlx.win_ptr);
 
-    g_player.rotationAngle += g_player.turnDirection * g_player.rotationSpeed * (M_PI/180);
-    g_player.rotationAngle = fmod(g_player.rotationAngle,360); // Unable to exceed 360 on RotationAngle
+    g_player.rotationAngle += g_player.turnDirection * g_player.rotationSpeed ;//* (M_PI/180);
+    //g_player.rotationAngle = fmod(g_player.rotationAngle,360); // Unable to exceed 360 on RotationAngle
     g_player.moveStep = g_player.walkDirection * g_player.moveSpeed;
-    x = g_player.x + cos(g_player.rotationAngle) * g_player.moveStep;
-    y = g_player.y + sin(g_player.rotationAngle) * g_player.moveStep;
-    printf("%d\n", is_wall(x, y));
-    if (is_wall(x, y) == 0 || is_wall(x, y) == 3)
+    fakex = g_player.x + cos(g_player.rotationAngle * (M_PI/180)) * g_player.moveStep;
+    fakey = g_player.y + sin(g_player.rotationAngle * (M_PI/180)) * g_player.moveStep;
+    printf("%d\n", is_wall(fakex, fakey));
+    //printf("%f\n",g_player.rotationAngle);
+    if (is_wall(fakex, fakey) != 1)
     {
-      g_player.x = x;
-      g_player.y = y;
+      g_player.x = fakex;
+      g_player.y = fakey;
     }
     draw();
     draw_player();
 
-  
 
     mlx_put_image_to_window(g_mlx.mlx_ptr, g_mlx.win_ptr, g_mg.img, 0, 0);
     mlx_destroy_image(g_mlx.mlx_ptr,g_mg.img);
     g_mg.img = mlx_new_image(g_mlx.mlx_ptr, g_data.reso_one, g_data.reso_two);
     g_mg.addr = mlx_get_data_addr(g_mg.img, &g_mg.bits_per_pixel, &g_mg.line_length,&g_mg.endian);
 
-
-
-
-
    //mlx_pixel_put(g_mlx.win_ptr,g_mlx.win_ptr,0,0,AQUA);
   	//printf("%d\n",g_player.walkDirection);
     // printf("%f\n",g_player.rotationAngle);
-    
   return(0);
   }
   int main()
   {
   get_settings();
+  playerSettings();
   g_mlx.mlx_ptr = mlx_init();
   g_mlx.win_ptr = mlx_new_window(g_mlx.mlx_ptr,g_data.reso_one,g_data.reso_two,"Maro");
   g_mg.img = mlx_new_image(g_mlx.mlx_ptr, g_data.reso_one, g_data.reso_two);
   g_mg.addr = mlx_get_data_addr(g_mg.img, &g_mg.bits_per_pixel, &g_mg.line_length,&g_mg.endian);
 
 
-  playerSettings();
   //draw();
   //draw_player();
  //Put everything on deal_key
