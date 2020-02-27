@@ -13,6 +13,15 @@
     if (x < g_data.reso_one && y < g_data.reso_two && x > 0 && y > 0)
     *(unsigned int*)dst = color;
 }
+
+int is_wall(double x, double y)
+{
+  if ((int)x >= MAP_HOR * TILE_SIZE || (int)x <= 0 ||
+      (int)y >= MAP_VER * TILE_SIZE || (int)y <= 0)
+      return (1);
+      
+    return(map[(int)floor(y/TILE_SIZE)][(int)floor(x / TILE_SIZE)]);
+}
   void get_resolution(char **content, int ab)
   {
     int i;
@@ -153,7 +162,7 @@
         else if (content[ab][0] == '1')
         {
          aa = getarray(content, ab, aa);
-          removespace(content, ab, ia);
+          removespace(content, ab, ia);         
          
          ia++;
         }
@@ -171,16 +180,29 @@ void playerSettings()
   g_player.radius = 3;
   g_player.turnDirection = 0;
   g_player.walkDirection = 0;
-  g_player.rotationAngle = 270.0;
-  g_player.moveSpeed = 3;
-  g_player.rotationSpeed = 3.0;
+  g_player.rotationAngle = 90.0;
+  g_player.moveSpeed = 10;
+  g_player.rotationSpeed = 5.0;
 }
 
+
+void find_int(float interx,float intery)
+{
+  printf("%f\n",interx / TILE_SIZE);
+  printf("%f\n",intery / TILE_SIZE);
+}
 
 void draw_player()
 {
   int i;
   i = 1;
+  float fakey;
+  float fakex;
+
+    //float x = g_player.rotationAngle;
+
+    fakex = g_player.x + cos(g_player.rotationAngle * (M_PI/180));
+    fakey = g_player.y + sin(g_player.rotationAngle * (M_PI/180));
 
 
      int ang = 1;
@@ -191,25 +213,31 @@ void draw_player()
 
        ang++;
    }
-   float x = g_player.rotationAngle - 30;
-   float fov = 60;
-  while(fov >= 0)
-  {
-      while (i < 300)
+     float x = g_player.rotationAngle - 30;
+     float fov = 60;
+    while(fov >= 0)
+    {
+      while (i < 500)
       {
-        my_mlx_pixel_put(&g_mg, g_player.x + cos(x * PI / 180) * i, g_player.y + sin(x* PI / 180) * i, GOLD);
+        if (is_wall(g_player.x + cos(x * PI / 180) * i,g_player.y + sin (x * PI / 180) * i) == 1)
+        {
+          break;
+        }
+        else
+        my_mlx_pixel_put(&g_mg, g_player.x + cos(x * PI / 180) * i, g_player.y + sin (x * PI / 180) * i, GOLD);
         i++;
       }
-      x+= (60.0 / g_data.reso_one);
-      i = 0;
-      fov = fov - (60.0 / g_data.reso_one);
-   }
+        //find_int(g_player.x + cos(x * PI / 180) * i, g_player.y + sin (x * PI / 180) * i);
+        x+= (60.0 / g_data.reso_one);
+       i = 0;
+       fov = fov - (60.0 / g_data.reso_one);
+     }
 }
 
 
 
 void sqr(int Y, int X, int color)
-{
+{ 
     int x = X;
     int y = Y;
     int lenx = 0;
@@ -278,14 +306,7 @@ if (key == 53)
   
       return (0);
 }
-int is_wall(double x, double y)
-{
-  if ((int)x >= MAP_HOR * TILE_SIZE || (int)x <= 0 ||
-      (int)y >= MAP_VER * TILE_SIZE || (int)y <= 0)
-      return (1);
-      
-    return(map[(int)floor(y/TILE_SIZE)][(int)floor(x / TILE_SIZE)]);
-}
+
 int keyRelease(int key)
 {
   if (key == 126) //UP
@@ -301,7 +322,28 @@ int keyRelease(int key)
       g_player.turnDirection = 0;
       return (0);
 }
+int g_Trays[25] = {0};
 
+
+
+void CastAllRays()
+{
+  int columnId;
+  int rayAngle;
+  int i;
+
+  rayAngle =  g_player.rotationAngle - (FOV_ANGLE / 2);
+  columnId = 0;
+  i = 0;
+  while (i <  NUM_RAYS)
+  {
+    //RayR(rayAngle);
+
+    rayAngle += FOV_ANGLE / NUM_RAYS;
+    columnId++;
+    i++;
+  }
+}
 
  int update()
   {
@@ -317,7 +359,7 @@ int keyRelease(int key)
     g_player.moveStep = g_player.walkDirection * g_player.moveSpeed;
     fakex = g_player.x + cos(g_player.rotationAngle * (M_PI/180)) * g_player.moveStep;
     fakey = g_player.y + sin(g_player.rotationAngle * (M_PI/180)) * g_player.moveStep;
-    printf("%d\n", is_wall(fakex, fakey));
+    //printf("%d\n", is_wall(fakex, fakey));
     //printf("%f\n",g_player.rotationAngle);
     if (is_wall(fakex, fakey) != 1)
     {
@@ -326,7 +368,9 @@ int keyRelease(int key)
     }
     draw();
     draw_player();
+    //CastAllRays();
 
+    // I should Implement two Functions for First and Last Intersection after sending rays.
 
     mlx_put_image_to_window(g_mlx.mlx_ptr, g_mlx.win_ptr, g_mg.img, 0, 0);
     mlx_destroy_image(g_mlx.mlx_ptr,g_mg.img);
