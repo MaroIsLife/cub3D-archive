@@ -20,6 +20,7 @@
 #define FOV_ANGLE 60 * (M_PI / 180)
 #define WALL_STRIP_WIDTH 4
 #define NUM_RAYS 1000/WALL_STRIP_WIDTH
+#define INT_MAX 2147483647
 
 
 
@@ -46,6 +47,7 @@ typedef struct s_ray
 float rayAngle;
 float wallhitX;
 float wallhitY;
+float distance;
 int wasHitVertical;
 int isRayFacingUp;
 int isRayFacingDown;
@@ -111,6 +113,7 @@ int map[23][27] =  {
   {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
   };
+
 
 
   int		ft_atoi(const char *str);

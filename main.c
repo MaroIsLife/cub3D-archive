@@ -173,6 +173,16 @@ int is_wall(double x, double y)
       }
   }
 
+  float normalizeAngle(float angle)
+  {
+    angle = fmod(angle,(2 * M_PI));
+    if (angle < 0)
+    {
+      angle = (2 * M_PI) + angle;
+    }
+    return (angle);
+  }
+
 void playerSettings()
 {
   g_player.x = g_data.reso_one / 2;
@@ -185,12 +195,240 @@ void playerSettings()
   g_player.rotationSpeed = 5.0;
 }
 
-
-void find_int(float interx,float intery)
+void raySettings()
 {
-  printf("%f\n",interx / TILE_SIZE);
-  printf("%f\n",intery / TILE_SIZE);
+        g_ray.wallhitX = 0;
+        g_ray.wallhitY = 0;
+        g_ray.distance = 0;
+        g_ray.isRayFacingDown = g_ray.rayAngle > 0 && g_ray.rayAngle < M_PI;
+        g_ray.isRayFacingUp = !g_ray.isRayFacingDown;
+        g_ray.wasHitVertical = 0;
+        g_ray.isRayFacingRight = g_ray.rayAngle < 0.5 * M_PI || g_ray.rayAngle > 1.5 * M_PI;
+        g_ray.isRayFacingLeft = !g_ray.isRayFacingRight;
+        
 }
+
+float distanceBetweenPoints(int wallhitX, int wallhitY)
+{
+  return(sqrt((wallhitX - g_player.x) * (wallhitX - g_player.x) + (wallhitY - g_player.y) * (wallhitY - g_player.y)));
+
+  
+}
+
+void cast(float rayAngle)
+{
+  float xstep;
+  float ystep;
+  float xintercept;
+  float yintercept;
+  float nextHorzTouchX;
+  float nextHorzTouchY;
+  float foundH;
+
+  float hwallhitX = 0;
+  float hwallhitY = 0;
+
+  //Horizontal
+  rayAngle = normalizeAngle(rayAngle);
+  //find y coordinate of the closest horizontal grid
+  yintercept = floor(g_player.y / TILE_SIZE) * TILE_SIZE;
+  if (g_ray.isRayFacingDown)
+  {
+    yintercept += TILE_SIZE;
+  }
+  
+  
+  //find x coordinate of closest horizontal grid
+  xintercept = g_player.x + (yintercept - g_player.y) / tan(rayAngle * (M_PI / 180));
+
+  //Calculate  the increment for xstep and ystep
+  ystep = TILE_SIZE;
+
+  if (g_ray.isRayFacingUp)
+    ystep *= -1;
+
+  xstep = TILE_SIZE / tan(rayAngle * (M_PI / 180));
+  if(g_ray.isRayFacingLeft && xstep > 0)
+  xstep *= -1;
+  if (g_ray.isRayFacingRight && xstep < 0)
+  xstep *= -1;
+
+  nextHorzTouchX = xintercept;
+  nextHorzTouchY = yintercept;
+
+  if(g_ray.isRayFacingUp)
+  nextHorzTouchY--;
+
+  //Increment xstep and ystep until we find a wall
+
+  foundH = 0;
+  while (nextHorzTouchX >= 0 && nextHorzTouchX <= g_data.reso_one && nextHorzTouchY >= 0 && nextHorzTouchY <= g_data.reso_one)
+  {
+    if(is_wall(nextHorzTouchX,nextHorzTouchY))
+    {
+      foundH = 1;
+      hwallhitX = nextHorzTouchX;
+      hwallhitY = nextHorzTouchY;
+      break;
+    }
+    else
+    {
+      nextHorzTouchX += xstep;
+      nextHorzTouchY += ystep;
+    }
+  }
+
+  //Vertical 
+  float foundV;
+  float vwallhitX;
+  float vwallhitY;
+  float nextVertTouchX;
+  float nextVertTouchY;
+
+  vwallhitX = 0;
+  vwallhitY = 0;
+
+  xintercept = floor(g_player.x / TILE_SIZE) * TILE_SIZE;
+  if (g_ray.isRayFacingRight)
+  {
+    xintercept += TILE_SIZE;
+  }
+  yintercept = g_player.y + (xintercept - g_player.x) * tan(rayAngle * (M_PI / 180)); // Dividing or Multiplying ??
+  xstep = TILE_SIZE;
+
+  if (g_ray.isRayFacingLeft)
+    xstep *= -1;
+  else
+    xstep *= 1;
+  
+
+  ystep = TILE_SIZE * tan(rayAngle * (M_PI / 180));
+  if(g_ray.isRayFacingUp && ystep > 0)
+  ystep *= -1;
+  if (g_ray.isRayFacingDown && ystep < 0)
+  ystep *= -1;
+
+  nextVertTouchX = xintercept;
+  nextVertTouchY = yintercept;
+
+  if(g_ray.isRayFacingLeft)
+  nextVertTouchX--;
+  foundV = 0;
+  while (nextVertTouchX >= 0 && nextVertTouchX <= g_data.reso_one && nextVertTouchY >= 0 && nextVertTouchY <= g_data.reso_one)
+  {
+    if(is_wall(nextVertTouchX,nextVertTouchY))
+    {
+      foundV = 1;
+      vwallhitX = nextVertTouchX;
+      vwallhitY = nextVertTouchY;
+      break;
+    }
+    else
+    {
+      nextVertTouchX += xstep;
+      nextVertTouchY += ystep;
+    }
+  }
+
+  // Calculate both distances Vertical and Horz and Choose the smallest
+
+  float horHitDistance;
+  float verHitDistance;
+
+  if (foundH)
+    horHitDistance = distanceBetweenPoints(hwallhitX,hwallhitY);
+  else
+  horHitDistance = INT_MAX;
+
+  if (foundV)
+    verHitDistance = distanceBetweenPoints(vwallhitX,vwallhitY);
+  else
+  verHitDistance = INT_MAX;
+
+  if (horHitDistance < verHitDistance)
+  {
+    g_ray.wallhitX = hwallhitX;
+    g_ray.wallhitY = hwallhitY;
+    g_ray.distance = horHitDistance;
+  }
+  else
+  {
+    g_ray.wallhitX = vwallhitX;
+    g_ray.wallhitY = vwallhitY;
+    g_ray.distance = verHitDistance;
+    g_ray.wasHitVertical = 1;
+  }
+    
+  
+}
+
+void castallrays()
+{
+  int columnid;
+  //char *raysobject;
+  int i;
+
+  i = 0;
+  columnid = 0;
+
+  //raysobject = malloc(g_data.reso_one * sizeof(char));
+
+  while (i < NUM_RAYS)
+  {
+
+    g_ray.rayAngle += FOV_ANGLE / NUM_RAYS;
+    columnid++;
+    i++;
+  }
+
+
+}
+
+
+
+// struct rd
+// {
+//   float horx;
+//   float hory;
+//   float horxa;
+//   float horya;
+// } A;
+
+// void  f1(float dx)
+// {
+//   int a = dx;
+//   a++;
+//   if (g_player.rotationAngle > 180 && g_player.rotationAngle < 360)
+//   {
+//     A.hory = (int)(g_player.y / TILE_SIZE) * TILE_SIZE; //- 1;
+//     A.horya = -TILE_SIZE;
+//     A.horxa = -TILE_SIZE / tan(dx * (M_PI / 180)); // 60
+//   }
+//   else if (g_player.rotationAngle > 0 && g_player.rotationAngle < 180)
+//   {
+//     A.hory = (int)(g_player.y / TILE_SIZE) * TILE_SIZE + TILE_SIZE;
+//     A.horxa = TILE_SIZE / tan(dx * (M_PI / 180)); //60
+//     A.horya = TILE_SIZE;
+//   }
+//   A.horx = g_player.x + (g_player.y - A.hory) / tan(dx * (M_PI / 180));
+//   A.horxa = TILE_SIZE / tan(dx * (M_PI / 180));
+// }
+// int  f2()
+// {
+//   while (A.hory > 0 && A.horx > 0 && A.horx < g_data.reso_one && A.hory < g_data.reso_two && map[(int)(A.hory / TILE_SIZE)][(int)(A.horx / TILE_SIZE)] != 1)
+//   {
+//     A.hory += A.horya;
+//     A.horx += A.horxa;
+//   }
+//   return (sqrt(pow(A.horx - g_player.x ,2) + pow(A.hory - g_player.y,2)));
+// }
+// int find_distance(float dx)
+// {
+//   f1(dx);//first horz inter
+//   return (f2());//last horz inter
+//   //f3();
+
+// }
 
 void draw_player()
 {
@@ -199,7 +437,7 @@ void draw_player()
   float fakey;
   float fakex;
 
-    //float x = g_player.rotationAngle;
+    // float x = g_player.rotationAngle;
 
     fakex = g_player.x + cos(g_player.rotationAngle * (M_PI/180));
     fakey = g_player.y + sin(g_player.rotationAngle * (M_PI/180));
@@ -208,33 +446,26 @@ void draw_player()
      int ang = 1;
    while (ang < 360)
    {
-       //mlx_pixel_put(g_mlx.mlx_ptr,g_mlx.win_ptr, circle_size * cos(ang * PI / 180) + g_player.x, circle_size * sin(ang * PI / 180) + g_player.y, RED);
         my_mlx_pixel_put(&g_mg, circle_size * cos(ang * PI / 180) + g_player.x, circle_size * sin(ang * PI / 180) + g_player.y, RED);
-
        ang++;
    }
-     float x = g_player.rotationAngle - 30;
+     g_ray.rayAngle = g_player.rotationAngle - 30;
      float fov = 60;
     while(fov >= 0)
     {
-      while (i < 500)
+      i = 0;//find_distance(x);
+      while (i < 300)
       {
-        if (is_wall(g_player.x + cos(x * PI / 180) * i,g_player.y + sin (x * PI / 180) * i) == 1)
-        {
-          break;
-        }
-        else
-        my_mlx_pixel_put(&g_mg, g_player.x + cos(x * PI / 180) * i, g_player.y + sin (x * PI / 180) * i, GOLD);
+      //  if (is_wall(g_player.x + cos(x * PI / 180) * i,g_player.y + sin (x * PI / 180) * i) == 1)
+      //     break;
+      //   else
+        my_mlx_pixel_put(&g_mg, g_player.x + cos(g_ray.rayAngle * PI / 180) * i, g_player.y + sin (g_ray.rayAngle * PI / 180) * i, GOLD);
         i++;
-      }
-        //find_int(g_player.x + cos(x * PI / 180) * i, g_player.y + sin (x * PI / 180) * i);
-        x+= (60.0 / g_data.reso_one);
-       i = 0;
+      } 
+        g_ray.rayAngle+= (60.0 / g_data.reso_one);
        fov = fov - (60.0 / g_data.reso_one);
      }
 }
-
-
 
 void sqr(int Y, int X, int color)
 { 
@@ -246,7 +477,6 @@ void sqr(int Y, int X, int color)
     {
       while (leny < TILE_SIZE)
       {
-        //mlx_pixel_put(g_mlx.mlx_ptr, g_mlx.win_ptr, x, y, color);
         my_mlx_pixel_put(&g_mg,x,y,color);
         leny++;
         y++;
@@ -280,7 +510,6 @@ void draw()
    j = 0;
    i++;
  }
-
 }
 
 int keyPress(int key)
@@ -338,7 +567,6 @@ void CastAllRays()
   while (i <  NUM_RAYS)
   {
     //RayR(rayAngle);
-
     rayAngle += FOV_ANGLE / NUM_RAYS;
     columnId++;
     i++;
@@ -355,7 +583,7 @@ void CastAllRays()
     mlx_clear_window(g_mlx.mlx_ptr,g_mlx.win_ptr);
 
     g_player.rotationAngle += g_player.turnDirection * g_player.rotationSpeed ;//* (M_PI/180);
-    //g_player.rotationAngle = fmod(g_player.rotationAngle,360); // Unable to exceed 360 on RotationAngle
+    g_player.rotationAngle = fmod(g_player.rotationAngle,360); // Unable to exceed 360 on RotationAngle
     g_player.moveStep = g_player.walkDirection * g_player.moveSpeed;
     fakex = g_player.x + cos(g_player.rotationAngle * (M_PI/180)) * g_player.moveStep;
     fakey = g_player.y + sin(g_player.rotationAngle * (M_PI/180)) * g_player.moveStep;
@@ -368,29 +596,31 @@ void CastAllRays()
     }
     draw();
     draw_player();
+    printf("%f\n",g_player.rotationAngle);
     //CastAllRays();
 
-    // I should Implement two Functions for First and Last Intersection after sending rays.
 
     mlx_put_image_to_window(g_mlx.mlx_ptr, g_mlx.win_ptr, g_mg.img, 0, 0);
     mlx_destroy_image(g_mlx.mlx_ptr,g_mg.img);
     g_mg.img = mlx_new_image(g_mlx.mlx_ptr, g_data.reso_one, g_data.reso_two);
     g_mg.addr = mlx_get_data_addr(g_mg.img, &g_mg.bits_per_pixel, &g_mg.line_length,&g_mg.endian);
-
-   //mlx_pixel_put(g_mlx.win_ptr,g_mlx.win_ptr,0,0,AQUA);
-  	//printf("%d\n",g_player.walkDirection);
-    // printf("%f\n",g_player.rotationAngle);
   return(0);
   }
   int main()
   {
+    int a;
+    int d , c;
+    d = 10.;
+    c = 48.;
+    a = fmod(d,c);
+    printf("%d\n", a);
+
   get_settings();
   playerSettings();
   g_mlx.mlx_ptr = mlx_init();
   g_mlx.win_ptr = mlx_new_window(g_mlx.mlx_ptr,g_data.reso_one,g_data.reso_two,"Maro");
   g_mg.img = mlx_new_image(g_mlx.mlx_ptr, g_data.reso_one, g_data.reso_two);
   g_mg.addr = mlx_get_data_addr(g_mg.img, &g_mg.bits_per_pixel, &g_mg.line_length,&g_mg.endian);
-
 
   //draw();
   //draw_player();
