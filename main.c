@@ -14,6 +14,55 @@
     *(unsigned int*)dst = color;
 }
 
+void sqr(int Y, int X, int color)
+{ 
+    int x = X;
+    int y = Y;
+    int lenx = 0;
+    int leny = 0;
+    int tile;
+
+    tile = TILE_SIZE * MINIMAP_SCALE_FACTOR;
+    while (lenx < tile)
+    {
+      while (leny < tile)
+      {
+        my_mlx_pixel_put(&g_mg,x,y,color);
+        leny++;
+        y++;
+      }
+      leny = 0;
+      y = Y;
+      lenx++;
+      x++;
+    }
+}
+
+void draw()
+{
+
+  int i;
+  int j;
+  int tile_i;
+  int tile_j;
+  j = 0;
+  i = 0;
+
+   while (i < 23)
+   {  
+    while (j < 27)
+    {
+      tile_i = i * TILE_SIZE * MINIMAP_SCALE_FACTOR;
+      tile_j = j * TILE_SIZE * MINIMAP_SCALE_FACTOR;
+        if (map[i][j] == 1)       
+          sqr(tile_i,tile_j,WHITE);
+        j++;
+    }
+   j = 0;
+   i++;
+ }
+}
+
 int is_wall(double x, double y)
 {
   if ((int)x >= MAP_HOR * TILE_SIZE || (int)x <= 0 ||
@@ -175,13 +224,21 @@ int is_wall(double x, double y)
 
   float normalizeAngle(float angle)
   {
-    angle = fmod(angle,(2 * M_PI));
+    angle = remainderf(angle,(2 * M_PI));
     if (angle < 0)
     {
       angle = (2 * M_PI) + angle;
     }
     return (angle);
   }
+
+float	normalizeangle2(float rayangle)
+{
+	rayangle = remainderf(rayangle,  360);
+	if (rayangle < 0)
+		rayangle = 360 + rayangle;
+	return(rayangle);
+}
 
 void playerSettings()
 {
@@ -190,21 +247,28 @@ void playerSettings()
   g_player.radius = 3;
   g_player.turnDirection = 0;
   g_player.walkDirection = 0;
-  g_player.rotationAngle = 90.0;
+  g_player.rotationAngle = 90;
   g_player.moveSpeed = 10;
   g_player.rotationSpeed = 5.0;
 }
 
 void raySettings()
 {
-        g_ray.wallhitX = 0;
-        g_ray.wallhitY = 0;
-        g_ray.distance = 0;
-        g_ray.isRayFacingDown = g_ray.rayAngle > 0 && g_ray.rayAngle < M_PI;
-        g_ray.isRayFacingUp = !g_ray.isRayFacingDown;
-        g_ray.wasHitVertical = 0;
-        g_ray.isRayFacingRight = g_ray.rayAngle < 0.5 * M_PI || g_ray.rayAngle > 1.5 * M_PI;
-        g_ray.isRayFacingLeft = !g_ray.isRayFacingRight;
+        // g_ray.wallhitX = 0;
+        // g_ray.wallhitY = 0;
+        // g_ray.distance = 0;
+        // g_ray.wasHitVertical = 0;
+        // g_ray.isRayFacingDown = g_ray.rayAngle > 0 && g_ray.rayAngle < M_PI;
+        // g_ray.isRayFacingUp = !g_ray.isRayFacingDown;
+        // g_ray.isRayFacingRight = g_ray.rayAngle < 0.5 * M_PI || g_ray.rayAngle > 1.5 * M_PI;
+        // g_ray.isRayFacingLeft = !g_ray.isRayFacingRight;
+
+        // if (g_ray.rayAngle >= 0 && g_ray.rayAngle <= 180)
+		    // g_ray.isRayFacingDown = 1;
+	      // if (g_ray.isRayFacingRight <= 90 || g_ray.isRayFacingRight >= 270)
+		    // g_ray.isRayFacingRight = 1;
+	      // g_ray.isRayFacingUp = !g_ray.isRayFacingDown;
+	      // g_ray.isRayFacingLeft = !g_ray.isRayFacingRight;
         
 }
 
@@ -215,7 +279,7 @@ float distanceBetweenPoints(int wallhitX, int wallhitY)
   
 }
 
-void cast(float rayAngle)
+float cast(int id, float rayangle)
 {
   float xstep;
   float ystep;
@@ -229,34 +293,42 @@ void cast(float rayAngle)
   float hwallhitY = 0;
 
   //Horizontal
-  rayAngle = normalizeAngle(rayAngle);
+  g_ray[id].rayAngle = normalizeAngle(g_ray[id].rayAngle);
+
+   if (g_ray[id].rayAngle >= 0 && g_ray[id].rayAngle <= 180)
+		    g_ray[id].isRayFacingDown = 1;
+	      if (g_ray[id].isRayFacingRight <= 90 || g_ray[id].isRayFacingRight >= 270)
+		    g_ray[id].isRayFacingRight = 1;
+	      g_ray[id].isRayFacingUp = !g_ray[id].isRayFacingDown;
+	      g_ray[id].isRayFacingLeft = !g_ray[id].isRayFacingRight;
+  //g_ray.rayAngle = normalizeangle2(g_ray.rayAngle);
   //find y coordinate of the closest horizontal grid
   yintercept = floor(g_player.y / TILE_SIZE) * TILE_SIZE;
-  if (g_ray.isRayFacingDown)
+  if (g_ray[id].isRayFacingDown)
   {
     yintercept += TILE_SIZE;
   }
   
   
   //find x coordinate of closest horizontal grid
-  xintercept = g_player.x + (yintercept - g_player.y) / tan(rayAngle * (M_PI / 180));
+  xintercept = g_player.x + (yintercept - g_player.y) / tan(g_ray[id].rayAngle * (M_PI / 180));
 
   //Calculate  the increment for xstep and ystep
   ystep = TILE_SIZE;
 
-  if (g_ray.isRayFacingUp)
+  if (g_ray[id].isRayFacingUp)
     ystep *= -1;
 
-  xstep = TILE_SIZE / tan(rayAngle * (M_PI / 180));
-  if(g_ray.isRayFacingLeft && xstep > 0)
+  xstep = TILE_SIZE / tan(g_ray[id].rayAngle * (M_PI / 180));
+  if(g_ray[id].isRayFacingLeft && xstep > 0)
   xstep *= -1;
-  if (g_ray.isRayFacingRight && xstep < 0)
+  if (g_ray[id].isRayFacingRight && xstep < 0)
   xstep *= -1;
 
   nextHorzTouchX = xintercept;
   nextHorzTouchY = yintercept;
 
-  if(g_ray.isRayFacingUp)
+  if(g_ray[id].isRayFacingUp)
   nextHorzTouchY--;
 
   //Increment xstep and ystep until we find a wall
@@ -289,29 +361,28 @@ void cast(float rayAngle)
   vwallhitY = 0;
 
   xintercept = floor(g_player.x / TILE_SIZE) * TILE_SIZE;
-  if (g_ray.isRayFacingRight)
+  if (g_ray[id].isRayFacingRight)
   {
     xintercept += TILE_SIZE;
   }
-  yintercept = g_player.y + (xintercept - g_player.x) * tan(rayAngle * (M_PI / 180)); // Dividing or Multiplying ??
+  yintercept = g_player.y + (xintercept - g_player.x) * tan(rayangle * (M_PI / 180)); // Dividing or Multiplying ??
   xstep = TILE_SIZE;
 
-  if (g_ray.isRayFacingLeft)
+  if (g_ray[id].isRayFacingLeft)
     xstep *= -1;
   else
     xstep *= 1;
   
-
-  ystep = TILE_SIZE * tan(rayAngle * (M_PI / 180));
-  if(g_ray.isRayFacingUp && ystep > 0)
+  ystep = TILE_SIZE * tan(rayangle * (M_PI / 180));
+  if(g_ray[id].isRayFacingUp && ystep > 0)
   ystep *= -1;
-  if (g_ray.isRayFacingDown && ystep < 0)
+  if (g_ray[id].isRayFacingDown && ystep < 0)
   ystep *= -1;
 
   nextVertTouchX = xintercept;
   nextVertTouchY = yintercept;
 
-  if(g_ray.isRayFacingLeft)
+  if(g_ray[id].isRayFacingLeft)
   nextVertTouchX--;
   foundV = 0;
   while (nextVertTouchX >= 0 && nextVertTouchX <= g_data.reso_one && nextVertTouchY >= 0 && nextVertTouchY <= g_data.reso_one)
@@ -347,45 +418,84 @@ void cast(float rayAngle)
 
   if (horHitDistance < verHitDistance)
   {
-    g_ray.wallhitX = hwallhitX;
-    g_ray.wallhitY = hwallhitY;
-    g_ray.distance = horHitDistance;
+    g_ray[id].wallhitX = hwallhitX;
+    g_ray[id].wallhitY = hwallhitY;
+    g_ray[id].distance = horHitDistance;
   }
   else
   {
-    g_ray.wallhitX = vwallhitX;
-    g_ray.wallhitY = vwallhitY;
-    g_ray.distance = verHitDistance;
-    g_ray.wasHitVertical = 1;
+    g_ray[id].wallhitX = vwallhitX;
+    g_ray[id].wallhitY = vwallhitY; 
+    g_ray[id].distance = verHitDistance;
+    g_ray[id].wasHitVertical = 1;
   }
-    
-  
+  g_ray[id].rayAngle = rayangle;
+  if (horHitDistance < verHitDistance)
+  return (horHitDistance);
+  else
+  return(verHitDistance);
+     
 }
 
-void castallrays()
+void draw_player()
 {
-  int columnid;
-  //char *raysobject;
-  int i;
+  // int i;
+  // i = 1;
+  float fakey;
+  float fakex;
+  float rayAngle;
 
-  i = 0;
-  columnid = 0;
+    // float x = g_player.rotationAngle;
 
-  //raysobject = malloc(g_data.reso_one * sizeof(char));
-
-  while (i < NUM_RAYS)
-  {
-
-    g_ray.rayAngle += FOV_ANGLE / NUM_RAYS;
-    columnid++;
-    i++;
-  }
+    fakex = g_player.x + cos(g_player.rotationAngle * (M_PI/180));
+    fakey = g_player.y + sin(g_player.rotationAngle * (M_PI/180));
 
 
+     int ang = 1;
+   while (ang < 360)
+   {
+        my_mlx_pixel_put(&g_mg, circle_size * cos(ang * PI / 180) + g_player.x * 0.3, circle_size * sin(ang * PI / 180) + g_player.y * 0.3, RED);
+       ang++;
+   }
+    rayAngle = g_player.rotationAngle - 30;
+     float fov = 60;
+     int    i;
+    
+    while(fov >= 0)
+    {
+      i = 0; //cast();//find_distance(x);
+      while (i < 30)
+      {
+        my_mlx_pixel_put(&g_mg, 0.3 * g_player.x + cos(rayAngle * PI / 180) * i, 0.3 * g_player.y + sin (rayAngle * PI / 180) * i, GOLD);       
+        i++;
+      } 
+        rayAngle+= (60.0 / g_data.reso_one);
+        fov = fov - (60.0 / g_data.reso_one);
+     }
+     //printf("%f\n",g_ray.rayAngle);
 }
 
 
+void CastAllRays()
+{
+  int id;
+  float rayangle;
 
+
+  rayangle = g_player.rotationAngle - (FOV_ANGLE / 2);
+  //g_ray[0].rayAngle =g_player.rotationAngle - (FOV_ANGLE / 2);
+  id = 0;
+  while (id < NUM_RAYS)
+  {
+    cast(id, rayangle);
+    rayangle +=  60 / (float)NUM_RAYS;
+
+    id++;
+    // g_ray.rayAngle += FOV_ANGLE / NUM_RAYS;
+    //g_ray[id + 1].rayAngle = g_ray[id].rayAngle + FOV_ANGLE / g_data.reso_one;
+  } 
+   //draw()
+}
 // struct rd
 // {
 //   float horx;
@@ -430,87 +540,6 @@ void castallrays()
 
 // }
 
-void draw_player()
-{
-  int i;
-  i = 1;
-  float fakey;
-  float fakex;
-
-    // float x = g_player.rotationAngle;
-
-    fakex = g_player.x + cos(g_player.rotationAngle * (M_PI/180));
-    fakey = g_player.y + sin(g_player.rotationAngle * (M_PI/180));
-
-
-     int ang = 1;
-   while (ang < 360)
-   {
-        my_mlx_pixel_put(&g_mg, circle_size * cos(ang * PI / 180) + g_player.x, circle_size * sin(ang * PI / 180) + g_player.y, RED);
-       ang++;
-   }
-     g_ray.rayAngle = g_player.rotationAngle - 30;
-     float fov = 60;
-    while(fov >= 0)
-    {
-      i = 0;//find_distance(x);
-      while (i < 300)
-      {
-      //  if (is_wall(g_player.x + cos(x * PI / 180) * i,g_player.y + sin (x * PI / 180) * i) == 1)
-      //     break;
-      //   else
-        my_mlx_pixel_put(&g_mg, g_player.x + cos(g_ray.rayAngle * PI / 180) * i, g_player.y + sin (g_ray.rayAngle * PI / 180) * i, GOLD);
-        i++;
-      } 
-        g_ray.rayAngle+= (60.0 / g_data.reso_one);
-       fov = fov - (60.0 / g_data.reso_one);
-     }
-}
-
-void sqr(int Y, int X, int color)
-{ 
-    int x = X;
-    int y = Y;
-    int lenx = 0;
-    int leny = 0;
-    while (lenx < TILE_SIZE)
-    {
-      while (leny < TILE_SIZE)
-      {
-        my_mlx_pixel_put(&g_mg,x,y,color);
-        leny++;
-        y++;
-      }
-      leny = 0;
-      y = Y;
-      lenx++;
-      x++;
-    }
-}
-void draw()
-{
-
-  int i;
-  int j;
-  int tile_i;
-  int tile_j;
-  j = 0;
-  i = 0;
-
-   while (i < 23)
-   {  
-    while (j < 27)
-    {
-      tile_i = i * TILE_SIZE;
-      tile_j = j * TILE_SIZE;
-        if (map[i][j] == 1)       
-          sqr(tile_i,tile_j,WHITE);
-        j++;
-    }
-   j = 0;
-   i++;
- }
-}
 
 int keyPress(int key)
 {
@@ -551,27 +580,8 @@ int keyRelease(int key)
       g_player.turnDirection = 0;
       return (0);
 }
-int g_Trays[25] = {0};
 
 
-
-void CastAllRays()
-{
-  int columnId;
-  int rayAngle;
-  int i;
-
-  rayAngle =  g_player.rotationAngle - (FOV_ANGLE / 2);
-  columnId = 0;
-  i = 0;
-  while (i <  NUM_RAYS)
-  {
-    //RayR(rayAngle);
-    rayAngle += FOV_ANGLE / NUM_RAYS;
-    columnId++;
-    i++;
-  }
-}
 
  int update()
   {
@@ -594,26 +604,38 @@ void CastAllRays()
       g_player.x = fakex;
       g_player.y = fakey;
     }
+    //draw();
+    //draw_player();
+    // printf("%f\n",g_player.rotationAngle);
+    CastAllRays();
     draw();
     draw_player();
-    printf("%f\n",g_player.rotationAngle);
-    //CastAllRays();
 
-
+  
     mlx_put_image_to_window(g_mlx.mlx_ptr, g_mlx.win_ptr, g_mg.img, 0, 0);
     mlx_destroy_image(g_mlx.mlx_ptr,g_mg.img);
     g_mg.img = mlx_new_image(g_mlx.mlx_ptr, g_data.reso_one, g_data.reso_two);
     g_mg.addr = mlx_get_data_addr(g_mg.img, &g_mg.bits_per_pixel, &g_mg.line_length,&g_mg.endian);
   return(0);
   }
+
+  // void render3DProjectedWalls()
+  // {
+  //   int i;
+  //   int ray;
+
+  //   i = 0;
+  //   while (i < NUM_RAYS)
+  //   {
+
+  //     ray = rays[i];
+
+  //     i++;
+  //   }
+
+  // }
   int main()
   {
-    int a;
-    int d , c;
-    d = 10.;
-    c = 48.;
-    a = fmod(d,c);
-    printf("%d\n", a);
 
   get_settings();
   playerSettings();
@@ -621,6 +643,7 @@ void CastAllRays()
   g_mlx.win_ptr = mlx_new_window(g_mlx.mlx_ptr,g_data.reso_one,g_data.reso_two,"Maro");
   g_mg.img = mlx_new_image(g_mlx.mlx_ptr, g_data.reso_one, g_data.reso_two);
   g_mg.addr = mlx_get_data_addr(g_mg.img, &g_mg.bits_per_pixel, &g_mg.line_length,&g_mg.endian);
+
 
   //draw();
   //draw_player();
