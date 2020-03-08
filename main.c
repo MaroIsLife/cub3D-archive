@@ -22,7 +22,7 @@ void sqr(int Y, int X, int color)
     int leny = 0;
     int tile;
 
-    tile = TILE_SIZE * MINIMAP_SCALE_FACTOR;
+    tile = TILE_SIZE;
     while (lenx < tile)
     {
       while (leny < tile)
@@ -52,8 +52,8 @@ void draw()
    {  
     while (j < 27)
     {
-      tile_i = i * TILE_SIZE * MINIMAP_SCALE_FACTOR;
-      tile_j = j * TILE_SIZE * MINIMAP_SCALE_FACTOR;
+      tile_i = i * TILE_SIZE;
+      tile_j = j * TILE_SIZE;
         if (map[i][j] == 1)       
           sqr(tile_i,tile_j,WHITE);
         j++;
@@ -224,7 +224,7 @@ int is_wall(double x, double y)
 
   float normalizeAngle(float angle)
   {
-    angle = remainderf(angle,(2 * M_PI));
+    angle = remainder(angle,(2 * M_PI));
     if (angle < 0)
     {
       angle = (2 * M_PI) + angle;
@@ -272,169 +272,174 @@ void raySettings()
         
 }
 
-float distanceBetweenPoints(int wallhitX, int wallhitY)
+float distanceBetweenPoints(float wallhitX, float wallhitY)
 {
   return(sqrt((wallhitX - g_player.x) * (wallhitX - g_player.x) + (wallhitY - g_player.y) * (wallhitY - g_player.y)));
-
-  
 }
 
-float cast(int id, float rayangle)
+
+void cast(float rayAngle,int id)
 {
-  float xstep;
-  float ystep;
   float xintercept;
   float yintercept;
-  float nextHorzTouchX;
-  float nextHorzTouchY;
-  float foundH;
+  float xstep;
+  float ystep;
+  int foundHorzWallHit = 0;
+  float horzWallhitx = 0;
+  float horzWallhity = 0;
+  //int horzWallContent = 0;
+  int isRayFacingDown = 0;
+  int isRayFacingUp = 0;
+  int isRayFacingRight = 0;
+  int isRayFacingLeft;
+  int nextHorzTouchX;
+  int nextHorzTouchY;
+  float xtocheck;
+  float ytocheck;
 
-  float hwallhitX = 0;
-  float hwallhitY = 0;
+  rayAngle = normalizeAngle(rayAngle);
 
-  //Horizontal
-  g_ray[id].rayAngle = normalizeAngle(g_ray[id].rayAngle);
 
-   if (g_ray[id].rayAngle >= 0 && g_ray[id].rayAngle <= 180)
-		    g_ray[id].isRayFacingDown = 1;
-	      if (g_ray[id].isRayFacingRight <= 90 || g_ray[id].isRayFacingRight >= 270)
-		    g_ray[id].isRayFacingRight = 1;
-	      g_ray[id].isRayFacingUp = !g_ray[id].isRayFacingDown;
-	      g_ray[id].isRayFacingLeft = !g_ray[id].isRayFacingRight;
-  //g_ray.rayAngle = normalizeangle2(g_ray.rayAngle);
-  //find y coordinate of the closest horizontal grid
+   if (rayAngle >= 0 && rayAngle <= 180)
+		    isRayFacingDown = 1;
+	  if (isRayFacingRight <= 90 || isRayFacingRight >= 270)
+		    isRayFacingRight = 1;
+	      isRayFacingUp = !isRayFacingDown;
+	      isRayFacingLeft = !isRayFacingRight;
+
+    //HORIZONTAL PART
   yintercept = floor(g_player.y / TILE_SIZE) * TILE_SIZE;
-  if (g_ray[id].isRayFacingDown)
-  {
-    yintercept += TILE_SIZE;
-  }
-  
-  
-  //find x coordinate of closest horizontal grid
-  xintercept = g_player.x + (yintercept - g_player.y) / tan(g_ray[id].rayAngle * (M_PI / 180));
+  yintercept += isRayFacingDown ? TILE_SIZE : 0;
 
-  //Calculate  the increment for xstep and ystep
+  xintercept = g_player.x + (yintercept - g_player.y) / tan(rayAngle * (M_PI / 180));
   ystep = TILE_SIZE;
+  ystep *= isRayFacingUp ? -1 : 1;
 
-  if (g_ray[id].isRayFacingUp)
-    ystep *= -1;
-
-  xstep = TILE_SIZE / tan(g_ray[id].rayAngle * (M_PI / 180));
-  if(g_ray[id].isRayFacingLeft && xstep > 0)
-  xstep *= -1;
-  if (g_ray[id].isRayFacingRight && xstep < 0)
-  xstep *= -1;
+  xstep = TILE_SIZE / tan(rayAngle * (M_PI / 180));
+  xstep *= (isRayFacingLeft && xstep > 0) ? -1 : 1;
+  xstep *= (isRayFacingRight && xstep < 0) ? -1 : 1;
 
   nextHorzTouchX = xintercept;
   nextHorzTouchY = yintercept;
 
-  if(g_ray[id].isRayFacingUp)
-  nextHorzTouchY--;
-
-  //Increment xstep and ystep until we find a wall
-
-  foundH = 0;
   while (nextHorzTouchX >= 0 && nextHorzTouchX <= g_data.reso_one && nextHorzTouchY >= 0 && nextHorzTouchY <= g_data.reso_one)
   {
-    if(is_wall(nextHorzTouchX,nextHorzTouchY))
+    xtocheck = nextHorzTouchX;
+    ytocheck = nextHorzTouchY + (isRayFacingUp ? -1 : 0);
+    if (is_wall(xtocheck,ytocheck))
     {
-      foundH = 1;
-      hwallhitX = nextHorzTouchX;
-      hwallhitY = nextHorzTouchY;
-      break;
+        horzWallhitx = nextHorzTouchX;
+        horzWallhity = nextHorzTouchY;
+        //horzWallContent = map[(int)floor(ytocheck / TILE_SIZE)][(int)floor(xtocheck / TILE_SIZE)];
+        foundHorzWallHit = 1;
+        break;
     }
     else
     {
-      nextHorzTouchX += xstep;
-      nextHorzTouchY += ystep;
+        nextHorzTouchX += xstep;
+        nextHorzTouchY += ystep;
     }
   }
 
-  //Vertical 
-  float foundV;
-  float vwallhitX;
-  float vwallhitY;
-  float nextVertTouchX;
-  float nextVertTouchY;
+  //VERTICAL PART
+  int foundVerWallHit = 0;
+  int verWallhitx = 0;
+  int verWallhity = 0;
+  //int verWallContent = 0;
+  int nextVerTouchX;
+  int nextVerTouchY;
 
-  vwallhitX = 0;
-  vwallhitY = 0;
 
-  xintercept = floor(g_player.x / TILE_SIZE) * TILE_SIZE;
-  if (g_ray[id].isRayFacingRight)
-  {
-    xintercept += TILE_SIZE;
-  }
-  yintercept = g_player.y + (xintercept - g_player.x) * tan(rayangle * (M_PI / 180)); // Dividing or Multiplying ??
+    xintercept = floor(g_player.x / TILE_SIZE) * TILE_SIZE;
+    xintercept += isRayFacingRight ? TILE_SIZE : 0;
+
+  yintercept = g_player.y + (xintercept - g_player.x) * tan(rayAngle * (M_PI / 180));
   xstep = TILE_SIZE;
+  xstep *= isRayFacingLeft ? -1 : 1;
 
-  if (g_ray[id].isRayFacingLeft)
-    xstep *= -1;
-  else
-    xstep *= 1;
-  
-  ystep = TILE_SIZE * tan(rayangle * (M_PI / 180));
-  if(g_ray[id].isRayFacingUp && ystep > 0)
-  ystep *= -1;
-  if (g_ray[id].isRayFacingDown && ystep < 0)
-  ystep *= -1;
+  ystep = TILE_SIZE * tan(rayAngle * (M_PI / 180));
+  ystep *= (isRayFacingUp && ystep > 0) ? -1 : 1;
+  ystep *= (isRayFacingDown && ystep < 0) ? -1 : 1;
 
-  nextVertTouchX = xintercept;
-  nextVertTouchY = yintercept;
+  nextVerTouchX = xintercept;
+  nextVerTouchY = yintercept;
 
-  if(g_ray[id].isRayFacingLeft)
-  nextVertTouchX--;
-  foundV = 0;
-  while (nextVertTouchX >= 0 && nextVertTouchX <= g_data.reso_one && nextVertTouchY >= 0 && nextVertTouchY <= g_data.reso_one)
+  while (nextVerTouchX >= 0 && nextVerTouchX <= g_data.reso_one && nextVerTouchY >= 0 && nextVerTouchY <= g_data.reso_one)
   {
-    if(is_wall(nextVertTouchX,nextVertTouchY))
+    xtocheck = nextVerTouchX + (isRayFacingLeft ? -1 : 0);
+    ytocheck = nextVerTouchY;
+    if (is_wall(xtocheck,ytocheck))
     {
-      foundV = 1;
-      vwallhitX = nextVertTouchX;
-      vwallhitY = nextVertTouchY;
-      break;
+        verWallhitx = nextVerTouchX;
+        verWallhity = nextVerTouchY;
+        //verWallContent = map[(int)floor(ytocheck / TILE_SIZE)][(int)floor(xtocheck / TILE_SIZE)];
+        foundVerWallHit = 1;
+        break;
     }
     else
     {
-      nextVertTouchX += xstep;
-      nextVertTouchY += ystep;
+        nextVerTouchX += xstep;
+        nextVerTouchY += ystep;
     }
   }
 
-  // Calculate both distances Vertical and Horz and Choose the smallest
-
-  float horHitDistance;
+  //Calculate Distances and choosing the smallest one
+  float horzHitDistance;
   float verHitDistance;
 
-  if (foundH)
-    horHitDistance = distanceBetweenPoints(hwallhitX,hwallhitY);
-  else
-  horHitDistance = INT_MAX;
+  horzHitDistance = foundHorzWallHit ? distanceBetweenPoints(horzWallhitx,horzWallhity) : INT_MAX;
+  verHitDistance = foundVerWallHit ? distanceBetweenPoints(verWallhitx,verWallhity) : INT_MAX;
 
-  if (foundV)
-    verHitDistance = distanceBetweenPoints(vwallhitX,vwallhitY);
-  else
-  verHitDistance = INT_MAX;
-
-  if (horHitDistance < verHitDistance)
+  if (verHitDistance < horzHitDistance)
   {
-    g_ray[id].wallhitX = hwallhitX;
-    g_ray[id].wallhitY = hwallhitY;
-    g_ray[id].distance = horHitDistance;
+      g_ray[id].distance = verHitDistance;
+      g_ray[id].wallhitX = verWallhitx;
+      g_ray[id].wallhitY = verWallhity;
+      g_ray[id].wasHitVertical = 1;
+     // g_ray[id].wallHitContent = verWallContent;
   }
   else
   {
-    g_ray[id].wallhitX = vwallhitX;
-    g_ray[id].wallhitY = vwallhitY; 
-    g_ray[id].distance = verHitDistance;
-    g_ray[id].wasHitVertical = 1;
+     g_ray[id].distance = horzHitDistance;
+      g_ray[id].wallhitX = horzWallhitx;
+      g_ray[id].wallhitY = horzWallhity;
+      g_ray[id].wasHitVertical = 0;
+      //g_ray[id].wallHitContent = horzWallContent;
   }
-  g_ray[id].rayAngle = rayangle;
-  if (horHitDistance < verHitDistance)
-  return (horHitDistance);
-  else
-  return(verHitDistance);
-     
+  
+  g_ray[id].rayAngle = rayAngle;
+  g_ray[id].isRayFacingDown = isRayFacingDown;
+  g_ray[id].isRayFacingUp = isRayFacingUp;
+  g_ray[id].isRayFacingLeft = isRayFacingLeft;
+  g_ray[id].isRayFacingRight = isRayFacingRight;
+
+}
+
+void render3DProjectedWalls()
+{
+  int i;
+  float wallStripHeight;
+  float rayDistance;
+  float distanceProjectionPlane;
+  int ybegin;
+
+  i = 0;
+
+  while (i  < NUM_RAYS)
+  {
+    rayDistance = g_ray[i].distance;
+    //Calculate Distance to projection plane
+    distanceProjectionPlane = (g_data.reso_one / 2) / tan(FOV_ANGLE / 2);
+    wallStripHeight = (TILE_SIZE / rayDistance) * distanceProjectionPlane;
+    ybegin = (g_data.reso_one / 2) - (wallStripHeight / 2);
+    while (ybegin < g_data.reso_one && ybegin >= 0)
+    {
+      my_mlx_pixel_put(&g_mg,i,ybegin,WHITE);
+      ybegin++;
+    }
+
+  }
+
 }
 
 void draw_player()
@@ -454,48 +459,87 @@ void draw_player()
      int ang = 1;
    while (ang < 360)
    {
-        my_mlx_pixel_put(&g_mg, circle_size * cos(ang * PI / 180) + g_player.x * 0.3, circle_size * sin(ang * PI / 180) + g_player.y * 0.3, RED);
+        my_mlx_pixel_put(&g_mg, circle_size * cos(ang * PI / 180) + g_player.x , circle_size * sin(ang * PI / 180) + g_player.y , RED);
        ang++;
    }
-    rayAngle = g_player.rotationAngle - 30;
-     float fov = 60;
+    rayAngle = g_player.rotationAngle; //- 30;
+    //  float fov = 60;
      int    i;
     
-    while(fov >= 0)
-    {
-      i = 0; //cast();//find_distance(x);
-      while (i < 30)
+    // while(fov >= 0)
+    // {
+      i = 0;
+      while (i < 100)
       {
-        my_mlx_pixel_put(&g_mg, 0.3 * g_player.x + cos(rayAngle * PI / 180) * i, 0.3 * g_player.y + sin (rayAngle * PI / 180) * i, GOLD);       
+        // my_mlx_pixel_put(&g_mg, g_player.x + cos(rayAngle * PI / 180) * i, g_player.y + sin(rayAngle * PI / 180) * i, GOLD);
+         my_mlx_pixel_put(&g_mg, g_player.x + cos(rayAngle * PI / 180) * i, g_player.y + sin(rayAngle * PI / 180) * i, GOLD);       
         i++;
       } 
-        rayAngle+= (60.0 / g_data.reso_one);
-        fov = fov - (60.0 / g_data.reso_one);
-     }
+    //     g_ray[0].rayAngle+= (60.0 / g_data.reso_one);
+    //     fov = fov - (60.0 / g_data.reso_one);
+    //  }
      //printf("%f\n",g_ray.rayAngle);
 }
+
 
 
 void CastAllRays()
 {
   int id;
-  float rayangle;
+  float rayAngle;
 
-
-  rayangle = g_player.rotationAngle - (FOV_ANGLE / 2);
-  //g_ray[0].rayAngle =g_player.rotationAngle - (FOV_ANGLE / 2);
   id = 0;
+  rayAngle = g_player.rotationAngle - (FOV_ANGLE / 2);
   while (id < NUM_RAYS)
   {
-    cast(id, rayangle);
-    rayangle +=  60 / (float)NUM_RAYS;
-
+    cast(rayAngle,id);
+    rayAngle +=  60 / (float)NUM_RAYS;
     id++;
-    // g_ray.rayAngle += FOV_ANGLE / NUM_RAYS;
-    //g_ray[id + 1].rayAngle = g_ray[id].rayAngle + FOV_ANGLE / g_data.reso_one;
   } 
-   //draw()
+  id = 0;
+  render3DProjectedWalls();
 }
+
+// void cast2(int id,float rayAngle)
+// {
+//   float xintercept;
+//   float yintercept;
+//   float xstep;
+//   float ystep;
+//   float foundHorzWallHit;
+//   float horzWallhitX;
+//   float horzWallHitY;
+//   float horzWallColor;
+
+//   foundHorzWallHit = 0;
+//   horzWallhitX = 0;
+//   horzWallHitY = 0;
+//   horzWallColor = 0;
+
+//   yintercept = floor(g_player.y / TILE_SIZE) * TILE_SIZE;
+//   yintercept += g_ray[id].isRayFacingDown ? TILE_SIZE : 0;
+
+//   xintercept = g_player.x + (yintercept - g_player.y) / tan(rayAngle)
+
+// }
+
+// void CastAllRays2()
+// {
+//   int id;
+//   float rayAngle;
+
+//   id = 0;
+//   rayAngle = g_player.rotationAngle - (FOV_ANGLE / 2);
+//   //g_ray[0].rayAngle =g_player.rotationAngle - (FOV_ANGLE / 2);
+//   while (id < NUM_RAYS)
+//   {
+//     cast(id);
+//      rayAngle +=  FOV_ANGLE / NUM_RAYS;
+//     id++;
+//   } 
+   //draw()
+//}
+
 // struct rd
 // {
 //   float horx;
@@ -581,6 +625,17 @@ int keyRelease(int key)
       return (0);
 }
 
+void renderRays()
+{
+  int i;
+
+  i = 0;
+  while (i <  NUM_RAYS)
+  {
+
+  }
+}
+
 
 
  int update()
@@ -607,9 +662,11 @@ int keyRelease(int key)
     //draw();
     //draw_player();
     // printf("%f\n",g_player.rotationAngle);
+    // draw();
+    // draw_player();
     CastAllRays();
-    draw();
-    draw_player();
+    // render3DProjectedWalls();
+    
 
   
     mlx_put_image_to_window(g_mlx.mlx_ptr, g_mlx.win_ptr, g_mg.img, 0, 0);

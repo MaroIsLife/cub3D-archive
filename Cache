@@ -1,0 +1,158 @@
+float cast(int id)
+{
+  float xstep;
+  float ystep;
+  float xintercept;
+  float yintercept;
+  float nextHorzTouchX;
+  float nextHorzTouchY;
+  float foundH;
+
+  float hwallhitX = 0;
+  float hwallhitY = 0;
+
+  //Horizontal
+  g_ray[id].rayAngle = normalizeAngle(g_ray[id].rayAngle);
+
+   if (g_ray[id].rayAngle >= 0 && g_ray[id].rayAngle <= 180)
+		    g_ray[id].isRayFacingDown = 1;
+	      if (g_ray[id].isRayFacingRight <= 90 || g_ray[id].isRayFacingRight >= 270)
+		    g_ray[id].isRayFacingRight = 1;
+	      g_ray[id].isRayFacingUp = !g_ray[id].isRayFacingDown;
+	      g_ray[id].isRayFacingLeft = !g_ray[id].isRayFacingRight;
+  //g_ray.rayAngle = normalizeangle2(g_ray.rayAngle);
+  //find y coordinate of the closest horizontal grid
+  yintercept = floor(g_player.y / TILE_SIZE) * TILE_SIZE;
+  if (g_ray[id].isRayFacingDown)
+  {
+    yintercept += TILE_SIZE;
+  }
+  
+  
+  //find x coordinate of closest horizontal grid
+  xintercept = g_player.x + (yintercept - g_player.y) / tan(g_ray[id].rayAngle * (M_PI / 180));
+
+  //Calculate  the increment for xstep and ystep
+  ystep = TILE_SIZE;
+
+  if (g_ray[id].isRayFacingUp)
+    ystep *= -1;
+
+  xstep = TILE_SIZE / tan(g_ray[id].rayAngle * (M_PI / 180));
+  if(g_ray[id].isRayFacingLeft && xstep > 0)
+  xstep *= -1;
+  if (g_ray[id].isRayFacingRight && xstep < 0)
+  xstep *= -1;
+
+  nextHorzTouchX = xintercept;
+  nextHorzTouchY = yintercept;
+
+  if(g_ray[id].isRayFacingUp)
+  nextHorzTouchY--;
+
+  //Increment xstep and ystep until we find a wall
+
+  foundH = 0;
+  while (nextHorzTouchX >= 0 && nextHorzTouchX <= g_data.reso_one && nextHorzTouchY >= 0 && nextHorzTouchY <= g_data.reso_one)
+  {
+    if(is_wall(nextHorzTouchX,nextHorzTouchY))
+    {
+      foundH = 1;
+      hwallhitX = nextHorzTouchX;
+      hwallhitY = nextHorzTouchY;
+      break;
+    }
+    else
+    {
+      nextHorzTouchX += xstep;
+      nextHorzTouchY += ystep;
+    }
+  }
+
+  //Vertical 
+  float foundV;
+  float vwallhitX;
+  float vwallhitY;
+  float nextVertTouchX;
+  float nextVertTouchY;
+
+  vwallhitX = 0;
+  vwallhitY = 0;
+
+  xintercept = floor(g_player.x / TILE_SIZE) * TILE_SIZE;
+  if (g_ray[id].isRayFacingRight)
+  {
+    xintercept += TILE_SIZE;
+  }
+  yintercept = g_player.y + (xintercept - g_player.x) * tan(g_ray[id].rayAngle * (M_PI / 180)); // Dividing or Multiplying ??
+  xstep = TILE_SIZE;
+
+  if (g_ray[id].isRayFacingLeft)
+    xstep *= -1;
+  else
+    xstep *= 1;
+  
+  ystep = TILE_SIZE * tan(g_ray[id].rayAngle * (M_PI / 180));
+  if(g_ray[id].isRayFacingUp && ystep > 0)
+  ystep *= -1;
+  if (g_ray[id].isRayFacingDown && ystep < 0)
+  ystep *= -1;
+
+  nextVertTouchX = xintercept;
+  nextVertTouchY = yintercept;
+
+  if(g_ray[id].isRayFacingLeft)
+  nextVertTouchX--;
+  foundV = 0;
+  while (nextVertTouchX >= 0 && nextVertTouchX <= g_data.reso_one && nextVertTouchY >= 0 && nextVertTouchY <= g_data.reso_one)
+  {
+    if(is_wall(nextVertTouchX,nextVertTouchY))
+    {
+      foundV = 1;
+      vwallhitX = nextVertTouchX;
+      vwallhitY = nextVertTouchY;
+      break;
+    }
+    else
+    {
+      nextVertTouchX += xstep;
+      nextVertTouchY += ystep;
+    }
+  }
+
+  // Calculate both distances Vertical and Horz and Choose the smallest
+
+  float horHitDistance;
+  float verHitDistance;
+
+  if (foundH)
+    horHitDistance = distanceBetweenPoints(hwallhitX,hwallhitY);
+  else
+  horHitDistance = INT_MAX;
+
+  if (foundV)
+    verHitDistance = distanceBetweenPoints(vwallhitX,vwallhitY);
+  else
+  verHitDistance = INT_MAX;
+
+  if (horHitDistance < verHitDistance)
+  {
+    g_ray[id].wallhitX = hwallhitX;
+    g_ray[id].wallhitY = hwallhitY;
+    my_mlx_pixel_put(&g_mg,hwallhitX,hwallhitY,AQUA);
+    g_ray[id].distance = horHitDistance;
+  }
+  else
+  {
+    g_ray[id].wallhitX = vwallhitX;
+    g_ray[id].wallhitY = vwallhitY; 
+    my_mlx_pixel_put(&g_mg,vwallhitX,vwallhitY,AQUA);
+    g_ray[id].distance = verHitDistance;
+    g_ray[id].wasHitVertical = 1;
+  }
+  if (horHitDistance < verHitDistance)
+  return (horHitDistance);
+  else
+  return(verHitDistance);
+     
+}
