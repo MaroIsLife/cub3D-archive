@@ -17,9 +17,8 @@
 #define AQUA 0x00ffff
 #define PI 3.14159265358979323846
 #define circle_size 10
-#define FOV_ANGLE 60 * (M_PI / 180)
-#define WALL_STRIP_WIDTH 4
-#define NUM_RAYS 1000/WALL_STRIP_WIDTH
+#define FOV_ANGLE 60
+#define NUM_RAYS 1000
 #define INT_MAX 2147483647
 // #define MINIMAP_SCALE_FACTOR 0.3;
 

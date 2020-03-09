@@ -224,10 +224,10 @@ int is_wall(double x, double y)
 
   float normalizeAngle(float angle)
   {
-    angle = remainder(angle,(2 * M_PI));
+    angle = remainder(angle,(360));
     if (angle < 0)
     {
-      angle = (2 * M_PI) + angle;
+      angle = (360) + angle;
     }
     return (angle);
   }
@@ -302,8 +302,9 @@ void cast(float rayAngle,int id)
 
    if (rayAngle >= 0 && rayAngle <= 180)
 		    isRayFacingDown = 1;
-	  if (isRayFacingRight <= 90 || isRayFacingRight >= 270)
+	  if (rayAngle <= 90 || rayAngle >= 270)
 		    isRayFacingRight = 1;
+
 	      isRayFacingUp = !isRayFacingDown;
 	      isRayFacingLeft = !isRayFacingRight;
 
@@ -412,33 +413,6 @@ void cast(float rayAngle,int id)
   g_ray[id].isRayFacingUp = isRayFacingUp;
   g_ray[id].isRayFacingLeft = isRayFacingLeft;
   g_ray[id].isRayFacingRight = isRayFacingRight;
-
-}
-
-void render3DProjectedWalls()
-{
-  int i;
-  float wallStripHeight;
-  float rayDistance;
-  float distanceProjectionPlane;
-  int ybegin;
-
-  i = 0;
-
-  while (i  < NUM_RAYS)
-  {
-    rayDistance = g_ray[i].distance;
-    //Calculate Distance to projection plane
-    distanceProjectionPlane = (g_data.reso_one / 2) / tan(FOV_ANGLE / 2);
-    wallStripHeight = (TILE_SIZE / rayDistance) * distanceProjectionPlane;
-    ybegin = (g_data.reso_one / 2) - (wallStripHeight / 2);
-    while (ybegin < g_data.reso_one && ybegin >= 0)
-    {
-      my_mlx_pixel_put(&g_mg,i,ybegin,WHITE);
-      ybegin++;
-    }
-
-  }
 }
 
 void draw_player()
@@ -482,11 +456,16 @@ void draw_player()
 
 void	wall_data(int id)
 {
+  int toppixel;
+
 	float distance = g_ray[id].distance * cos((g_ray[id].rayAngle - g_player.rotationAngle) * (M_PI / 180));
 	float projection = (g_data.reso_one / 2) / tan((60/2) * (M_PI / 180));
 	float wallheight = (TILE_SIZE / distance) * projection;
 
-	int	toppixel = (g_data.reso_two / 2) - ((int)wallheight / 2);
+	toppixel = (g_data.reso_two / 2) - ((int)wallheight / 2);
+  if (toppixel < 0)
+    toppixel = 0;
+  
 	int	bottompixel = toppixel + wallheight;
 	g_ray[id].top = toppixel;
 	g_ray[id].bottom = bottompixel;
@@ -534,7 +513,7 @@ void CastAllRays()
   {
     cast(rayAngle,id);
     id++;
-    rayAngle +=  60 / (float)NUM_RAYS;
+    rayAngle +=  60.0 / (float)NUM_RAYS;
   } 
   id = 0;
   while (id < NUM_RAYS)
@@ -703,7 +682,7 @@ int keyRelease(int key)
     //draw();
     //draw_player();
     // printf("%f\n",g_player.rotationAngle);
-    // draw();
+    //  draw();
     // draw_player();
     CastAllRays();
     // render3DProjectedWalls();
