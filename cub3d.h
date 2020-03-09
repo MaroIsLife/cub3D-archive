@@ -14,11 +14,14 @@
 #define WHITE 0xffffff
 #define GOLD 0xffd700
 #define BLUE 0x0000ff
+#define SKY 0x87ceeb
+#define GREEN 0x7CFC00
 #define AQUA 0x00ffff
+#define BROWN 0xCD853F
 #define PI 3.14159265358979323846
 #define circle_size 10
 #define FOV_ANGLE 60
-#define NUM_RAYS 1000
+// #define NUM_RAYS 1680
 #define INT_MAX 2147483647
 // #define MINIMAP_SCALE_FACTOR 0.3;
 
@@ -57,7 +60,7 @@ int isRayFacingDown;
 int isRayFacingLeft;
 int isRayFacingRight;
 int wallHitContent;
-} t_ray[NUM_RAYS];
+} t_ray[2560];
 
 
 typedef struct s_data {
@@ -110,7 +113,7 @@ int map[23][27] =  {
   {1,0,0,0,1,1,1,0,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,0,0,1},
   {1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,1},
   {1,0,0,0,1,1,0,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,1},
+  {1,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1},
   {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
