@@ -248,8 +248,8 @@ void playerSettings()
   g_player.turnDirection = 0;
   g_player.walkDirection = 0;
   g_player.rotationAngle = 90;
-  g_player.moveSpeed = 10;
-  g_player.rotationSpeed = 5.0;
+  g_player.moveSpeed = 1;
+  g_player.rotationSpeed = 1.0;
 }
 
 void raySettings()
@@ -439,7 +439,6 @@ void render3DProjectedWalls()
     }
 
   }
-
 }
 
 void draw_player()
@@ -481,7 +480,48 @@ void draw_player()
      //printf("%f\n",g_ray.rayAngle);
 }
 
+void	wall_data(int id)
+{
+	float distance = g_ray[id].distance * cos((g_ray[id].rayAngle - g_player.rotationAngle) * (M_PI / 180));
+	float projection = (g_data.reso_one / 2) / tan((60/2) * (M_PI / 180));
+	float wallheight = (TILE_SIZE / distance) * projection;
 
+	int	toppixel = (g_data.reso_two / 2) - ((int)wallheight / 2);
+	int	bottompixel = toppixel + wallheight;
+	g_ray[id].top = toppixel;
+	g_ray[id].bottom = bottompixel;
+	g_ray[id].height = wallheight;
+}
+void	draw_floor(int id)
+{
+	
+	int i = 0;
+
+	while(i < g_ray[id].top)
+	{
+		my_mlx_pixel_put(&g_mg, id, i, BLUE);
+		i++;
+	}
+	i = g_ray[id].bottom;
+	while(i < g_data.reso_two)
+	{
+		my_mlx_pixel_put(&g_mg, id, i, BLUE);
+		i++;
+	}
+}
+void	draw_wall(int id, int nb)
+{
+	// float i = 0;
+	float a = g_ray[id].top;
+	float b = g_ray[id].bottom;
+  nb = 12;
+
+	while(a < b)
+	{
+		my_mlx_pixel_put(&g_mg, id, a, WHITE);
+		a++;
+	}
+}
 
 void CastAllRays()
 {
@@ -493,11 +533,22 @@ void CastAllRays()
   while (id < NUM_RAYS)
   {
     cast(rayAngle,id);
-    rayAngle +=  60 / (float)NUM_RAYS;
     id++;
+    rayAngle +=  60 / (float)NUM_RAYS;
   } 
   id = 0;
-  render3DProjectedWalls();
+  while (id < NUM_RAYS)
+  {
+      wall_data(id);
+      id++;
+  }
+  id = 0;
+  while (id < NUM_RAYS)
+  {
+      draw_floor(id);
+      draw_wall(id,3);
+      id++;
+  }
 }
 
 // void cast2(int id,float rayAngle)
@@ -625,16 +676,6 @@ int keyRelease(int key)
       return (0);
 }
 
-void renderRays()
-{
-  int i;
-
-  i = 0;
-  while (i <  NUM_RAYS)
-  {
-
-  }
-}
 
 
 
