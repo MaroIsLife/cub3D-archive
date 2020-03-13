@@ -254,7 +254,7 @@ void playerSettings()
   g_player.walkDirection = 0;
   g_player.rotationAngle = 90;
   g_player.moveSpeed = 5;
-  g_player.rotationSpeed = 2.5;
+  g_player.rotationSpeed = 4.5;
 }
 
 void raySettings()
@@ -395,6 +395,7 @@ void cast(float rayAngle,int id)
       g_ray[id].distance = verHitDistance;
       g_ray[id].wallhitX = verWallhitx;
       g_ray[id].wallhitY = verWallhity;
+      g_ray[id].offset = verWallhity;
       g_ray[id].wasHitVertical = 1;
      // g_ray[id].wallHitContent = verWallContent;
   }
@@ -403,6 +404,7 @@ void cast(float rayAngle,int id)
      g_ray[id].distance = horzHitDistance;
       g_ray[id].wallhitX = horzWallhitx;
       g_ray[id].wallhitY = horzWallhity;
+      g_ray[id].offset = horzWallhitx;
       g_ray[id].wasHitVertical = 0;
       //g_ray[id].wallHitContent = horzWallContent;
   }
@@ -453,6 +455,12 @@ void draw_player()
      //printf("%f\n",g_ray.rayAngle);
 }
 
+void init_texture()
+{
+  g_txt.ptr[0] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,"./marinid.xpm",&g_txt.width[0],&g_txt.height[0]);
+  g_txt.data[0] = (int *)mlx_get_data_addr(g_txt.ptr[0],&g_txt.bpp,&g_txt.line,&g_txt.endian);
+}
+
 void	wall_data(int id)
 {
   int top;
@@ -462,8 +470,8 @@ void	wall_data(int id)
 	float wallheight = (TILE_SIZE / distance) * projection;
 
 	top = (g_data.reso_two / 2) - ((int)wallheight / 2);
-  if (top< 0)
-    top = 0;
+  // if (top< 0)
+  //   top = 0;
   
 	int	bottom = top + wallheight;
 	g_ray[id].top = top;
@@ -491,10 +499,27 @@ void	draw_wall(int id)
 {
 	float a = g_ray[id].top;
 	float b = g_ray[id].bottom;
+  int o;
+  int color;
+  float f;
+  float i;
+
+  o = 0;
+
+  f = (float)g_txt.height[0] / g_ray[id].height;
+
+  i = 0.;
+	b > g_data.reso_two ? b = g_data.reso_two : 0;
 	while(a < b)
 	{
-		my_mlx_pixel_put(&g_mg, id, a, BROWN);
-		a++;
+    	if ((int)i * g_txt.width[0] + (int)g_ray[id].offset < g_txt.width[0] * g_txt.height[0]
+			&& id >= 0 && id < g_data.reso_one)
+		{
+			color = g_txt.data[0][(int)i * g_txt.width[0] + (int)g_ray[id].offset];
+			my_mlx_pixel_put(&g_mg, id, a, color);
+		}	
+	a++;
+    i+= f;
 	}
 }
 
@@ -518,99 +543,16 @@ void CastAllRays()
       wall_data(id);
       id++;
   }
+  init_texture();
   id = 0;
   while (id < g_data.reso_one)
   {
       draw_floor(id);
       draw_wall(id);
+      //CLOCK(draw_wall(id));
       id++;
   }
 }
-
-// void cast2(int id,float rayAngle)
-// {
-//   float xintercept;
-//   float yintercept;
-//   float xstep;
-//   float ystep;
-//   float foundHorzWallHit;
-//   float horzWallhitX;
-//   float horzWallHitY;
-//   float horzWallColor;
-
-//   foundHorzWallHit = 0;
-//   horzWallhitX = 0;
-//   horzWallHitY = 0;
-//   horzWallColor = 0;
-
-//   yintercept = floor(g_player.y / TILE_SIZE) * TILE_SIZE;
-//   yintercept += g_ray[id].isRayFacingDown ? TILE_SIZE : 0;
-
-//   xintercept = g_player.x + (yintercept - g_player.y) / tan(rayAngle)
-
-// }
-
-// void CastAllRays2()
-// {
-//   int id;
-//   float rayAngle;
-
-//   id = 0;
-//   rayAngle = g_player.rotationAngle - (FOV_ANGLE / 2);
-//   //g_ray[0].rayAngle =g_player.rotationAngle - (FOV_ANGLE / 2);
-//   while (id < NUM_RAYS)
-//   {
-//     cast(id);
-//      rayAngle +=  FOV_ANGLE / NUM_RAYS;
-//     id++;
-//   } 
-   //draw()
-//}
-
-// struct rd
-// {
-//   float horx;
-//   float hory;
-//   float horxa;
-//   float horya;
-// } A;
-
-// void  f1(float dx)
-// {
-//   int a = dx;
-//   a++;
-//   if (g_player.rotationAngle > 180 && g_player.rotationAngle < 360)
-//   {
-//     A.hory = (int)(g_player.y / TILE_SIZE) * TILE_SIZE; //- 1;
-//     A.horya = -TILE_SIZE;
-//     A.horxa = -TILE_SIZE / tan(dx * (M_PI / 180)); // 60
-//   }
-//   else if (g_player.rotationAngle > 0 && g_player.rotationAngle < 180)
-//   {
-//     A.hory = (int)(g_player.y / TILE_SIZE) * TILE_SIZE + TILE_SIZE;
-//     A.horxa = TILE_SIZE / tan(dx * (M_PI / 180)); //60
-//     A.horya = TILE_SIZE;
-//   }
-//   A.horx = g_player.x + (g_player.y - A.hory) / tan(dx * (M_PI / 180));
-//   A.horxa = TILE_SIZE / tan(dx * (M_PI / 180));
-// }
-// int  f2()
-// {
-//   while (A.hory > 0 && A.horx > 0 && A.horx < g_data.reso_one && A.hory < g_data.reso_two && map[(int)(A.hory / TILE_SIZE)][(int)(A.horx / TILE_SIZE)] != 1)
-//   {
-//     A.hory += A.horya;
-//     A.horx += A.horxa;
-//   }
-//   return (sqrt(pow(A.horx - g_player.x ,2) + pow(A.hory - g_player.y,2)));
-// }
-// int find_distance(float dx)
-// {
-//   f1(dx);//first horz inter
-//   return (f2());//last horz inter
-//   //f3();
-
-// }
-
 
 int keyPress(int key)
 {
@@ -688,7 +630,7 @@ int keyRelease(int key)
     mlx_destroy_image(g_mlx.mlx_ptr,g_mg.img);
     g_mg.img = mlx_new_image(g_mlx.mlx_ptr, g_data.reso_one, g_data.reso_two);
     g_mg.addr = mlx_get_data_addr(g_mg.img, &g_mg.bits_per_pixel, &g_mg.line_length,&g_mg.endian);
-  return(0);
+    return(0);
   }
 
 

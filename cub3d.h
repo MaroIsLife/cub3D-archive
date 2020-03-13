@@ -6,16 +6,24 @@
 # include <unistd.h>
 # include "get_next_line.h"
 # include "mlx.h"
+# include "time.h"
+clock_t begin, end;
+#define CLOCK(x) do { \
+    begin = clock(); \
+    x; \
+    end = clock(); \
+    printf("time taken: %lfs\n", (double)(end - begin) / CLOCKS_PER_SEC); \
+} while (0);
 
 #define MAP_VER 23
 #define MAP_HOR 27
-#define TILE_SIZE 32
+#define TILE_SIZE 64
 #define RED 0xff0000
 #define WHITE 0xffffff
 #define GOLD 0xffd700
 #define BLUE 0x0000ff
 #define SKY 0x87ceeb
-#define GREEN 0x7CFC00
+#define GREEN 0x32CD32
 #define AQUA 0x00ffff
 #define BROWN 0xCD853F
 #define PI 3.14159265358979323846
@@ -23,7 +31,6 @@
 #define FOV_ANGLE 60
 // #define NUM_RAYS 1680
 #define INT_MAX 2147483647
-// #define MINIMAP_SCALE_FACTOR 0.3;
 
 
 
@@ -54,13 +61,14 @@ float distance;
 float height;
 int top;
 int bottom;
+float offset;
 int wasHitVertical;
 int isRayFacingUp;
 int isRayFacingDown;
 int isRayFacingLeft;
 int isRayFacingRight;
 int wallHitContent;
-} t_ray[2560];
+} t_ray[2550];
 
 
 typedef struct s_data {
@@ -77,6 +85,16 @@ typedef struct s_data {
 
 }	t_data;
 
+typedef struct s_txt {
+  void *ptr[5];
+  int *data[5];
+  int bpp;
+  int line;
+  int endian;
+  int height[5];
+  int width[5];
+} t_txt;
+
 
 typedef struct  s_mg {
 	void        *img;
@@ -92,6 +110,7 @@ t_mg g_mg;
 t_mlx g_mlx;
 t_player g_player;
 t_data g_data;
+t_txt g_txt;
 
 
 
