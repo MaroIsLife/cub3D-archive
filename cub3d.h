@@ -29,7 +29,7 @@ clock_t begin, end;
 #define PI 3.14159265358979323846
 #define circle_size 10
 #define FOV_ANGLE 60
-// #define NUM_RAYS 1680
+#define NUM_RAYS 1680
 #define INT_MAX 2147483647
 
 
