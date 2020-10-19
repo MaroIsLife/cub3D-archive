@@ -1,8 +1,27 @@
-build:
-	gcc -std=c99 main2.c -lSDL2 -o raycast;
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: mougnou <marvin@42.fr>                     +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2020/10/17 10:27:14 by mougnou           #+#    #+#              #
+#    Updated: 2020/10/18 12:58:49 by mougnou          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
-run:
-	./raycast;
+SRC = *.c
+OBJ = *.o
 
+
+GL = mlx_opengl
+AK = AppKit
+OGL = OpenGL
+
+all:
+	gcc $(SRC) -o cub3D -L $(GL) -lmlx  -framework $(OGL) -framework $(AK)
 clean:
-	rm raycast;
+	rm -rf *.o
+fclean: clean
+	rm ./cub3D
+	rm *.gch

@@ -237,7 +237,7 @@ int is_wall(double x, double y)
     return (angle);
   }
 
-float	normalizeangle2(float rayangle)
+float	normalizeAngle2(float rayangle)
 {
 	rayangle = remainderf(rayangle,  360);
 	if (rayangle < 0)
@@ -328,10 +328,10 @@ void cast(float rayAngle,int id)
   nextHorzTouchX = xintercept;
   nextHorzTouchY = yintercept;
 
-  while (nextHorzTouchX >= 0 && nextHorzTouchX <= g_data.reso_one && nextHorzTouchY >= 0 && nextHorzTouchY <= g_data.reso_one) // reso one
+  while (nextHorzTouchX >= 0 && nextHorzTouchX <= g_data.reso_one * TILE_SIZE && nextHorzTouchY >= 0 && nextHorzTouchY <= g_data.reso_one * TILE_SIZE) // reso one
   {
     xtocheck = nextHorzTouchX;
-    ytocheck = nextHorzTouchY + (isRayFacingUp ? -1 : 0);
+    ytocheck = nextHorzTouchY + (isRayFacingUp ? - 1 : 0);
     if (is_wall(xtocheck,ytocheck))
     {
         horzWallhitx = nextHorzTouchX;
@@ -367,7 +367,7 @@ void cast(float rayAngle,int id)
   nextVerTouchX = xintercept;
   nextVerTouchY = yintercept;
 
-  while (nextVerTouchX >= 0 && nextVerTouchX <= g_data.reso_one && nextVerTouchY >= 0 && nextVerTouchY <= g_data.reso_one) // reso _one
+  while (nextVerTouchX >= 0 && nextVerTouchX <= g_data.reso_one * TILE_SIZE && nextVerTouchY >= 0 && nextVerTouchY <= g_data.reso_one * TILE_SIZE) // reso _one
   {
     xtocheck = nextVerTouchX + (isRayFacingLeft ? -1 : 0);
     ytocheck = nextVerTouchY;
@@ -512,7 +512,7 @@ void	draw_wall(int id)
 	b > g_data.reso_two ? b = g_data.reso_two : 0;
 	while(a < b)
 	{
-    	if ((int)i * g_txt.width[0] + (int)g_ray[id].offset < g_txt.width[0] * g_txt.height[0]
+      if ((int)i * g_txt.width[0] + (int)g_ray[id].offset < g_txt.width[0] * g_txt.height[0]
 			&& id >= 0 && id < g_data.reso_one)
 		{
 			color = g_txt.data[0][(int)i * g_txt.width[0] + (int)g_ray[id].offset];
