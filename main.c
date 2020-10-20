@@ -54,17 +54,31 @@ void check_map()
     {
       tile_i = ((double)i + 0.5) * TILE_SIZE;
       tile_j = ((double)j + 0.5) * TILE_SIZE;
-       if (map[i][j] == 2)
+       if (map[i][j] == 'N' || map[i][j] == 'W' || map[i][j] == 'S' || map[i][j] == 'E')
        {
+         g_player.found = 1;
+          if (map[i][j] == 'N')
+            g_player.rotationAngle = 90;
+          else if (map[i][j] == 'W')
+            g_player.rotationAngle = 180;
+          else if (map[i][j] == 'S')
+            g_player.rotationAngle = 270;
+          else if (map[i][j] == 'E')
+            g_player.rotationAngle = 360;
+
           g_player.x = tile_j;
           g_player.y = tile_i;
           map[i][j] = 0;
-        }       
-          // sqr(tile_i,tile_j,WHITE);
+        }
         j++;
     }
    j = 0;
    i++;
+ }
+ if(g_player.found == 0)
+ {
+  perror("No Player found");
+  exit(1);
  }
 }
 
@@ -177,7 +191,7 @@ int is_wall(double x, double y)
     g_data.ver = ver;
     g_data.map = malloc((ver + 1) * sizeof(char *));
     g_data.map[ver] = NULL;
-    hor = hor/2 + 1;
+    hor = hor / 2 + 1;
     g_data.hor = hor;
     while (i < ver)
     {
@@ -252,7 +266,7 @@ void playerSettings()
   g_player.radius = 3;
   g_player.turnDirection = 0;
   g_player.walkDirection = 0;
-  g_player.rotationAngle = 90;
+  //g_player.rotationAngle = 360; // Moved to check_map()
   g_player.moveSpeed = 5;
   g_player.rotationSpeed = 4.5;
 }
@@ -328,7 +342,7 @@ void cast(float rayAngle,int id)
   nextHorzTouchX = xintercept;
   nextHorzTouchY = yintercept;
 
-  while (nextHorzTouchX >= 0 && nextHorzTouchX <= g_data.reso_one * TILE_SIZE && nextHorzTouchY >= 0 && nextHorzTouchY <= g_data.reso_one * TILE_SIZE) // reso one
+  while (nextHorzTouchX >= 0 && nextHorzTouchX <= g_data.reso_one * TILE_SIZE && nextHorzTouchY >= 0 && nextHorzTouchY <= g_data.reso_two * TILE_SIZE) // reso one
   {
     xtocheck = nextHorzTouchX;
     ytocheck = nextHorzTouchY + (isRayFacingUp ? - 1 : 0);
@@ -531,7 +545,7 @@ void CastAllRays()
   id = 0;
   rayAngle = g_player.rotationAngle - (60 / 2);
   while (id < g_data.reso_one)
-  {
+  { 
     cast(rayAngle,id);
      rayAngle +=  60.0 / (float)g_data.reso_one;
     id++;
@@ -580,7 +594,6 @@ if (key == 53)
         mlx_destroy_window(g_mlx.mlx_ptr,g_mlx.win_ptr);
         exit(1);
       }
-  
       return (0);
 }
 
@@ -601,8 +614,6 @@ int keyRelease(int key)
 }
 
 
-
-
  int update()
   {
     double fakex;
@@ -611,7 +622,7 @@ int keyRelease(int key)
     mlx_hook(g_mlx.win_ptr,2,0,keyPress,0);
     mlx_hook(g_mlx.win_ptr,3,0,keyRelease,0);
     mlx_clear_window(g_mlx.mlx_ptr,g_mlx.win_ptr);
-
+  
     g_player.rotationAngle += g_player.turnDirection * g_player.rotationSpeed ;//* (M_PI/180);
     g_player.rotationAngle = fmod(g_player.rotationAngle,360); // Unable to exceed 360 on RotationAngle
     g_player.moveStep = g_player.walkDirection * g_player.moveSpeed;
