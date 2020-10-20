@@ -1,9 +1,4 @@
-# include "mlx.h"
-# include <unistd.h>
-#include <math.h>
-# include <stdio.h>
 # include "cub3d.h"
-# include "get_next_line.h"
 
  void            my_mlx_pixel_put(t_mg *data, int x, int y, int color)
 {
@@ -622,7 +617,7 @@ int keyRelease(int key)
     mlx_hook(g_mlx.win_ptr,2,0,keyPress,0);
     mlx_hook(g_mlx.win_ptr,3,0,keyRelease,0);
     mlx_clear_window(g_mlx.mlx_ptr,g_mlx.win_ptr);
-  
+
     g_player.rotationAngle += g_player.turnDirection * g_player.rotationSpeed ;//* (M_PI/180);
     g_player.rotationAngle = fmod(g_player.rotationAngle,360); // Unable to exceed 360 on RotationAngle
     g_player.moveStep = g_player.walkDirection * g_player.moveSpeed;
