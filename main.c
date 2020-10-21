@@ -43,16 +43,16 @@ void check_map()
   j = 0;
   i = 0;
 
-   while (i < 23)
+   while (i < 19) // < ver
    {  
-    while (j < 27)
+    while (j < 26) // < hor
     {
       tile_i = ((double)i + 0.5) * TILE_SIZE;
       tile_j = ((double)j + 0.5) * TILE_SIZE;
-       if (map[i][j] == 'N' || map[i][j] == 'W' || map[i][j] == 'S' || map[i][j] == 'E')
+       if (map[i][j] == 'N' || map[i][j] == 'W' || map[i][j] == 'S' || map[i][j] == 'E' || map[i][j] == 8)
        {
          g_player.found = 1;
-          if (map[i][j] == 'N')
+          if (map[i][j] == 'N' || map[i][j] == 8)
             g_player.rotationAngle = 90;
           else if (map[i][j] == 'W')
             g_player.rotationAngle = 180;
@@ -69,7 +69,7 @@ void check_map()
     }
    j = 0;
    i++;
- }
+  }
  if(g_player.found == 0)
  {
   perror("No Player found");
@@ -79,8 +79,8 @@ void check_map()
 
 int is_wall(double x, double y)
 {
-  if ((int)x >= MAP_HOR * TILE_SIZE || (int)x <= 0 ||
-      (int)y >= MAP_VER * TILE_SIZE || (int)y <= 0)
+  if ((int)x >= 26 * TILE_SIZE || (int)x <= 0 || //Hor
+      (int)y >= 19 * TILE_SIZE || (int)y <= 0) // Ver
       return (1);
       
     return(map[(int)floor(y/TILE_SIZE)][(int)floor(x / TILE_SIZE)]);
@@ -130,6 +130,8 @@ int is_wall(double x, double y)
         exit(1);
       }
     }
+    content[i] = line;
+    i++;
     content[i] = NULL;
     return (content);
   }
@@ -226,14 +228,16 @@ int is_wall(double x, double y)
         {
          aa = getarray(content, ab, aa);
           removespace(content, ab, ia);         
-         
          ia++;
         }
-
-       /*else if (content[ab][0] == 'F')
-        else if (content[ab][0] == 'C')*/
         ab++;
       }
+      int i = 0;
+      while (g_data.map[i] != NULL)
+      {
+        printf("%s\n",g_data.map[i]);
+        i++;
+      }      
   }
 
   float normalizeAngle(float angle)
@@ -404,7 +408,7 @@ void cast(float rayAngle,int id)
       g_ray[id].distance = verHitDistance;
       g_ray[id].wallhitX = verWallhitx;
       g_ray[id].wallhitY = verWallhity;
-      g_ray[id].offset = verWallhity;
+      g_ray[id].offset = remainder(verWallhity,TILE_SIZE);
       g_ray[id].wasHitVertical = 1;
      // g_ray[id].wallHitContent = verWallContent;
   }
@@ -413,7 +417,7 @@ void cast(float rayAngle,int id)
      g_ray[id].distance = horzHitDistance;
       g_ray[id].wallhitX = horzWallhitx;
       g_ray[id].wallhitY = horzWallhity;
-      g_ray[id].offset = horzWallhitx;
+      g_ray[id].offset = remainder(horzWallhitx,TILE_SIZE);
       g_ray[id].wasHitVertical = 0;
       //g_ray[id].wallHitContent = horzWallContent;
   }
@@ -466,7 +470,7 @@ void draw_player()
 
 void init_texture()
 {
-  g_txt.ptr[0] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,"./marinid.xpm",&g_txt.width[0],&g_txt.height[0]);
+  g_txt.ptr[0] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.NO /* < Texture from Map.cub*/,&g_txt.width[0],&g_txt.height[0]);
   g_txt.data[0] = (int *)mlx_get_data_addr(g_txt.ptr[0],&g_txt.bpp,&g_txt.line,&g_txt.endian);
 }
 
@@ -492,13 +496,13 @@ void	draw_floor(int id)
 	
 	int i = 0;
 
-	while(i < g_ray[id].top)
+	while (i < g_ray[id].top)
 	{
 		my_mlx_pixel_put(&g_mg, id, i, SKY);
 		i++;
 	}
 	i = g_ray[id].bottom;
-	while(i < g_data.reso_two)
+	while (i < g_data.reso_two)
 	{
 		my_mlx_pixel_put(&g_mg, id, i, GREEN);
 		i++;
@@ -519,7 +523,7 @@ void	draw_wall(int id)
 
   i = 0.;
 	b > g_data.reso_two ? b = g_data.reso_two : 0;
-	while(a < b)
+	while (a < b)
 	{
       if ((int)i * g_txt.width[0] + (int)g_ray[id].offset < g_txt.width[0] * g_txt.height[0]
 			&& id >= 0 && id < g_data.reso_one)
@@ -623,14 +627,16 @@ int keyRelease(int key)
     g_player.moveStep = g_player.walkDirection * g_player.moveSpeed;
     fakex = g_player.x + cos(g_player.rotationAngle * (M_PI/180)) * g_player.moveStep;
     fakey = g_player.y + sin(g_player.rotationAngle * (M_PI/180)) * g_player.moveStep;
-    //printf("%d\n", is_wall(fakex, fakey));
-    //printf("%f\n",g_player.rotationAngle);
+  
     if (is_wall(fakex, fakey) != 1)
     {
       g_player.x = fakex;
       g_player.y = fakey;
     }
     CastAllRays();
+    // printf("hor: %d\n",g_data.hor);
+    //  printf("ver: %d\n",g_data.ver);
+
 
     mlx_put_image_to_window(g_mlx.mlx_ptr, g_mlx.win_ptr, g_mg.img, 0, 0);
     mlx_destroy_image(g_mlx.mlx_ptr,g_mg.img);

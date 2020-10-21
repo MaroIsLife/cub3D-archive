@@ -6,7 +6,7 @@
 #    By: mougnou <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/17 10:27:14 by mougnou           #+#    #+#              #
-#    Updated: 2020/10/18 12:58:49 by mougnou          ###   ########.fr        #
+#    Updated: 2020/10/20 18:22:02 by mougnou          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ AK = AppKit
 OGL = OpenGL
 
 all:
-	gcc $(SRC) -o cub3D -L $(GL) -lmlx  -framework $(OGL) -framework $(AK)
+	gcc $(SRC) -Wall -Werror -Wextra -o cub3D -L $(GL) -lmlx  -framework $(OGL) -framework $(AK)
 clean:
 	rm -rf *.o
 fclean: clean
