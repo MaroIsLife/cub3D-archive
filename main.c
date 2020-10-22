@@ -270,25 +270,6 @@ void playerSettings()
   g_player.rotationSpeed = 4.5;
 }
 
-void raySettings()
-{
-        // g_ray.wallhitX = 0;
-        // g_ray.wallhitY = 0;
-        // g_ray.distance = 0;
-        // g_ray.wasHitVertical = 0;
-        // g_ray.isRayFacingDown = g_ray.rayAngle > 0 && g_ray.rayAngle < M_PI;
-        // g_ray.isRayFacingUp = !g_ray.isRayFacingDown;
-        // g_ray.isRayFacingRight = g_ray.rayAngle < 0.5 * M_PI || g_ray.rayAngle > 1.5 * M_PI;
-        // g_ray.isRayFacingLeft = !g_ray.isRayFacingRight;
-
-        // if (g_ray.rayAngle >= 0 && g_ray.rayAngle <= 180)
-		    // g_ray.isRayFacingDown = 1;
-	      // if (g_ray.isRayFacingRight <= 90 || g_ray.isRayFacingRight >= 270)
-		    // g_ray.isRayFacingRight = 1;
-	      // g_ray.isRayFacingUp = !g_ray.isRayFacingDown;
-	      // g_ray.isRayFacingLeft = !g_ray.isRayFacingRight;
-        
-}
 
 float distanceBetweenPoints(float wallhitX, float wallhitY)
 {
@@ -531,7 +512,7 @@ void	draw_wall(int id)
 			color = g_txt.data[0][(int)i * g_txt.width[0] + (int)g_ray[id].offset];
 			my_mlx_pixel_put(&g_mg, id, a, color);
 		}	
-	a++;
+	  a++;
     i+= f;
 	}
 }
@@ -562,7 +543,6 @@ void CastAllRays()
   {
       draw_floor(id);
       draw_wall(id);
-      //CLOCK(draw_wall(id));
       id++;
   }
 }
@@ -633,9 +613,8 @@ int keyRelease(int key)
       g_player.x = fakex;
       g_player.y = fakey;
     }
+    
     CastAllRays();
-    // printf("hor: %d\n",g_data.hor);
-    //  printf("ver: %d\n",g_data.ver);
 
 
     mlx_put_image_to_window(g_mlx.mlx_ptr, g_mlx.win_ptr, g_mg.img, 0, 0);
