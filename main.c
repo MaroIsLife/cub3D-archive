@@ -43,16 +43,16 @@ void check_map()
   j = 0;
   i = 0;
 
-   while (i < 19) // < ver
+   while (i < 23) // < ver
    {  
-    while (j < 26) // < hor
+    while (j < 27) // < hor
     {
       tile_i = ((double)i + 0.5) * TILE_SIZE;
       tile_j = ((double)j + 0.5) * TILE_SIZE;
-       if (map[i][j] == 'N' || map[i][j] == 'W' || map[i][j] == 'S' || map[i][j] == 'E' || map[i][j] == 8)
+       if (map[i][j] == 'N' | map[i][j] == 'W' || map[i][j] == 'S' || map[i][j] == 'E')
        {
          g_player.found = 1;
-          if (map[i][j] == 'N' || map[i][j] == 8)
+          if (map[i][j] == 'N')
             g_player.rotationAngle = 90;
           else if (map[i][j] == 'W')
             g_player.rotationAngle = 180;
@@ -63,7 +63,7 @@ void check_map()
 
           g_player.x = tile_j;
           g_player.y = tile_i;
-          map[i][j] = 0;
+         map[i][j] = 0;
         }
         j++;
     }
@@ -79,8 +79,8 @@ void check_map()
 
 int is_wall(double x, double y)
 {
-  if ((int)x >= 26 * TILE_SIZE || (int)x <= 0 || //Hor
-      (int)y >= 19 * TILE_SIZE || (int)y <= 0) // Ver
+  if ((int)x >= 27 * TILE_SIZE || (int)x <= 0 || //Hor
+      (int)y >= 23 * TILE_SIZE || (int)y <= 0) // Ver
       return (1);
       
     return(map[(int)floor(y/TILE_SIZE)][(int)floor(x / TILE_SIZE)]);
@@ -161,25 +161,31 @@ int is_wall(double x, double y)
     a = 0;
     while (content[ab][i] != '\0')
     {
-      if (content[ab][i] != ' ')
+      if (content[ab][i] == ' ')
       {
-      g_data.map[ia][a] = content[ab][i];
-      a++;
+        g_data.map[ia][a] = '1';
+        a++;
+      }
+      else
+      {
+        g_data.map[ia][a] = content[ab][i];
+        a++;
       }
       i++;
     }
-  }
+    g_data.map[ia][i] = '\0';
+    }
   int getarray(char **content, int ab, int aa)
   {
     int hor;
     int ver;
     int i;
 
+    if (aa == 1)
+    return (1);
     i = 0;
     hor = 0;
     ver = ab;
-    if (aa == 1)
-    return (1);
     while (content[ver] != NULL)
       ver++;
     while (content[ab][hor] != '\0')
@@ -188,7 +194,6 @@ int is_wall(double x, double y)
     g_data.ver = ver;
     g_data.map = malloc((ver + 1) * sizeof(char *));
     g_data.map[ver] = NULL;
-    hor = hor / 2 + 1;
     g_data.hor = hor;
     while (i < ver)
     {
@@ -232,12 +237,15 @@ int is_wall(double x, double y)
         }
         ab++;
       }
-      int i = 0;
-      while (g_data.map[i] != NULL)
-      {
-        printf("%s\n",g_data.map[i]);
-        i++;
-      }      
+
+      // int abs = 0;
+      // while (g_data.map[abs] != NULL)
+      // {
+      //   printf("%s\n",g_data.map[abs]);
+      //   abs++;
+      // }
+
+
   }
 
   float normalizeAngle(float angle)
@@ -266,8 +274,8 @@ void playerSettings()
   g_player.turnDirection = 0;
   g_player.walkDirection = 0;
   //g_player.rotationAngle = 360; // Moved to check_map()
-  g_player.moveSpeed = 5;
-  g_player.rotationSpeed = 4.5;
+  g_player.moveSpeed = 10;
+  g_player.rotationSpeed = 3;
 }
 
 
@@ -453,6 +461,9 @@ void init_texture()
 {
   g_txt.ptr[0] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.NO /* < Texture from Map.cub*/,&g_txt.width[0],&g_txt.height[0]);
   g_txt.data[0] = (int *)mlx_get_data_addr(g_txt.ptr[0],&g_txt.bpp,&g_txt.line,&g_txt.endian);
+
+  g_txt.ptr[1] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.NO,&g_txt.width[1],&g_txt.height[1]);
+  g_txt.data[1] = (int *)mlx_get_data_addr(g_txt.ptr[1],&g_txt.bpp,&g_txt.line,&g_txt.endian);
 }
 
 void	wall_data(int id)
@@ -549,17 +560,17 @@ void CastAllRays()
 
 int keyPress(int key)
 {
-  double fakex;
-  double fakey;
+  // double fakex;
+  // double fakey;
 
-    fakex = g_player.x + cos(g_player.rotationAngle * (M_PI/180)) * g_player.moveStep;
-    fakey = g_player.y + sin(g_player.rotationAngle * (M_PI/180)) * g_player.moveStep;
+  //   fakex = g_player.x + cos(g_player.rotationAngle * (M_PI/180)) * g_player.moveStep;
+  //   fakey = g_player.y + sin(g_player.rotationAngle * (M_PI/180)) * g_player.moveStep;
 
 
-if (key == 126) //UP
+if (key == 126 || key == 13) //UP
       g_player.walkDirection = 1;
 
-if (key == 125) //D
+if (key == 125 || key == 1) //D
       g_player.walkDirection = -1;
 
 if (key == 123) //L
@@ -572,16 +583,16 @@ if (key == 53)
       {
         mlx_destroy_window(g_mlx.mlx_ptr,g_mlx.win_ptr);
         exit(1);
-      }
+      } 
       return (0);
 }
 
 int keyRelease(int key)
 {
-  if (key == 126) //UP
+  if (key == 126 || key == 13) //UP
       g_player.walkDirection = 0;
 
-    if (key == 125) //D
+    if (key == 125 || key == 1) //D
       g_player.walkDirection = 0;
 
     if (key == 123) //L
@@ -605,13 +616,13 @@ int keyRelease(int key)
     g_player.rotationAngle += g_player.turnDirection * g_player.rotationSpeed ;//* (M_PI/180);
     g_player.rotationAngle = fmod(g_player.rotationAngle,360); // Unable to exceed 360 on RotationAngle
     g_player.moveStep = g_player.walkDirection * g_player.moveSpeed;
-    fakex = g_player.x + cos(g_player.rotationAngle * (M_PI/180)) * g_player.moveStep;
-    fakey = g_player.y + sin(g_player.rotationAngle * (M_PI/180)) * g_player.moveStep;
+    fakex = g_player.x + cos(g_player.rotationAngle * (M_PI/180)) * (g_player.moveStep * 5);
+    fakey = g_player.y + sin(g_player.rotationAngle * (M_PI/180)) * (g_player.moveStep * 5);
   
     if (is_wall(fakex, fakey) != 1)
     {
-      g_player.x = fakex;
-      g_player.y = fakey;
+      g_player.x += cos(g_player.rotationAngle * (M_PI/180)) * (g_player.moveStep);
+      g_player.y += sin(g_player.rotationAngle * (M_PI/180)) * (g_player.moveStep);
     }
     
     CastAllRays();
@@ -638,9 +649,17 @@ int keyRelease(int key)
 
   //draw();
   //draw_player();
+
+   int abs = 0;
+      while (g_data.map[abs] != NULL)
+      {
+        printf("%s\n",g_data.map[abs]);
+        abs++;
+      }
+
   check_map();
  //Put everything on deal_key
 	mlx_loop_hook(g_mlx.mlx_ptr,update,(void *)0);
 	mlx_loop(g_mlx.mlx_ptr);
-return(0);
+  return(0);
 }
