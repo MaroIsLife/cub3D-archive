@@ -82,6 +82,7 @@ typedef struct s_data {
 	char *EA;
 	char *S;
 	char **map;
+	int mapstart;
 	int ver;
 	int hor;
 

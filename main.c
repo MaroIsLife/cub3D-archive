@@ -9,6 +9,47 @@
     *(unsigned int*)dst = color;
 }
 
+
+void error_one()
+{
+  int i;
+  int j;
+
+  i = 0;
+  j = 0;
+
+  while (g_data.map[0][i] != '\0')
+  {
+    if (g_data.map[0][i] == '0')
+    {
+      perror("Invalid Map");
+      exit(1);
+    }
+      i++;
+  }
+  i = 0;
+  while (g_data.map[g_data.ver - 1][i] != '\0')
+  {
+    if (g_data.map[g_data.ver - 1][i] == '0')
+    {
+      perror("Invalid Map");
+      exit(1);
+    }
+    i++;
+  }
+
+ i = 0;
+
+ while (g_data.map[i] != NULL)
+ {
+   if (g_data.map[i][0] != '1' || g_data.map[i][3] != '1')
+   {
+     perror("Invalid Map");
+     exit(1);
+   } 
+   i++;
+ }
+}
 void sqr(int Y, int X, int color)
 { 
     int x = X;
@@ -70,7 +111,7 @@ void check_map()
    j = 0;
    i++;
   }
- if(g_player.found == 0)
+     if(g_player.found == 0)
  {
   perror("No Player found");
   exit(1);
@@ -78,49 +119,6 @@ void check_map()
 }
 
 
-// void check_map()
-// {
-
-//   int i;
-//   int j;
-//   double tile_i;
-//   double tile_j;
-//   j = 0;
-//   i = 0;
-
-//    while (i < 16) // < ver
-//    {  
-//     while (j < 27) // < hor
-//     {
-//       tile_i = ((double)i + 0.5) * TILE_SIZE;
-//       tile_j = ((double)j + 0.5) * TILE_SIZE;
-//        if (map[i][j] == 'N' | map[i][j] == 'W' || map[i][j] == 'S' || map[i][j] == 'E')
-//        {
-//          g_player.found = 1;
-//           if (map[i][j] == 'N')
-//             g_player.rotationAngle = 90;
-//           else if (map[i][j] == 'W')
-//             g_player.rotationAngle = 180;
-//           else if (map[i][j] == 'S')
-//             g_player.rotationAngle = 270;
-//           else if (map[i][j] == 'E')
-//             g_player.rotationAngle = 360;
-
-//           g_player.x = tile_j;
-//           g_player.y = tile_i;
-//          map[i][j] = '0';
-//         }
-//         j++;
-//     }
-//    j = 0;
-//    i++;
-//   }
-//  if(g_player.found == 0)
-//  {
-//   perror("No Player found");
-//   exit(1);
-//  }
-// }
 
 int is_wall(double x, double y)
 {
@@ -237,7 +235,7 @@ int is_wall(double x, double y)
       hor++;
     ver = ver - ab;
     g_data.ver = ver;
-    g_data.map = malloc((ver + 1) * sizeof(char *));
+    g_data.map = malloc(ver + 1 * sizeof(char *));
     g_data.map[ver] = NULL;
     g_data.hor = hor;
     while (i < ver)
@@ -319,7 +317,7 @@ void playerSettings()
   g_player.turnDirection = 0;
   g_player.walkDirection = 0;
   //g_player.rotationAngle = 360; // Moved to check_map()
-  g_player.moveSpeed = 10;
+  g_player.moveSpeed = 8;
   g_player.rotationSpeed = 3;
 }
 
@@ -563,7 +561,7 @@ void	draw_wall(int id)
 	while (a < b)
 	{
       if ((int)i * g_txt.width[0] + (int)g_ray[id].offset < g_txt.width[0] * g_txt.height[0]
-			&& id >= 0 && id < g_data.reso_one)
+			&& id >= 0 && id < g_data.reso_one && id < g_data.reso_two)
 		{
 			color = g_txt.data[0][(int)i * g_txt.width[0] + (int)g_ray[id].offset];
 			my_mlx_pixel_put(&g_mg, id, a, color);
@@ -693,16 +691,14 @@ int keyRelease(int key)
   g_mg.addr = mlx_get_data_addr(g_mg.img, &g_mg.bits_per_pixel, &g_mg.line_length,&g_mg.endian);
 
 
-  //draw();
-  //draw_player();
-
   //  int abs = 0;
   //     while (g_data.map[abs] != NULL)
   //     {
   //       printf("%s\n",g_data.map[abs]);
   //       abs++;
   //     }
-
+  error_one();
+  printf("%d\n",g_data.ver);
   check_map();
  //Put everything on deal_key
 	mlx_loop_hook(g_mlx.mlx_ptr,update,(void *)0);
