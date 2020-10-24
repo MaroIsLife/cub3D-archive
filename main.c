@@ -33,51 +33,6 @@ void sqr(int Y, int X, int color)
     }
 }
 
-// void check_map()
-// {
-
-//   int i;
-//   int j;
-//   double tile_i;
-//   double tile_j;
-//   j = 0;
-//   i = 0;
-
-//    while (i < g_data.ver) // < ver
-//    {  
-//     while (j < g_data.hor) // < hor
-//     {
-//       tile_i = ((double)i + 0.5) * TILE_SIZE;
-//       tile_j = ((double)j + 0.5) * TILE_SIZE;
-//        if (g_data.map[i][j] == 'N' | g_data.map[i][j] == 'W' || g_data.map[i][j] == 'S' || g_data.map[i][j] == 'E')
-//        {
-//          g_player.found = 1;
-//           if (g_data.map[i][j] == 'N')
-//             g_player.rotationAngle = 90;
-//           else if (g_data.map[i][j] == 'W')
-//             g_player.rotationAngle = 180;
-//           else if (g_data.map[i][j] == 'S')
-//             g_player.rotationAngle = 270;
-//           else if (g_data.map[i][j] == 'E')
-//             g_player.rotationAngle = 360;
-
-//           g_player.x = tile_j;
-//           g_player.y = tile_i;
-//          g_data.map[i][j] = 0;
-//         }
-//         j++;
-//     }
-//    j = 0;
-//    i++;
-//   }
-//  if(g_player.found == 0)
-//  {
-//   perror("No Player found");
-//   exit(1);
-//  }
-// }
-
-
 void check_map()
 {
 
@@ -88,27 +43,27 @@ void check_map()
   j = 0;
   i = 0;
 
-   while (i < 16) // < ver
+   while (i < g_data.ver) // < ver
    {  
-    while (j < 27) // < hor
+    while (j < g_data.hor) // < hor
     {
       tile_i = ((double)i + 0.5) * TILE_SIZE;
       tile_j = ((double)j + 0.5) * TILE_SIZE;
-       if (map[i][j] == 'N' | map[i][j] == 'W' || map[i][j] == 'S' || map[i][j] == 'E')
+       if (g_data.map[i][j] == 'N' | g_data.map[i][j] == 'W' || g_data.map[i][j] == 'S' || g_data.map[i][j] == 'E')
        {
          g_player.found = 1;
-          if (map[i][j] == 'N')
+          if (g_data.map[i][j] == 'N')
             g_player.rotationAngle = 90;
-          else if (map[i][j] == 'W')
+          else if (g_data.map[i][j] == 'W')
             g_player.rotationAngle = 180;
-          else if (map[i][j] == 'S')
+          else if (g_data.map[i][j] == 'S')
             g_player.rotationAngle = 270;
-          else if (map[i][j] == 'E')
+          else if (g_data.map[i][j] == 'E')
             g_player.rotationAngle = 360;
 
           g_player.x = tile_j;
           g_player.y = tile_i;
-         map[i][j] = 0;
+         g_data.map[i][j] = '0';
         }
         j++;
     }
@@ -122,13 +77,58 @@ void check_map()
  }
 }
 
+
+// void check_map()
+// {
+
+//   int i;
+//   int j;
+//   double tile_i;
+//   double tile_j;
+//   j = 0;
+//   i = 0;
+
+//    while (i < 16) // < ver
+//    {  
+//     while (j < 27) // < hor
+//     {
+//       tile_i = ((double)i + 0.5) * TILE_SIZE;
+//       tile_j = ((double)j + 0.5) * TILE_SIZE;
+//        if (map[i][j] == 'N' | map[i][j] == 'W' || map[i][j] == 'S' || map[i][j] == 'E')
+//        {
+//          g_player.found = 1;
+//           if (map[i][j] == 'N')
+//             g_player.rotationAngle = 90;
+//           else if (map[i][j] == 'W')
+//             g_player.rotationAngle = 180;
+//           else if (map[i][j] == 'S')
+//             g_player.rotationAngle = 270;
+//           else if (map[i][j] == 'E')
+//             g_player.rotationAngle = 360;
+
+//           g_player.x = tile_j;
+//           g_player.y = tile_i;
+//          map[i][j] = '0';
+//         }
+//         j++;
+//     }
+//    j = 0;
+//    i++;
+//   }
+//  if(g_player.found == 0)
+//  {
+//   perror("No Player found");
+//   exit(1);
+//  }
+// }
+
 int is_wall(double x, double y)
 {
-  if ((int)x >= 27 * TILE_SIZE || (int)x <= 0 || //Hor
-      (int)y >= 16 * TILE_SIZE || (int)y <= 0) // Ver
+  if ((int)x >= g_data.hor * TILE_SIZE || (int)x <= 0 || //Hor
+      (int)y >= g_data.ver * TILE_SIZE || (int)y <= 0) // Ver
       return (1);
       
-    return(map[(int)floor(y / TILE_SIZE)][(int)floor(x / TILE_SIZE)]);
+    return(g_data.map[(int)floor(y / TILE_SIZE)][(int)floor(x / TILE_SIZE)] - '0');
 }
   void get_resolution(char **content, int ab)
   {
@@ -703,7 +703,6 @@ int keyRelease(int key)
   //       abs++;
   //     }
 
-printf("%c\n",1);
   check_map();
  //Put everything on deal_key
 	mlx_loop_hook(g_mlx.mlx_ptr,update,(void *)0);
