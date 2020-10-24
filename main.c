@@ -33,6 +33,51 @@ void sqr(int Y, int X, int color)
     }
 }
 
+// void check_map()
+// {
+
+//   int i;
+//   int j;
+//   double tile_i;
+//   double tile_j;
+//   j = 0;
+//   i = 0;
+
+//    while (i < g_data.ver) // < ver
+//    {  
+//     while (j < g_data.hor) // < hor
+//     {
+//       tile_i = ((double)i + 0.5) * TILE_SIZE;
+//       tile_j = ((double)j + 0.5) * TILE_SIZE;
+//        if (g_data.map[i][j] == 'N' | g_data.map[i][j] == 'W' || g_data.map[i][j] == 'S' || g_data.map[i][j] == 'E')
+//        {
+//          g_player.found = 1;
+//           if (g_data.map[i][j] == 'N')
+//             g_player.rotationAngle = 90;
+//           else if (g_data.map[i][j] == 'W')
+//             g_player.rotationAngle = 180;
+//           else if (g_data.map[i][j] == 'S')
+//             g_player.rotationAngle = 270;
+//           else if (g_data.map[i][j] == 'E')
+//             g_player.rotationAngle = 360;
+
+//           g_player.x = tile_j;
+//           g_player.y = tile_i;
+//          g_data.map[i][j] = 0;
+//         }
+//         j++;
+//     }
+//    j = 0;
+//    i++;
+//   }
+//  if(g_player.found == 0)
+//  {
+//   perror("No Player found");
+//   exit(1);
+//  }
+// }
+
+
 void check_map()
 {
 
@@ -43,7 +88,7 @@ void check_map()
   j = 0;
   i = 0;
 
-   while (i < 23) // < ver
+   while (i < 16) // < ver
    {  
     while (j < 27) // < hor
     {
@@ -80,10 +125,10 @@ void check_map()
 int is_wall(double x, double y)
 {
   if ((int)x >= 27 * TILE_SIZE || (int)x <= 0 || //Hor
-      (int)y >= 23 * TILE_SIZE || (int)y <= 0) // Ver
+      (int)y >= 16 * TILE_SIZE || (int)y <= 0) // Ver
       return (1);
       
-    return(map[(int)floor(y/TILE_SIZE)][(int)floor(x / TILE_SIZE)]);
+    return(map[(int)floor(y / TILE_SIZE)][(int)floor(x / TILE_SIZE)]);
 }
   void get_resolution(char **content, int ab)
   {
@@ -418,44 +463,44 @@ void cast(float rayAngle,int id)
   g_ray[id].isRayFacingRight = isRayFacingRight;
 }
 
-void draw_player()
-{
-  // int i;
-  // i = 1;
-  float fakey;
-  float fakex;
-  float rayAngle;
+// void draw_player()
+// {
+//   // int i;
+//   // i = 1;
+//   float fakey;
+//   float fakex;
+//   float rayAngle;
 
-    // float x = g_player.rotationAngle;
+//     // float x = g_player.rotationAngle;
 
-    fakex = g_player.x + cos(g_player.rotationAngle * (M_PI/180));
-    fakey = g_player.y + sin(g_player.rotationAngle * (M_PI/180));
+//     fakex = g_player.x + cos(g_player.rotationAngle * (M_PI/180));
+//     fakey = g_player.y + sin(g_player.rotationAngle * (M_PI/180));
 
 
-     int ang = 1;
-   while (ang < 360)
-   {
-        my_mlx_pixel_put(&g_mg, circle_size * cos(ang * PI / 180) + g_player.x , circle_size * sin(ang * PI / 180) + g_player.y , RED);
-       ang++;
-   }
-    rayAngle = g_player.rotationAngle; //- 30;
-    //  float fov = 60;
-     int    i;
+//      int ang = 1;
+//    while (ang < 360)
+//    {
+//         my_mlx_pixel_put(&g_mg, circle_size * cos(ang * PI / 180) + g_player.x , circle_size * sin(ang * PI / 180) + g_player.y , RED);
+//        ang++;
+//    }
+//     rayAngle = g_player.rotationAngle; //- 30;
+//     //  float fov = 60;
+//      int    i;
     
-    // while(fov >= 0)
-    // {
-      i = 0;
-      while (i < 100)
-      {
-        // my_mlx_pixel_put(&g_mg, g_player.x + cos(rayAngle * PI / 180) * i, g_player.y + sin(rayAngle * PI / 180) * i, GOLD);
-         my_mlx_pixel_put(&g_mg, g_player.x + cos(rayAngle * PI / 180) * i, g_player.y + sin(rayAngle * PI / 180) * i, GOLD);       
-        i++;
-      } 
-    //     g_ray[0].rayAngle+= (60.0 / g_data.reso_one);
-    //     fov = fov - (60.0 / g_data.reso_one);
-    //  }
-     //printf("%f\n",g_ray.rayAngle);
-}
+//     // while(fov >= 0)
+//     // {
+//       i = 0;
+//       while (i < 100)
+//       {
+//         // my_mlx_pixel_put(&g_mg, g_player.x + cos(rayAngle * PI / 180) * i, g_player.y + sin(rayAngle * PI / 180) * i, GOLD);
+//          my_mlx_pixel_put(&g_mg, g_player.x + cos(rayAngle * PI / 180) * i, g_player.y + sin(rayAngle * PI / 180) * i, GOLD);       
+//         i++;
+//       } 
+//     //     g_ray[0].rayAngle+= (60.0 / g_data.reso_one);
+//     //     fov = fov - (60.0 / g_data.reso_one);
+//     //  }
+//      //printf("%f\n",g_ray.rayAngle);
+// }
 
 void init_texture()
 {
@@ -618,7 +663,8 @@ int keyRelease(int key)
     g_player.moveStep = g_player.walkDirection * g_player.moveSpeed;
     fakex = g_player.x + cos(g_player.rotationAngle * (M_PI/180)) * (g_player.moveStep * 5);
     fakey = g_player.y + sin(g_player.rotationAngle * (M_PI/180)) * (g_player.moveStep * 5);
-  
+
+    
     if (is_wall(fakex, fakey) != 1)
     {
       g_player.x += cos(g_player.rotationAngle * (M_PI/180)) * (g_player.moveStep);
@@ -650,13 +696,14 @@ int keyRelease(int key)
   //draw();
   //draw_player();
 
-   int abs = 0;
-      while (g_data.map[abs] != NULL)
-      {
-        printf("%s\n",g_data.map[abs]);
-        abs++;
-      }
+  //  int abs = 0;
+  //     while (g_data.map[abs] != NULL)
+  //     {
+  //       printf("%s\n",g_data.map[abs]);
+  //       abs++;
+  //     }
 
+printf("%c\n",1);
   check_map();
  //Put everything on deal_key
 	mlx_loop_hook(g_mlx.mlx_ptr,update,(void *)0);
