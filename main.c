@@ -14,15 +14,16 @@ void error_one()
 {
   int i;
   int j;
+  int a;
 
   i = 0;
   j = 0;
 
   while (g_data.map[0][i] != '\0')
   {
-    if (g_data.map[0][i] == '0')
+    if (g_data.map[0][i] != '1')
     {
-      perror("Invalid Map");
+      perror("Invalid Map (First Line)");
       exit(1);
     }
       i++;
@@ -30,25 +31,65 @@ void error_one()
   i = 0;
   while (g_data.map[g_data.ver - 1][i] != '\0')
   {
-    if (g_data.map[g_data.ver - 1][i] == '0')
+    if (g_data.map[g_data.ver - 1][i] != '1')
     {
-      perror("Invalid Map");
+      perror("Invalid Map (Last Line)");
       exit(1);
     }
     i++;
   }
 
  i = 0;
+ a = 0;
 
  while (g_data.map[i] != NULL)
  {
-   if (g_data.map[i][0] != '1' || g_data.map[i][3] != '1')
+   while (g_data.map[i][a] != '\0')
+    a++;
+   if (g_data.map[i][0] != '1' || g_data.map[i][a - 1] != '1')
    {
-     perror("Invalid Map");
+     perror("Invalid Map (Line Doesn't start or end with 1)");
      exit(1);
    } 
    i++;
+   a = 0;
  }
+}
+
+ void error_two()
+{
+  int a;
+  int j;
+  int b;
+
+  a = 0;
+  b = 0;
+  j = 0;
+
+  while (g_data.map[b + 1] != NULL)
+  {
+    while (g_data.map[b][a] != '\0')
+    a++;
+
+    while (g_data.map[b + 1][j] != '\0')
+    j++;
+
+    if (j > a)
+    {
+      while (a < j && g_data.map[b + 1][a] != '\0')
+      {
+        if (g_data.map[b + 1][a] == '0')
+        {
+          perror("Found 0 outbounds");
+          exit(-1);
+        }
+        a++;
+      }
+    }
+    a = 0;
+    j = 0;
+    b++;
+  }
 }
 void sqr(int Y, int X, int color)
 { 
@@ -195,6 +236,45 @@ int is_wall(double x, double y)
 
    return(text);
   }
+  
+  int getarray(char **content, int ab, int aa)
+  {
+    int hor;
+    int ver;
+    int i;
+    int fhor;
+
+    if (aa == 1)
+    return (1);
+    g_data.mapstart = ab;
+    i = 0;
+    hor = 0;
+    ver = ab;
+    while (content[ver] != NULL)
+      ver++;
+    ver = ver - ab;
+    g_data.ver = ver;
+    g_data.map = malloc((ver + 1)  * sizeof(char *));
+    g_data.map[ver] = NULL;
+    fhor = ab;
+    while (content[fhor] != NULL)
+    {
+      while (content[fhor][i] != '\0')
+        i++;
+      if (i > g_data.hor)
+        g_data.hor = i;
+
+        i = 0;
+        fhor++;
+    }
+    i = 0;
+    while (i < ver)
+    {
+     g_data.map[i++] = calloc((g_data.hor + 1),sizeof(char));
+    }
+    return (1);
+  }
+
   void removespace(char **content, int ab, int ia)
   {
     int i;
@@ -204,47 +284,44 @@ int is_wall(double x, double y)
     a = 0;
     while (content[ab][i] != '\0')
     {
-      if (content[ab][i] == ' ')
-      {
-        g_data.map[ia][a] = '1';
-        a++;
-      }
-      else
-      {
+      // if (content[ab][i] == ' ')
+      // {
+      //   g_data.map[ia][a] = '1';
+      //   a++;
+      // }
+      // else
+      // {
         g_data.map[ia][a] = content[ab][i];
         a++;
-      }
+      // }
       i++;
     }
     g_data.map[ia][i] = '\0';
     }
-  int getarray(char **content, int ab, int aa)
-  {
-    int hor;
-    int ver;
-    int i;
 
-    if (aa == 1)
-    return (1);
-    i = 0;
-    hor = 0;
-    ver = ab;
-    while (content[ver] != NULL)
-      ver++;
-    while (content[ab][hor] != '\0')
-      hor++;
-    ver = ver - ab;
-    g_data.ver = ver;
-    g_data.map = malloc(ver + 1 * sizeof(char *));
-    g_data.map[ver] = NULL;
-    g_data.hor = hor;
-    while (i < ver)
-    {
-     g_data.map[i++] = calloc(hor + 1,sizeof(char));
+  
+  
+  void int_map(char **content)
+      {
+      int a;
+      int i;
+      int b;
+
+      a = g_data.mapstart;
+      b = 0;
+      i = 0;
+      while (content[a] != NULL)
+      {
+        while (content[a][i] != '\0')
+        {
+          g_data.map[b][i] = content[a][i];
+          i++;
+        }
+        a++;
+        b++;
+        i = 0;
+      }
     }
-    //removespace(content, ab, ia);
-    return (1);
-  }
 
   void get_settings()
   {
@@ -275,11 +352,11 @@ int is_wall(double x, double y)
         else if (content[ab][0] == '1')
         {
          aa = getarray(content, ab, aa);
-          removespace(content, ab, ia);         
          ia++;
         }
         ab++;
       }
+      int_map(content);
 
       // int abs = 0;
       // while (g_data.map[abs] != NULL)
@@ -561,7 +638,7 @@ void	draw_wall(int id)
 	while (a < b)
 	{
       if ((int)i * g_txt.width[0] + (int)g_ray[id].offset < g_txt.width[0] * g_txt.height[0]
-			&& id >= 0 && id < g_data.reso_one && id < g_data.reso_two)
+			&& id >= 0 && id < g_data.reso_one && id < g_data.reso_two && g_txt.width[0] < g_data.reso_one)
 		{
 			color = g_txt.data[0][(int)i * g_txt.width[0] + (int)g_ray[id].offset];
 			my_mlx_pixel_put(&g_mg, id, a, color);
@@ -698,7 +775,8 @@ int keyRelease(int key)
   //       abs++;
   //     }
   error_one();
-  printf("%d\n",g_data.ver);
+  error_two();
+  printf("%d\n",g_data.hor);
   check_map();
  //Put everything on deal_key
 	mlx_loop_hook(g_mlx.mlx_ptr,update,(void *)0);
