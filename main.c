@@ -9,6 +9,56 @@
     *(unsigned int*)dst = color;
 }
 
+int     get_rgb(int r, int g, int b)
+{
+    return (b + g * 256 + r * 65536);
+}
+
+int get_color(char **content, int ab)
+{
+  int i;
+  int a;
+  int b;
+  char *s;
+
+  i = 0;
+  a = 0;
+  while (content[ab][a] < 48 || content[ab][a] > 57)
+    a++;
+
+  b = a;
+  while (content[ab][a] != ',')
+  {
+    i++;
+    a++;
+  }
+
+   s = ft_substr(content[ab],b,i);
+   g_color.r = ft_atoi(s);
+
+  b = a + 1;
+  a++;
+  i = 0;
+  while (content[ab][a] != ',')
+  {
+    i++;
+    a++;
+  }
+  s = ft_substr(content[ab],b,i);
+  g_color.g = ft_atoi(s);
+  b = a + 1;
+  a++;
+  i = 0;
+  while (content[ab][a] != '\0')
+  {
+    i++;
+    a++;
+  }
+  s = ft_substr(content[ab],b,i);
+  g_color.b = ft_atoi(s);
+
+    return (g_color.b + g_color.g * 256 + g_color.r * 65536);
+}
 
 void error_one()
 {
@@ -237,13 +287,13 @@ void check_map()
        {
          g_player.found = 1;
           if (g_data.map[i][j] == 'N')
-            g_player.rotationAngle = 90;
-          else if (g_data.map[i][j] == 'W')
             g_player.rotationAngle = 180;
-          else if (g_data.map[i][j] == 'S')
+          else if (g_data.map[i][j] == 'W')
             g_player.rotationAngle = 270;
-          else if (g_data.map[i][j] == 'E')
+          else if (g_data.map[i][j] == 'S')
             g_player.rotationAngle = 360;
+          else if (g_data.map[i][j] == 'E')
+            g_player.rotationAngle = 90;
 
           g_player.x = tile_j;
           g_player.y = tile_i;
@@ -425,7 +475,11 @@ int is_wall(double x, double y)
         else if (content[ab][0] == 'E' && content[ab][1] == 'A')
           g_data.EA = get_texture(content, ab);
         else if (content[ab][0] == 'S')
-          g_data.S = get_texture(content, ab);  
+          g_data.S = get_texture(content, ab);
+          else if (content[ab][0] == 'F')
+          g_data.Fcolor = get_color(content,ab);
+          else if (content[ab][0] == 'C')
+          g_data.Ccolor = get_color(content,ab);
         else if (content[ab][0] == '1' || content[ab][0] == ' ')
         {
          aa = getarray(content, ab, aa);
@@ -687,13 +741,13 @@ void	draw_floor(int id)
 
 	while (i < g_ray[id].top)
 	{
-		my_mlx_pixel_put(&g_mg, id, i, SKY);
+		my_mlx_pixel_put(&g_mg, id, i, g_data.Ccolor);
 		i++;
 	}
 	i = g_ray[id].bottom;
 	while (i < g_data.reso_two)
 	{
-		my_mlx_pixel_put(&g_mg, id, i, GREEN);
+		my_mlx_pixel_put(&g_mg, id, i, g_data.Fcolor);
 		i++;
 	}
 }
@@ -763,9 +817,20 @@ int keyPress(int key)
   //   fakex = g_player.x + cos(g_player.rotationAngle * (M_PI/180)) * g_player.moveStep;
   //   fakey = g_player.y + sin(g_player.rotationAngle * (M_PI/180)) * g_player.moveStep;
 
-
 if (key == 126 || key == 13) //UP
       g_player.walkDirection = 1;
+
+if (key == 2)
+{
+      g_player.directionLR = 90;
+      g_player.walkDirection = 1;
+}
+
+if (key == 0)
+{
+  g_player.directionLR = 270;
+  g_player.walkDirection = 1;
+}
 
 if (key == 125 || key == 1) //D
       g_player.walkDirection = -1;
@@ -791,6 +856,18 @@ int keyRelease(int key)
 
     if (key == 125 || key == 1) //D
       g_player.walkDirection = 0;
+
+    if (key == 2)
+    {
+      g_player.directionLR = 0;
+      g_player.walkDirection = 0;
+    }
+
+    if (key == 0)
+    {
+      g_player.directionLR = 0;
+      g_player.walkDirection = 0;
+    }
 
     if (key == 123) //L
       g_player.turnDirection = 0;
@@ -819,8 +896,8 @@ int keyRelease(int key)
     
     if (is_wall(fakex, fakey) != 1)
     {
-      g_player.x += cos(g_player.rotationAngle * (M_PI/180)) * (g_player.moveStep);
-      g_player.y += sin(g_player.rotationAngle * (M_PI/180)) * (g_player.moveStep);
+      g_player.x += cos((g_player.rotationAngle + g_player.directionLR) * (M_PI/180)) * (g_player.moveStep);
+      g_player.y += sin((g_player.rotationAngle + g_player.directionLR) * (M_PI/180)) * (g_player.moveStep);
     }
     
     CastAllRays();
@@ -851,7 +928,7 @@ int keyRelease(int key)
   //       printf("%s\n",g_data.map[abs]);
   //       abs++;
   //     }
-  printf("%s\n",g_data.map[0]);
+
   error_one();
   error_two();
   error_three();

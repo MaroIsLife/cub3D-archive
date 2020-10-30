@@ -48,11 +48,20 @@ typedef struct s_player {
 	int turnDirection;
 	int walkDirection;
 	float rotationAngle;
+	int directionLR;
 	double moveSpeed;
 	float rotationSpeed;
   float moveStep;
   int found;
 }	t_player;
+
+typedef struct s_color {
+	int r;
+	int g;
+	int b;
+	int color;
+
+} t_color;
 
 typedef struct s_ray
 {
@@ -85,6 +94,8 @@ typedef struct s_data {
 	int mapstart;
 	int ver;
 	int hor;
+	int Fcolor;
+	int Ccolor;
 
 }	t_data;
 
@@ -114,6 +125,7 @@ t_mlx g_mlx;
 t_player g_player;
 t_data g_data;
 t_txt g_txt;
+t_color g_color;
 
 
 // 11111111111111111111111111111
