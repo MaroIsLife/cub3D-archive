@@ -16,17 +16,7 @@ clock_t begin, end;
     printf("time taken: %lfs\n", (double)(end - begin) / CLOCKS_PER_SEC); \
 } while (0);
 
-#define MAP_VER 23
-#define MAP_HOR 27
 #define TILE_SIZE 64
-#define RED 0xff0000
-#define WHITE 0xffffff
-#define GOLD 0xffd700
-#define BLUE 0x0000ff
-#define SKY 0x87ceeb
-#define GREEN 0x32CD32
-#define AQUA 0x00ffff
-#define BROWN 0xCD853F
 #define PI 3.14159265358979323846
 #define circle_size 10
 #define FOV_ANGLE 60
@@ -190,4 +180,10 @@ t_color g_color;
 
   int		ft_atoi(const char *str);
   void	*ft_calloc(size_t n, size_t size);
+  void error_one();
+  void error_two();
+  void error_three();
+  void error_four();
+  void error_first_last();
+  void error_up_down();
 #endif 
