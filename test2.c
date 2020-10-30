@@ -1,6 +1,104 @@
 //  #include "cub3d.h"
  
 
+// void error_one()
+// {
+//   int i;
+//   int j;
+//   int a;
+
+//   i = 0;
+//   j = 0;
+
+//   while (g_data.map[0][i] != '\0')
+//   {
+//     if (g_data.map[0][i] != '1' && g_data.map[0][i] != 32)
+//     {
+//       perror("Invalid Map (First Line)");
+//       exit(1);
+//     }
+//       i++;
+//   }
+//   i = 0;
+//   while (g_data.map[g_data.ver - 1][i] != '\0')
+//   {
+//     if (g_data.map[g_data.ver - 1][i] != '1' && g_data.map[g_data.ver - 1][i] != 32)
+//     {
+//       perror("Invalid Map (Last Line)");
+//       exit(1);
+//     }
+//     i++;
+//   }
+
+//  i = 0;
+//  a = 0;
+
+
+//   }
+
+// void error_first_last()
+// {
+//   int i;
+//   int a;
+
+//   i = 0;
+//   a = 0;
+
+
+//   while (g_data.map[i] != NULL)
+//  {
+//    if (g_data.map[i][a] == 32)
+//    {
+//       while (g_data.map[i][a] == 32)
+//       a++;
+//    }
+//    if (g_data.map[i][a] != '1')
+//    {
+//      perror("First Col doesn't start with 1");
+//      exit(-1);
+//    }
+//    i++;
+//    a = 0;
+//   }
+//   a = 0;
+//   i = 0;
+ 
+// }
+
+// void error_three()
+// {
+
+// int a;
+// int i;
+
+
+//   a = 0;
+//   i = 0;
+//   while (g_data.map[i] != NULL)
+//   {
+//     while (g_data.map[i][a] != '\0')
+//       a++;
+
+//     a--;
+//     if (g_data.map[i][a] == 32)
+//     {
+//       while(g_data.map[i][a] == 32)
+//       a--;
+//     }
+
+//     if (g_data.map[i][a] != '1')
+//     {
+//       perror("Last Line doesn't end with 1");
+//       exit(-1);
+//     }
+//     i++;
+//     a = 0;
+//   }
+// }
+
+
+
+
 //  void error_two()
 // {
 //   int a;
@@ -35,6 +133,54 @@
 //     j = 0;
 //     b++;
 //   }
+// }
+
+// void error_up_down()
+// {
+//   int i;
+//   int j;
+//   int a;
+
+//   a = 0;
+//   j = 0;
+//   i = 0;
+
+//   while (g_data.map[i] != NULL)
+//   {
+//     while (g_data.map[i][a] != '\0')
+//     {
+//       if (g_data.map[i + 1] != NULL && g_data.map[i + 1][a] == 32 && g_data.map[i][a] == '0')
+//       {
+//         perror("Error an Open 0 inbound");
+//         exit(-1);
+//       }
+//       a++;
+//     }
+//     a = 0;
+//     i++;
+//   }
+//   i = 0;
+//   while (g_data.map[i] != NULL)
+//   {
+//     while (g_data.map[i][a] != '\0')
+//     {
+//       if (g_data.map[i][a] == '0' && g_data.map[i][a + 1] == 32)
+//       {
+//         perror("Error space after 0 ");
+//         exit(-1);
+//       }
+//       else if (g_data.map[i][a] == '0' && g_data.map[i][a - 1] == 32)
+//       {
+//         perror("Error space before 0");
+//         exit(-1);
+//       }
+//       a++;
+
+//     }
+//     i++;
+//     a = 0;
+//   }
+
 // }
  
 //   void check_map()
@@ -113,7 +259,7 @@
 //     int i;
 //     i = 0;
 //     fd = open("map.cub",O_RDONLY);
-//     content = malloc(30 * sizeof(char *));
+//     content = malloc(80 * sizeof(char *));
 
 //     while (get_next_line(fd,&line))
 //     {
@@ -222,7 +368,6 @@
 //           g_data.map[b][i] = content[a][i];
 //           i++;
 //         }
-//         printf("%s\n",g_data.map[b]);
 //         a++;
 //         b++;
 //         i = 0;
@@ -245,7 +390,7 @@
 //       {
 //         if (content[ab][0] == 'R')
 //         get_resolution(content, ab);
-//         else if (content[ab][0] == '1')
+//         else if (content[ab][0] == '1' || content[ab][0] == ' ')
 //         {
 //          aa = getarray(content, ab, aa);
 //          ia++;
@@ -266,9 +411,14 @@
 //   {
 //     get_settings();
 //     check_map();
+//     error_one();
+//     error_first_last();
+//     error_three();
 //     error_two();
+//     error_up_down();
 
-//     int i = 0;
+//     printf("\nWorks");
+
 
 //     return (0);
 

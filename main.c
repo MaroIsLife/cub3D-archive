@@ -21,7 +21,7 @@ void error_one()
 
   while (g_data.map[0][i] != '\0')
   {
-    if (g_data.map[0][i] != '1')
+    if (g_data.map[0][i] != '1' && g_data.map[0][i] != 32)
     {
       perror("Invalid Map (First Line)");
       exit(1);
@@ -31,7 +31,7 @@ void error_one()
   i = 0;
   while (g_data.map[g_data.ver - 1][i] != '\0')
   {
-    if (g_data.map[g_data.ver - 1][i] != '1')
+    if (g_data.map[g_data.ver - 1][i] != '1' && g_data.map[g_data.ver - 1][i] != 32)
     {
       perror("Invalid Map (Last Line)");
       exit(1);
@@ -42,19 +42,71 @@ void error_one()
  i = 0;
  a = 0;
 
- while (g_data.map[i] != NULL)
+
+  }
+
+void error_first_last()
+{
+  int i;
+  int a;
+
+  i = 0;
+  a = 0;
+
+
+  while (g_data.map[i] != NULL)
  {
-   while (g_data.map[i][a] != '\0')
-    a++;
-   if (g_data.map[i][0] != '1' || g_data.map[i][a - 1] != '1')
+   if (g_data.map[i][a] == 32)
    {
-     perror("Invalid Map (Line Doesn't start or end with 1)");
-     exit(1);
-   } 
+      while (g_data.map[i][a] == 32)
+      a++;
+   }
+   if (g_data.map[i][a] != '1')
+   {
+     perror("First Col doesn't start with 1");
+     exit(-1);
+   }
    i++;
    a = 0;
- }
+  }
+  a = 0;
+  i = 0;
+ 
 }
+
+void error_three()
+{
+
+int a;
+int i;
+
+
+  a = 0;
+  i = 0;
+  while (g_data.map[i] != NULL)
+  {
+    while (g_data.map[i][a] != '\0')
+      a++;
+
+    a--;
+    if (g_data.map[i][a] == 32)
+    {
+      while(g_data.map[i][a] == 32)
+      a--;
+    }
+
+    if (g_data.map[i][a] != '1')
+    {
+      perror("Last Line doesn't end with 1");
+      exit(-1);
+    }
+    i++;
+    a = 0;
+  }
+}
+
+
+
 
  void error_two()
 {
@@ -91,6 +143,56 @@ void error_one()
     b++;
   }
 }
+
+void error_up_down()
+{
+  int i;
+  int j;
+  int a;
+
+  a = 0;
+  j = 0;
+  i = 0;
+
+  while (g_data.map[i] != NULL)
+  {
+    while (g_data.map[i][a] != '\0')
+    {
+      if (g_data.map[i + 1] != NULL && g_data.map[i + 1][a] == 32 && g_data.map[i][a] == '0')
+      {
+        perror("Error an Open 0 inbound");
+        exit(-1);
+      }
+      a++;
+    }
+    a = 0;
+    i++;
+  }
+  i = 0;
+  while (g_data.map[i] != NULL)
+  {
+    while (g_data.map[i][a] != '\0')
+    {
+      if (g_data.map[i][a] == '0' && g_data.map[i][a + 1] == 32)
+      {
+        perror("Error space after 0 ");
+        exit(-1);
+      }
+      else if (g_data.map[i][a] == '0' && g_data.map[i][a - 1] == 32)
+      {
+        perror("Error space before 0");
+        exit(-1);
+      }
+      a++;
+
+    }
+    i++;
+    a = 0;
+  }
+
+}
+
+
 void sqr(int Y, int X, int color)
 { 
     int x = X;
@@ -200,7 +302,7 @@ int is_wall(double x, double y)
     int i;
     i = 0;
     fd = open("map.cub",O_RDONLY);
-    content = malloc(30 * sizeof(char *));
+    content = malloc(80 * sizeof(char *));
 
     while (get_next_line(fd,&line))
     {
@@ -274,31 +376,6 @@ int is_wall(double x, double y)
     }
     return (1);
   }
-
-  void removespace(char **content, int ab, int ia)
-  {
-    int i;
-    int a;
-
-    i = 0;
-    a = 0;
-    while (content[ab][i] != '\0')
-    {
-      // if (content[ab][i] == ' ')
-      // {
-      //   g_data.map[ia][a] = '1';
-      //   a++;
-      // }
-      // else
-      // {
-        g_data.map[ia][a] = content[ab][i];
-        a++;
-      // }
-      i++;
-    }
-    g_data.map[ia][i] = '\0';
-    }
-
   
   
   void int_map(char **content)
@@ -349,7 +426,7 @@ int is_wall(double x, double y)
           g_data.EA = get_texture(content, ab);
         else if (content[ab][0] == 'S')
           g_data.S = get_texture(content, ab);  
-        else if (content[ab][0] == '1')
+        else if (content[ab][0] == '1' || content[ab][0] == ' ')
         {
          aa = getarray(content, ab, aa);
          ia++;
@@ -774,9 +851,13 @@ int keyRelease(int key)
   //       printf("%s\n",g_data.map[abs]);
   //       abs++;
   //     }
+  printf("%s\n",g_data.map[0]);
   error_one();
   error_two();
-  printf("%d\n",g_data.hor);
+  error_three();
+  error_up_down();
+  error_first_last();
+
   check_map();
  //Put everything on deal_key
 	mlx_loop_hook(g_mlx.mlx_ptr,update,(void *)0);
