@@ -472,7 +472,7 @@ void cast(float rayAngle,int id)
       g_ray[id].distance = verHitDistance;
       g_ray[id].wallhitX = verWallhitx;
       g_ray[id].wallhitY = verWallhity;
-      g_ray[id].offset = remainder(verWallhity,TILE_SIZE);
+      g_ray[id].offset = (int)verWallhity % TILE_SIZE;
       g_ray[id].wasHitVertical = 1;
      // g_ray[id].wallHitContent = verWallContent;
   }
@@ -481,7 +481,7 @@ void cast(float rayAngle,int id)
      g_ray[id].distance = horzHitDistance;
       g_ray[id].wallhitX = horzWallhitx;
       g_ray[id].wallhitY = horzWallhity;
-      g_ray[id].offset = remainder(horzWallhitx,TILE_SIZE);
+      g_ray[id].offset = (int)horzWallhitx % TILE_SIZE;
       g_ray[id].wasHitVertical = 0;
       //g_ray[id].wallHitContent = horzWallContent;
   }
@@ -594,14 +594,16 @@ void	draw_floor(int id)
 }
 void	draw_wall(int id, int nb)
 {
-	float a = g_ray[id].top;
-	float b = g_ray[id].bottom;
+	float a;
+	float b;
   int o;
     float f;
     float i;
 
   o = 0;
   i = 0.;
+  a = g_ray[id].top;
+  b = g_ray[id].bottom;
 
 
   f = (float)g_txt.height[nb] / g_ray[id].height;
@@ -731,6 +733,10 @@ int keyRelease(int key)
       return (0);
 }
 
+int red()
+{
+  exit(-1);
+}
 
  int update()
   {
@@ -790,8 +796,11 @@ int keyRelease(int key)
   error_up_down();
   error_first_last();
   check_map();
+  error_other();
  //Put everything on deal_key
 	mlx_loop_hook(g_mlx.mlx_ptr,update,(void *)0);
+  mlx_hook(g_mlx.win_ptr, 17, 0,red, (void *)0);
+
 	mlx_loop(g_mlx.mlx_ptr);
   return(0);
 }
