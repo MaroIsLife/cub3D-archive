@@ -534,6 +534,17 @@ void cast(float rayAngle,int id)
 
 void init_texture()
 {
+  int i;
+
+  i = 0;
+
+
+    open_txt(g_data.SO);
+    open_txt(g_data.NO);
+    open_txt(g_data.WE);
+    open_txt(g_data.EA);
+
+
   g_txt.ptr[0] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.SO,&g_txt.width[0],&g_txt.height[0]);
   g_txt.data[0] = (int *)mlx_get_data_addr(g_txt.ptr[0],&g_txt.bpp,&g_txt.line,&g_txt.endian);
 

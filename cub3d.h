@@ -146,4 +146,5 @@ t_color g_color;
   void error_four();
   void error_first_last();
   void error_up_down();
+  void open_txt(char *txt);
 #endif 
