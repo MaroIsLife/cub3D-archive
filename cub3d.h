@@ -83,6 +83,7 @@ typedef struct s_data {
 	char *EA;
 	char *S;
 	char **map;
+	char *mapName;
 	int mapstart;
 	int ver;
 	int hor;
@@ -120,26 +121,11 @@ t_txt g_txt;
 t_color g_color;
 
 
-// 11111111111111111111111111111
-// 10000000001100000000000000001
-// 1011000N011100000000000010001
-// 10010000000000000000000010001
-// 10110000011100000000000010001
-// 10000000001100000111011110001
-// 11110111111111011100000010001
-// 11110111111111011101010010001
-// 11000000110101011100000010001
-// 10000000000000001100000010001
-// 10000000000000001101010010001
-// 11000000110101011111011110001
-// 11110111111101011111011110001
-// 11111111111111111111111111111
-
-
 
 
   int		ft_atoi(const char *str);
   void	*ft_calloc(size_t n, size_t size);
+  char	**ft_split(const char *s, char c);
   void error_one();
   void error_two();
   void error_three();
@@ -148,4 +134,5 @@ t_color g_color;
   void error_up_down();
   void error_other();
   void open_txt(char *txt);
+  void all_errors();
 #endif 

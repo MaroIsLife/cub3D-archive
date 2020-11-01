@@ -6,7 +6,7 @@
 #    By: mougnou <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/17 10:27:14 by mougnou           #+#    #+#              #
-#    Updated: 2020/10/31 14:20:18 by mougnou          ###   ########.fr        #
+#    Updated: 2020/11/01 16:22:51 by mougnou          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,7 @@ OGL = OpenGL
 all:
 	gcc $(SRC) -Wall -Werror -Wextra -o cub3D -L $(GL) -lmlx  -framework $(OGL) -framework $(AK)
 clean:
-	rm -rf *.o
+	rm -rf *.oi
 fclean: clean
 	rm ./cub3D
 	rm *.gch

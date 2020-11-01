@@ -57,6 +57,12 @@ int get_color(char **content, int ab)
   s = ft_substr(content[ab],b,i);
   g_color.b = ft_atoi(s);
 
+  if (g_color.b < 0 || g_color.g < 0 || g_color.r < 0)
+  {
+    perror("Negative number");
+    exit (-1);
+  }
+
     return (g_color.b + g_color.g * 256 + g_color.r * 65536);
 }
 
@@ -104,15 +110,20 @@ void check_map()
       tile_j = ((double)j + 0.5) * TILE_SIZE;
        if (g_data.map[i][j] == 'N' | g_data.map[i][j] == 'W' || g_data.map[i][j] == 'S' || g_data.map[i][j] == 'E')
        {
+         if (g_player.found == 1)
+         {
+           perror("Duplicate Players");
+           exit (1);
+         }
          g_player.found = 1;
           if (g_data.map[i][j] == 'N')
-            g_player.rotationAngle = 0;
-          else if (g_data.map[i][j] == 'W')
             g_player.rotationAngle = 270;
-          else if (g_data.map[i][j] == 'S')
+          else if (g_data.map[i][j] == 'W')
             g_player.rotationAngle = 180;
-          else if (g_data.map[i][j] == 'E')
+          else if (g_data.map[i][j] == 'S')
             g_player.rotationAngle = 90;
+          else if (g_data.map[i][j] == 'E')
+            g_player.rotationAngle = 0;
 
           g_player.x = tile_j;
           g_player.y = tile_i;
@@ -170,10 +181,10 @@ int is_wall(double x, double y)
     int fd;
     int i;
     i = 0;
-    fd = open("map.cub",O_RDONLY);
+    fd = open(g_data.mapName,O_RDONLY);
     if (fd == -1)
     {
-      perror("Map.cub could not be found.");
+      perror("The Map could not be found.");
       exit(-1);
     }
     content = malloc(80 * sizeof(char *));
@@ -206,9 +217,16 @@ int is_wall(double x, double y)
     i = 2;
     else
     i = 3;
+  
     while (content[ab][a] != '\0')
     a++;
     text = ft_substr(content[ab],i,a);
+     i = ft_strlen(text);
+     if (i == 2 || i == 3)
+     {
+       perror("Missing Texture");
+       exit (1);
+     }
 
    return(text);
   }
@@ -333,13 +351,7 @@ int is_wall(double x, double y)
     return (angle);
   }
 
-float	normalizeAngle2(float rayangle)
-{
-	rayangle = remainderf(rayangle,  360);
-	if (rayangle < 0)
-		rayangle = 360 + rayangle;
-	return(rayangle);
-}
+
 
 void playerSettings()
 {
@@ -544,17 +556,16 @@ void init_texture()
     open_txt(g_data.WE);
     open_txt(g_data.EA);
 
-
-  g_txt.ptr[0] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.SO,&g_txt.width[0],&g_txt.height[0]);
+  g_txt.ptr[0] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.WE,&g_txt.width[0],&g_txt.height[0]);
   g_txt.data[0] = (int *)mlx_get_data_addr(g_txt.ptr[0],&g_txt.bpp,&g_txt.line,&g_txt.endian);
 
-  g_txt.ptr[1] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.NO,&g_txt.width[1],&g_txt.height[1]);
+  g_txt.ptr[1] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.EA,&g_txt.width[1],&g_txt.height[1]);
   g_txt.data[1] = (int *)mlx_get_data_addr(g_txt.ptr[1],&g_txt.bpp,&g_txt.line,&g_txt.endian);
 
-  g_txt.ptr[2] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.WE,&g_txt.width[2],&g_txt.height[2]);
+  g_txt.ptr[2] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.NO,&g_txt.width[2],&g_txt.height[2]);
   g_txt.data[2] = (int *)mlx_get_data_addr(g_txt.ptr[2],&g_txt.bpp,&g_txt.line,&g_txt.endian);
 
-  g_txt.ptr[3] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.EA,&g_txt.width[3],&g_txt.height[3]);
+  g_txt.ptr[3] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.SO,&g_txt.width[3],&g_txt.height[3]);
   g_txt.data[3] = (int *)mlx_get_data_addr(g_txt.ptr[3],&g_txt.bpp,&g_txt.line,&g_txt.endian);
 }
 
@@ -608,7 +619,7 @@ void	draw_wall(int id, int nb)
 
   f = (float)g_txt.height[nb] / g_ray[id].height;
 
-	// b > g_data.reso_two ? b = g_data.reso_two : 0;
+	b > g_data.reso_two ? b = g_data.reso_two : 0;
 	while (a < b)
 	{
       if ((int)i * g_txt.width[nb] + (int)g_ray[id].offset < g_txt.width[nb] * g_txt.height[nb]
@@ -688,7 +699,7 @@ if (key == 0)
   g_player.walkDirection = 1;
 }
 
-if (key == 125 || key == 1) //D
+if (key == 125 || key == 1) 
       g_player.walkDirection = -1;
 
 if (key == 123) //L
@@ -750,8 +761,9 @@ int red()
     g_player.rotationAngle += g_player.turnDirection * g_player.rotationSpeed;//* (M_PI/180);
     g_player.rotationAngle = fmod(g_player.rotationAngle,360); // Unable to exceed 360 on RotationAngle
     g_player.moveStep = g_player.walkDirection * g_player.moveSpeed;
-    fakex = g_player.x + cos(g_player.rotationAngle * (M_PI/180)) * (g_player.moveStep * 5);
-    fakey = g_player.y + sin(g_player.rotationAngle * (M_PI/180)) * (g_player.moveStep * 5);
+    fakex = g_player.x + cos((g_player.rotationAngle + g_player.directionLR) * (M_PI/180)) * (g_player.moveStep * 5);
+    fakey = g_player.y + sin((g_player.rotationAngle + g_player.directionLR) * (M_PI/180)) * (g_player.moveStep * 5);
+
 
     
     if (is_wall(fakex, fakey) != 1)
@@ -771,36 +783,67 @@ int red()
   }
 
 
-  int main()
+  void  arg_check(char *s1)
   {
+    int i;
+    char **s2;
+    char *s3;
+    int a;
 
-  get_settings();
-  playerSettings();
-  g_mlx.mlx_ptr = mlx_init();
-  g_mlx.win_ptr = mlx_new_window(g_mlx.mlx_ptr,g_data.reso_one,g_data.reso_two,"Maro");
-  g_mg.img = mlx_new_image(g_mlx.mlx_ptr, g_data.reso_one, g_data.reso_two);
-  g_mg.addr = mlx_get_data_addr(g_mg.img, &g_mg.bits_per_pixel, &g_mg.line_length,&g_mg.endian);
+    a = 0;
+    i = 0;
+    s3 = "cub";
+
+    while (s1[i] != '\0')
+    {
+      if (s1[i] == '.')
+      {
+        s2 = ft_split(s1,'.');           
+        a = 1;
+      }
+      i++;
+    }
+    if (a == 0)
+    {
+      perror("Please insert the correct map that ends with .cub");
+      exit(1);
+    }
+    i = 0;
+    while (s2[1][i] != '\0')
+    {
+      if (s2[1][i] != s3[i])
+      {
+        perror("Please Insert the correct map using .cub");
+        exit(1);
+      }
+      i++;
+     }
+    g_data.mapName = s1;
+  }
 
 
-  //  int abs = 0;
-  //     while (g_data.map[abs] != NULL)
-  //     {
-  //       printf("%s\n",g_data.map[abs]);
-  //       abs++;
-  //     }
+  int main(int argc, char **argv)
+  {
+      
+  if (argc == 2 || argc == 3)
+  {
+    arg_check(argv[1]);
+    get_settings();
+    playerSettings();
+    g_mlx.mlx_ptr = mlx_init();
+    g_mlx.win_ptr = mlx_new_window(g_mlx.mlx_ptr,g_data.reso_one,g_data.reso_two,"Maro");
+    g_mg.img = mlx_new_image(g_mlx.mlx_ptr, g_data.reso_one, g_data.reso_two);
+    g_mg.addr = mlx_get_data_addr(g_mg.img, &g_mg.bits_per_pixel, &g_mg.line_length,&g_mg.endian);
+  
+    all_errors();
 
-  error_one();
-  error_two();
-  error_three();
-  error_four();
-  error_up_down();
-  error_first_last();
-  check_map();
-  error_other();
- //Put everything on deal_key
-	mlx_loop_hook(g_mlx.mlx_ptr,update,(void *)0);
-  mlx_hook(g_mlx.win_ptr, 17, 0,red, (void *)0);
-
-	mlx_loop(g_mlx.mlx_ptr);
+    check_map();
+	  mlx_loop_hook(g_mlx.mlx_ptr,update,(void *)0);
+    mlx_hook(g_mlx.win_ptr, 17, 0,red, (void *)0);
+	  mlx_loop(g_mlx.mlx_ptr);
+  }
+  else {
+    perror("Please insert the map's name.");
+  }
   return(0);
 }

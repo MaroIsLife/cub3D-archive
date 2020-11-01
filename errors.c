@@ -1,5 +1,14 @@
 #include "cub3d.h"
-
+void all_errors()
+{
+  error_other();
+  error_one();
+  error_two();
+  error_three();
+  error_four();
+  error_up_down();
+  error_first_last();
+}
 void error_one()
 {
   int i;
@@ -186,7 +195,7 @@ void error_up_down()
     {
       if (g_data.map[i + 1] != NULL && g_data.map[i + 1][a] == 32 && g_data.map[i][a] == '0')
       {
-        perror("Error an Open 0 inbound");
+        perror("Error an Open 0 or 2 inbound");
         exit(-1);
       }
       else if (g_data.map[i] != NULL && g_data.map[i - b][a] == 32 && g_data.map[i][a] == '0')
@@ -205,14 +214,14 @@ void error_up_down()
   {
     while (g_data.map[i][a] != '\0')
     {
-      if (g_data.map[i][a] == '0' && g_data.map[i][a + 1] == 32)
+      if ((g_data.map[i][a] == '0' && g_data.map[i][a + 1] == 32) || (g_data.map[i][a] == '2' && g_data.map[i][a + 1] == 32))
       {
-        perror("Error space after 0 ");
+        perror("Error space after 0 or 2 ");
         exit(-1);
       }
-      else if (g_data.map[i][a] == '0' && g_data.map[i][a - 1] == 32)
+      else if ((g_data.map[i][a] == '0' && g_data.map[i][a - 1] == 32) || (g_data.map[i][a] == '2' && g_data.map[i][a - 1] == 32))
       {
-        perror("Error space before 0");
+        perror("Error space before 0 or 2");
         exit(-1);
       }
       a++;
