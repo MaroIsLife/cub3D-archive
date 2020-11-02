@@ -33,6 +33,20 @@ typedef struct s_mlx {
 }	t_mlx;
 
 
+typedef struct s_header
+{
+	int	width;
+	int	height;
+	int	bitcount;
+	int	width_in_bytes;
+	int	imagesize;
+	int	bisize;
+	int	bfoffbits;
+	int	filesize;
+	int	biplanes;
+} t_header;
+
+
 typedef struct s_player {
 	double x;
   double y;
@@ -45,6 +59,7 @@ typedef struct s_player {
 	float rotationSpeed;
   float moveStep;
   int found;
+  int saved;
 }	t_player;
 
 typedef struct s_color {
@@ -103,6 +118,8 @@ typedef struct s_txt {
 } t_txt;
 
 
+
+
 typedef struct  s_mg {
 	void        *img;
 	char        *addr;
@@ -112,6 +129,12 @@ typedef struct  s_mg {
 	
 }               t_mg;
 
+typedef struct	s_rgb{
+	int		r;
+	int		g;
+	int		b;
+}				t_rgb;
+
 t_ray g_ray;
 t_mg g_mg;
 t_mlx g_mlx;
@@ -119,6 +142,7 @@ t_player g_player;
 t_data g_data;
 t_txt g_txt;
 t_color g_color;
+t_header g_header;
 
 
 
@@ -135,4 +159,11 @@ t_color g_color;
   void error_other();
   void open_txt(char *txt);
   void all_errors();
+  void	*ft_memcpy(void *dst, const void *src, size_t n);
+  void int_data();
+unsigned char *get_header();
+  void save_bitmap();
+  t_rgb	int_rgb(int col);
+  void fill_image(unsigned char *buffer,int *data, int col, int row);
+  void draw_bmp(unsigned char *buffer);
 #endif 

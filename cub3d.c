@@ -505,45 +505,6 @@ void cast(float rayAngle,int id)
   g_ray[id].isRayFacingRight = isRayFacingRight;
 }
 
-// void draw_player()
-// {
-//   // int i;
-//   // i = 1;
-//   float fakey;
-//   float fakex;
-//   float rayAngle;
-
-//     // float x = g_player.rotationAngle;
-
-//     fakex = g_player.x + cos(g_player.rotationAngle * (M_PI/180));
-//     fakey = g_player.y + sin(g_player.rotationAngle * (M_PI/180));
-
-
-//      int ang = 1;
-//    while (ang < 360)
-//    {
-//         my_mlx_pixel_put(&g_mg, circle_size * cos(ang * PI / 180) + g_player.x , circle_size * sin(ang * PI / 180) + g_player.y , RED);
-//        ang++;
-//    }
-//     rayAngle = g_player.rotationAngle; //- 30;
-//     //  float fov = 60;
-//      int    i;
-    
-//     // while(fov >= 0)
-//     // {
-//       i = 0;
-//       while (i < 100)
-//       {
-//         // my_mlx_pixel_put(&g_mg, g_player.x + cos(rayAngle * PI / 180) * i, g_player.y + sin(rayAngle * PI / 180) * i, GOLD);
-//          my_mlx_pixel_put(&g_mg, g_player.x + cos(rayAngle * PI / 180) * i, g_player.y + sin(rayAngle * PI / 180) * i, GOLD);       
-//         i++;
-//       } 
-//     //     g_ray[0].rayAngle+= (60.0 / g_data.reso_one);
-//     //     fov = fov - (60.0 / g_data.reso_one);
-//     //  }
-//      //printf("%f\n",g_ray.rayAngle);
-// }
-
 void init_texture()
 {
   int i;
@@ -555,6 +516,7 @@ void init_texture()
     open_txt(g_data.NO);
     open_txt(g_data.WE);
     open_txt(g_data.EA);
+    open_txt(g_data.S);
 
   g_txt.ptr[0] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.WE,&g_txt.width[0],&g_txt.height[0]);
   g_txt.data[0] = (int *)mlx_get_data_addr(g_txt.ptr[0],&g_txt.bpp,&g_txt.line,&g_txt.endian);
@@ -616,11 +578,14 @@ void	draw_wall(int id, int nb)
   a = g_ray[id].top;
   b = g_ray[id].bottom;
 
-
+  // printf("A: %f\n B: %f\n",a,b);
   f = (float)g_txt.height[nb] / g_ray[id].height;
 
-	b > g_data.reso_two ? b = g_data.reso_two : 0;
-	while (a < b)
+	//b > g_data.reso_two ? b = g_data.reso_two : 0;
+  if (b > g_data.reso_two)
+    b = g_data.reso_two;
+  
+	while (a < b && b > - 1)
 	{
       if ((int)i * g_txt.width[nb] + (int)g_ray[id].offset < g_txt.width[nb] * g_txt.height[nb]
 			&& id >= 0 && id < g_data.reso_one && id < g_data.reso_two && g_txt.width[nb] < g_data.reso_one)
@@ -776,6 +741,11 @@ int red()
 
 
     mlx_put_image_to_window(g_mlx.mlx_ptr, g_mlx.win_ptr, g_mg.img, 0, 0);
+    if (g_player.saved == 1)
+    {
+      save_bitmap();
+      exit(0);
+    }
     mlx_destroy_image(g_mlx.mlx_ptr,g_mg.img);
     g_mg.img = mlx_new_image(g_mlx.mlx_ptr, g_data.reso_one, g_data.reso_two);
     g_mg.addr = mlx_get_data_addr(g_mg.img, &g_mg.bits_per_pixel, &g_mg.line_length,&g_mg.endian);
@@ -787,16 +757,16 @@ int red()
   {
     int i;
     char **s2;
-    char *s3;
+    // char *s3;
     int a;
 
     a = 0;
     i = 0;
-    s3 = "cub";
+    // s3 = "cub";
 
     while (s1[i] != '\0')
     {
-      if (s1[i] == '.')
+      if (s1[i] == '.' && s1[i + 1] != '\0')
       {
         s2 = ft_split(s1,'.');           
         a = 1;
@@ -811,7 +781,7 @@ int red()
     i = 0;
     while (s2[1][i] != '\0')
     {
-      if (s2[1][i] != s3[i])
+      if (s2[1][i] != "cub"[i])
       {
         perror("Please Insert the correct map using .cub");
         exit(1);
@@ -821,13 +791,31 @@ int red()
     g_data.mapName = s1;
   }
 
+void arg_save_check(char *save)
+{
+  int i;
+
+  i = 0;
+  while ("--save"[i] != '\0')
+  {
+    if (save[i] != "--save"[i])
+    {
+      perror("Wrong flag");
+      exit(1);
+    }
+    i++;
+  }
+  g_player.saved = 1;
+}
+
 
   int main(int argc, char **argv)
   {
-      
   if (argc == 2 || argc == 3)
   {
     arg_check(argv[1]);
+    if (argc == 3)
+    arg_save_check(argv[2]);
     get_settings();
     playerSettings();
     g_mlx.mlx_ptr = mlx_init();
@@ -836,8 +824,8 @@ int red()
     g_mg.addr = mlx_get_data_addr(g_mg.img, &g_mg.bits_per_pixel, &g_mg.line_length,&g_mg.endian);
   
     all_errors();
-
     check_map();
+
 	  mlx_loop_hook(g_mlx.mlx_ptr,update,(void *)0);
     mlx_hook(g_mlx.win_ptr, 17, 0,red, (void *)0);
 	  mlx_loop(g_mlx.mlx_ptr);
