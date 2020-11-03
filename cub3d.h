@@ -70,6 +70,15 @@ typedef struct s_color {
 
 } t_color;
 
+typedef struct	s_sprite {
+	float x;
+	float y;
+	float dst;
+	float size;
+	float x_ofst;
+	float y_ofst;
+}				t_sprite[3500];
+
 typedef struct s_ray
 {
 float rayAngle;
@@ -81,12 +90,38 @@ int top;
 int bottom;
 float offset;
 int wasHitVertical;
+int wallHitContent;
 int isRayFacingUp;
 int isRayFacingDown;
 int isRayFacingLeft;
 int isRayFacingRight;
-int wallHitContent;
-} t_ray[2550];
+float	hitx;
+float	hity;
+} t_ray[3500];
+
+
+typedef struct	s_var{
+
+	float	nexthitx;
+	float	nexthity;
+	float	hitx1;
+	float	hitx2;
+	float	hity1;
+	float	hity2;
+	float	xstep;
+	float	ystep;
+	float	xtocheck;
+	float	ytocheck;
+	float	distanceHor;
+	float	distanceVer;
+	float	distance;
+	float	xintercept;
+	float	yintercept;
+	int isRayFacingUp;
+	int isRayFacingDown;
+	int isRayFacingLeft;
+	int isRayFacingRight;
+}				t_var;
 
 
 typedef struct s_data {
@@ -117,7 +152,13 @@ typedef struct s_txt {
   int width[5];
 } t_txt;
 
-
+typedef struct	s_sptexture
+{
+	void	*img_sprite;
+	int		*data;
+	int		width;
+	int		height;
+}				t_sptexture;
 
 
 typedef struct  s_mg {
@@ -143,11 +184,15 @@ t_data g_data;
 t_txt g_txt;
 t_color g_color;
 t_header g_header;
+t_sprite g_sprite;
+int		g_nsprite;
+t_sptexture g_sptexture;
+t_var g_var;
 
 
 
-
-  int		ft_atoi(const char *str);
+void    my_mlx_pixel_put(t_mg *data, int x, int y, int color);
+  int	ft_atoi(const char *str);
   void	*ft_calloc(size_t n, size_t size);
   char	**ft_split(const char *s, char c);
   void error_one();
@@ -166,4 +211,28 @@ unsigned char *get_header();
   t_rgb	int_rgb(int col);
   void fill_image(unsigned char *buffer,int *data, int col, int row);
   void draw_bmp(unsigned char *buffer);
+  int		is_wall(float x, float y);
+
+
+  int		len(char *s);
+  void	sort(void);
+  void	save_cordinate(int i, int j, int id);
+  void get_sprite_pos();
+  void	get_spriteimage();
+  void	sprite_put_pixels(int id, int i, int j);
+  void	draw_sprite(int id);
+  void render_sprite(int id);
+  float	to_deg(float angle);
+  float	to_rad(float angle);
+
+
+
+
+  void cast(float rayAngle,int id);
+  void calc_dis(float rayAngle,int id);
+  void v_cast(float rayAngle);
+	void h_cast(float rayAngle);
+	void v_calc();
+	void h_calc();
+	  float normalizeAngle(float angle);
 #endif 
