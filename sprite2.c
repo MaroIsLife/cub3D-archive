@@ -16,6 +16,11 @@ void	get_spriteimage()
 {
 	g_sptexture.img_sprite = mlx_xpm_file_to_image(g_mlx.mlx_ptr, g_data.S,
 			&g_sptexture.width, &g_sptexture.height);
+	if (g_sptexture.img_sprite == NULL)
+	{
+		perror("Error in Sprite XPM");
+		exit(1);
+	}
 }
 
 void	sprite_put_pixels(int id, int i, int j)

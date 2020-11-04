@@ -355,6 +355,7 @@ int		is_wall(float x, float y)
         ab++;
       }
       int_map(content);
+      free(content);
 
       // int abs = 0;
       // while (g_data.map[abs] != NULL)
@@ -371,166 +372,18 @@ int		is_wall(float x, float y)
 
 void playerSettings()
 {
-  // g_player.x = g_data.reso_one / 2;
-  // g_player.y = g_data.reso_two / 2;
   g_player.radius = 3;
   g_player.turnDirection = 0;
   g_player.walkDirection = 0;
-  //g_player.rotationAngle = 360; // Moved to check_map()
   g_player.moveSpeed = 8;
   g_player.rotationSpeed = 3;
 
   if (g_data.reso_one > 2000)
   {
-    g_player.moveSpeed = 25;
-    g_player.rotationSpeed = 3;
+    g_data.reso_one = 1600;
+    g_data.reso_two = 900;
   }
 }
-
-
-float distanceBetweenPoints(float wallhitX, float wallhitY)
-{
-  return(sqrt((wallhitX - g_player.x) * (wallhitX - g_player.x) + (wallhitY - g_player.y) * (wallhitY - g_player.y)));
-}
-
-
-void cast1(float rayAngle,int id)
-{
-  float xintercept;
-  float yintercept;
-  float xstep;
-  float ystep;
-  int foundHorzWallHit = 0;
-  float horzWallhitx = 0;
-  float horzWallhity = 0;
-  //int horzWallContent = 0;
-  int isRayFacingDown = 0;
-  int isRayFacingUp = 0;
-  int isRayFacingRight = 0;
-  int isRayFacingLeft;
-  float nextHorzTouchX;
-  float nextHorzTouchY;
-  float xtocheck;
-  float ytocheck;
-
-
-
-
-  rayAngle = normalizeAngle(rayAngle);
-
-
-   if (rayAngle >= 0 && rayAngle <= 180)
-		    isRayFacingDown = 1;
-	  if (rayAngle <= 90 || rayAngle >= 270)
-		    isRayFacingRight = 1;
-
-	      isRayFacingUp = !isRayFacingDown;
-	      isRayFacingLeft = !isRayFacingRight;
-
-    //HORIZONTAL PART
-  yintercept = floor(g_player.y / TILE_SIZE) * TILE_SIZE;
-  yintercept += isRayFacingDown ? TILE_SIZE : 0;
-
-  xintercept = g_player.x + (yintercept - g_player.y) / tan(rayAngle * (M_PI / 180));
-  ystep = TILE_SIZE;
-  ystep *= isRayFacingUp ? -1 : 1;
-
-  xstep = TILE_SIZE / tan(rayAngle * (M_PI / 180));
-  xstep *= (isRayFacingLeft && xstep > 0) ? -1 : 1;
-  xstep *= (isRayFacingRight && xstep < 0) ? -1 : 1;
-
-  nextHorzTouchX = xintercept;
-  nextHorzTouchY = yintercept;
-
-  while (nextHorzTouchX >= 0 && nextHorzTouchX <= g_data.reso_one * TILE_SIZE && nextHorzTouchY >= 0 && nextHorzTouchY <= g_data.reso_two * TILE_SIZE) // reso one
-  {
-    xtocheck = nextHorzTouchX;
-    ytocheck = nextHorzTouchY + (isRayFacingUp ? - 1 : 0);
-    if (is_wall(xtocheck,ytocheck) == 1)
-    {
-        horzWallhitx = nextHorzTouchX;
-        horzWallhity = nextHorzTouchY;
-        //horzWallContent = map[(int)floor(ytocheck / TILE_SIZE)][(int)floor(xtocheck / TILE_SIZE)];
-        foundHorzWallHit = 1;
-        break ;
-    }
-        nextHorzTouchX += xstep;
-        nextHorzTouchY += ystep;
-  }
-
-  //VERTICAL PART
-  int foundVerWallHit = 0;
-  float verWallhitx = 0;
-  float verWallhity = 0;
-  //int verWallContent = 0;
-  float nextVerTouchX;
-  float nextVerTouchY;
-
-
-    xintercept = floor(g_player.x / TILE_SIZE) * TILE_SIZE;
-    xintercept += isRayFacingRight ? TILE_SIZE : 0;
-
-  yintercept = g_player.y + (xintercept - g_player.x) * tan(rayAngle * (M_PI / 180));
-  xstep = TILE_SIZE;
-  xstep *= isRayFacingLeft ? -1 : 1;
-
-  ystep = TILE_SIZE * tan(rayAngle * (M_PI / 180));
-  ystep *= (isRayFacingUp && ystep > 0) ? -1 : 1;
-  ystep *= (isRayFacingDown && ystep < 0) ? -1 : 1;
-
-  nextVerTouchX = xintercept;
-  nextVerTouchY = yintercept;
-  
-  while (nextVerTouchX >= 0 && nextVerTouchX <= g_data.reso_one * TILE_SIZE && nextVerTouchY >= 0 && nextVerTouchY <= g_data.reso_one * TILE_SIZE) // reso _one
-  {
-    xtocheck = nextVerTouchX + (isRayFacingLeft ? -1 : 0);
-    ytocheck = nextVerTouchY;
-    if (is_wall(xtocheck,ytocheck) == 1)
-    {
-        verWallhitx = nextVerTouchX;
-        verWallhity = nextVerTouchY;
-        //verWallContent = map[(int)floor(ytocheck / TILE_SIZE)][(int)floor(xtocheck / TILE_SIZE)];
-        foundVerWallHit = 1;
-        break ;
-    }
-        nextVerTouchX += xstep;
-        nextVerTouchY += ystep;
-  }
-
-  //Calculate Distances and choosing the smallest one
-  float horzHitDistance;
-  float verHitDistance;
-
-  horzHitDistance = foundHorzWallHit ? distanceBetweenPoints(horzWallhitx,horzWallhity) : INT_MAX;
-  verHitDistance = foundVerWallHit ? distanceBetweenPoints(verWallhitx,verWallhity) : INT_MAX;
-
-  if (verHitDistance < horzHitDistance)
-  {
-      g_ray[id].distance = verHitDistance;
-      g_ray[id].wallhitX = verWallhitx;
-      g_ray[id].wallhitY = verWallhity;
-      g_ray[id].offset = (int)verWallhity % TILE_SIZE;
-      g_ray[id].wasHitVertical = 1;
-     // g_ray[id].wallHitContent = verWallContent;
-  }
-  else
-  {
-     g_ray[id].distance = horzHitDistance;
-      g_ray[id].wallhitX = horzWallhitx;
-      g_ray[id].wallhitY = horzWallhity;
-      g_ray[id].offset = (int)horzWallhitx % TILE_SIZE;
-      g_ray[id].wasHitVertical = 0;
-      //g_ray[id].wallHitContent = horzWallContent;
-  }
-  
-  g_ray[id].rayAngle = rayAngle;
-  g_ray[id].isRayFacingDown = isRayFacingDown;
-  g_ray[id].isRayFacingUp = isRayFacingUp;
-  g_ray[id].isRayFacingLeft = isRayFacingLeft;
-  g_ray[id].isRayFacingRight = isRayFacingRight;
-}
-
-
 
 void init_texture()
 {
@@ -545,17 +398,20 @@ void init_texture()
     open_txt(g_data.EA);
     open_txt(g_data.S);
 
-  g_txt.ptr[0] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.WE,&g_txt.width[0],&g_txt.height[0]);
-  g_txt.data[0] = (int *)mlx_get_data_addr(g_txt.ptr[0],&g_txt.bpp,&g_txt.line,&g_txt.endian);
-
-  g_txt.ptr[1] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.EA,&g_txt.width[1],&g_txt.height[1]);
-  g_txt.data[1] = (int *)mlx_get_data_addr(g_txt.ptr[1],&g_txt.bpp,&g_txt.line,&g_txt.endian);
-
-  g_txt.ptr[2] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.NO,&g_txt.width[2],&g_txt.height[2]);
-  g_txt.data[2] = (int *)mlx_get_data_addr(g_txt.ptr[2],&g_txt.bpp,&g_txt.line,&g_txt.endian);
-
-  g_txt.ptr[3] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.SO,&g_txt.width[3],&g_txt.height[3]);
-  g_txt.data[3] = (int *)mlx_get_data_addr(g_txt.ptr[3],&g_txt.bpp,&g_txt.line,&g_txt.endian);
+g_txt.ptr[0] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.WE,&g_txt.width[0],&g_txt.height[0]);
+g_txt.ptr[1] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.EA,&g_txt.width[1],&g_txt.height[1]);
+g_txt.ptr[2] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.NO,&g_txt.width[2],&g_txt.height[2]);
+g_txt.ptr[3] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.SO,&g_txt.width[3],&g_txt.height[3]);
+  
+if (g_txt.ptr[0] == NULL || g_txt.ptr[1] == NULL || g_txt.ptr[2] == NULL || g_txt.ptr[3] == NULL)
+{
+  perror("Error In texture XPM File");
+  exit(1);
+}
+g_txt.data[0] = (int *)mlx_get_data_addr(g_txt.ptr[0],&g_txt.bpp,&g_txt.line,&g_txt.endian);
+g_txt.data[1] = (int *)mlx_get_data_addr(g_txt.ptr[1],&g_txt.bpp,&g_txt.line,&g_txt.endian);
+g_txt.data[2] = (int *)mlx_get_data_addr(g_txt.ptr[2],&g_txt.bpp,&g_txt.line,&g_txt.endian);
+g_txt.data[3] = (int *)mlx_get_data_addr(g_txt.ptr[3],&g_txt.bpp,&g_txt.line,&g_txt.endian);
 }
 
 void	wall_data(int id)
@@ -578,7 +434,9 @@ void	wall_data(int id)
 void	draw_floor(int id)
 {
 	
-	int i = 0;
+	int i;
+
+  i = 0;
 
 	while (i < g_ray[id].top)
 	{
@@ -683,7 +541,7 @@ void CastAllRays()
 int keyPress(int key)
 {
 
-if (key == 126 || key == 13) //UP
+if (key == 13) //UP
       g_player.walkDirection = 1;
 
 if (key == 2)
@@ -698,7 +556,7 @@ if (key == 0)
   g_player.walkDirection = 1;
 }
 
-if (key == 125 || key == 1) 
+if (key == 1) 
       g_player.walkDirection = -1;
 
 if (key == 123) //L
@@ -717,10 +575,10 @@ if (key == 53)
 
 int keyRelease(int key)
 {
-  if (key == 126 || key == 13) //UP
+  if (key == 13) //UP
       g_player.walkDirection = 0;
 
-    if (key == 125 || key == 1) //D
+    if (key == 1) //D
       g_player.walkDirection = 0;
 
     if (key == 2)
@@ -745,6 +603,7 @@ int keyRelease(int key)
 
 int red()
 {
+  free(g_data.map);
   exit(-1);
 }
 
@@ -763,8 +622,8 @@ int red()
     g_player.rotationAngle += g_player.turnDirection * g_player.rotationSpeed;//* (M_PI/180);
     g_player.rotationAngle = fmod(g_player.rotationAngle,360); // Unable to exceed 360 on RotationAngle
     g_player.moveStep = g_player.walkDirection * g_player.moveSpeed;
-    fakex = g_player.x + cos((g_player.rotationAngle + g_player.directionLR) * (M_PI/180)) * (g_player.moveStep * 7);
-    fakey = g_player.y + sin((g_player.rotationAngle + g_player.directionLR) * (M_PI/180)) * (g_player.moveStep * 7);
+    fakex = g_player.x + cos((g_player.rotationAngle + g_player.directionLR) * (M_PI/180)) * (g_player.moveStep * 8);
+    fakey = g_player.y + sin((g_player.rotationAngle + g_player.directionLR) * (M_PI/180)) * (g_player.moveStep * 8);
 
 
     
@@ -802,10 +661,10 @@ int red()
 
     while (s1[i] != '\0')
     {
-      if (s1[i] == '.' && s1[i + 1] != '\0')
+      if (s1[i] == '.' && s1[i + 1] != '\0' && s1[i + 1] != '.')
       {
-        s2 = ft_split(s1,'.');           
         a = 1;
+        s2 = ft_split(s1,'.');           
       }
       i++;
     }
@@ -847,6 +706,7 @@ void arg_save_check(char *save)
 
   int main(int argc, char **argv)
   {
+ 
   if (argc == 2 || argc == 3)
   {
     arg_check(argv[1]);
