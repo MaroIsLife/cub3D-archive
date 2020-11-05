@@ -22,7 +22,7 @@ void error_one()
   {
     if (g_data.map[0][i] != '1' && g_data.map[0][i] != 32)
     {
-      perror("Invalid Map (First Line)");
+      perror("Error\nInvalid Map (First Line)");
       exit(1);
     }
       i++;
@@ -32,7 +32,7 @@ void error_one()
   {
     if (g_data.map[g_data.ver - 1][i] != '1' && g_data.map[g_data.ver - 1][i] != 32)
     {
-      perror("Invalid Map (Last Line)");
+      perror("Error\nInvalid Map (Last Line)");
       exit(1);
     }
     i++;
@@ -62,7 +62,9 @@ void error_first_last()
    }
    if (g_data.map[i][a] != '1')
    {
-     perror("First Col doesn't start with 1");
+     if (g_data.map[i][a] == '\0')
+        break ;
+     perror("Error\nFirst Col doesn't start with 1");
      exit(-1);
    }
    i++;
@@ -93,11 +95,12 @@ int i;
       while(g_data.map[i][a] == 32)
       a--;
     }
-
     if (g_data.map[i][a] != '1')
     {
-      perror("Last Line doesn't end with 1");
-      exit(-1);
+      if (g_data.map[i][a] == '\0')
+        break ;
+      perror("Error\nLast Line doesn't end with 1");
+      exit(1);
     }
     i++;
     a = 0;
@@ -129,7 +132,7 @@ int i;
       {
         if (g_data.map[b][j] == '0')
         {
-          perror("Found 0 outbounds space under 0");
+          perror("Error\nFound 0 outbounds space under 0");
           exit(-1);
         }
         j++;
@@ -166,7 +169,7 @@ int i;
       {
         if (g_data.map[b + 1][a] == '0')
         {
-          perror("Found 0 outbounds");
+          perror("Error\nFound 0 outbounds");
           exit(-1);
         }
         a++;
@@ -195,12 +198,12 @@ void error_up_down()
     {
       if (g_data.map[i + 1] != NULL && g_data.map[i + 1][a] == 32 && g_data.map[i][a] == '0')
       {
-        perror("Error an Open 0 or 2 inbound");
+        perror("Error\nan Open 0 or 2 inbound");
         exit(-1);
       }
       else if (g_data.map[i] != NULL && g_data.map[i - b][a] == 32 && g_data.map[i][a] == '0')
       {
-        perror("Error space upside 0");
+        perror("Error\n space upside 0");
         exit(-1);
       }
       a++;
@@ -216,12 +219,12 @@ void error_up_down()
     {
       if ((g_data.map[i][a] == '0' && g_data.map[i][a + 1] == 32) || (g_data.map[i][a] == '2' && g_data.map[i][a + 1] == 32))
       {
-        perror("Error space after 0 or 2 ");
+        perror("Error\n space after 0 or 2 ");
         exit(-1);
       }
       else if ((g_data.map[i][a] == '0' && g_data.map[i][a - 1] == 32) || (g_data.map[i][a] == '2' && g_data.map[i][a - 1] == 32))
       {
-        perror("Error space before 0 or 2");
+        perror("Error\n space before 0 or 2");
         exit(-1);
       }
       a++;

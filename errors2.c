@@ -7,7 +7,7 @@ void open_txt(char *txt)
     fd = open(txt,O_RDONLY);
     if (fd == -1)
     {
-        perror("Texture cannot be found");
+        perror("Error\nTexture cannot be found");
         exit (-1);
     }
     close(fd);
@@ -28,12 +28,12 @@ void error_other()
              && g_data.map[i][a] != '2' && g_data.map[i][a] != 'N' && g_data.map[i][a] != 'S'
              && g_data.map[i][a] != 'W' && g_data.map[i][a] != 'E')
              {
-                 perror("Wrong Character in map");
-                 exit (-1);
+                 perror("Error\n Wrong Character in map");
+                 exit (1);
              }
              a++;
         }
         a = 0;
         i++;
     }
-}
+    }

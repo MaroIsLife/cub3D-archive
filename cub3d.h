@@ -188,6 +188,7 @@ t_sprite g_sprite;
 int		g_nsprite;
 t_sptexture g_sptexture;
 t_var g_var;
+int g_rgbcounter;
 
 
 
@@ -235,4 +236,21 @@ unsigned char *get_header();
 	void v_calc();
 	void h_calc();
 	  float normalizeAngle(float angle);
+	void arg_save_check(char *save);
+	void  arg_check(char *s1);
+	void  arg_check2(char *s1, char **s2);
+	int keyRelease(int key);
+	int keyPress(int key);
+	int red();
+	void get_settings_texture(char **content,int ab);
+	 void get_settings();
+	 int getarray(char **content, int ab, int aa);
+	  char *get_texture(char **content, int ab);
+	  void get_resolution(char **content, int ab);
+	    char **get_line();
+		int get_color(char **content, int ab);
+		void get_colorR(char **content, int b,int i,int ab);
+	void get_colorG(char **content, int b,int i,int ab);
+	void get_colorB_error(char **content, int b,int i,int ab);
+		  void int_map(char **content);
 #endif 

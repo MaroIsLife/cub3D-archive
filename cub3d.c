@@ -14,57 +14,59 @@ int     get_rgb(int r, int g, int b)
     return (b + g * 256 + r * 65536);
 }
 
-int get_color(char **content, int ab)
-{
-  int i;
-  int a;
-  int b;
-  char *s;
+// int get_color(char **content, int ab)
+// {
+//   int i;
+//   int a;
+//   int b;
+//   char *s;
 
-  i = 0;
-  a = 0;
-  while (content[ab][a] < 48 || content[ab][a] > 57)
-    a++;
+//   i = 0;
+//   a = 0;
+//   while (content[ab][a] < 48 || content[ab][a] > 57)
+//     a++;
 
-  b = a;
-  while (content[ab][a] != ',')
-  {
-    i++;
-    a++;
-  }
+//   b = a;
+//   while (content[ab][a] != ',')
+//   {
+//     i++;
+//     a++;
+//   }
 
-   s = ft_substr(content[ab],b,i);
-   g_color.r = ft_atoi(s);
+//    s = ft_substr(content[ab],b,i);
+//    g_color.r = ft_atoi(s);
+//    free(s);
 
-  b = a + 1;
-  a++;
-  i = 0;
-  while (content[ab][a] != ',')
-  {
-    i++;
-    a++;
-  }
-  s = ft_substr(content[ab],b,i);
-  g_color.g = ft_atoi(s);
-  b = a + 1;
-  a++;
-  i = 0;
-  while (content[ab][a] != '\0')
-  {
-    i++;
-    a++;
-  }
-  s = ft_substr(content[ab],b,i);
-  g_color.b = ft_atoi(s);
+//   b = a + 1;
+//   a++;
+//   i = 0;
+//   while (content[ab][a] != ',')
+//   {
+//     i++;
+//     a++;
+//   }
+//   s = ft_substr(content[ab],b,i);
+//   g_color.g = ft_atoi(s);
+//   free(s);
+//   b = a + 1;
+//   a++;
+//   i = 0;
+//   while (content[ab][a] != '\0')
+//   {
+//     i++;
+//     a++;
+//   }
+//   s = ft_substr(content[ab],b,i);
+//   g_color.b = ft_atoi(s);
+//   free(s);
+//   if (g_color.b < 0 || g_color.g < 0 || g_color.r < 0)
+//   {
+//     perror("Negative number");
+//     exit (-1);
+//   }
 
-  if (g_color.b < 0 || g_color.g < 0 || g_color.r < 0)
-  {
-    perror("Negative number");
-    exit (-1);
-  }
-
-    return (g_color.b + g_color.g * 256 + g_color.r * 65536);
-}
+//     return (g_color.b + g_color.g * 256 + g_color.r * 65536);
+// }
 
 
 
@@ -138,7 +140,7 @@ void check_map()
    j = 0;
    i++;
   }
-    if(g_player.found == 0)
+  if (g_player.found == 0)
  {
   perror("No Player found");
   exit(1);
@@ -173,203 +175,6 @@ int		is_wall(float x, float y)
 }
 
 
-
-
-
-  void get_resolution(char **content, int ab)
-  {
-    int i;
-    int a;
-    int b;
-    char *r_one;
-    char *r_two;
-    i = 2;
-    a = 0;
-    while (content[ab][i++] != ' ')
-      a++;
-    r_one = ft_substr(content[0],2,a);
-    a = 0;
-    b = i;
-    while(content[0][i++] != '\0')
-        a++;
-    r_two = ft_substr(content[0],b,a);
-    g_data.reso_one = ft_atoi(r_one);
-    g_data.reso_two = ft_atoi(r_two);
-    free(r_one);
-    free(r_two);
-  }
-
-  char **get_line()
-  {
-    char *line;
-    char **content;
-    int fd;
-    int i;
-    i = 0;
-    fd = open(g_data.mapName,O_RDONLY);
-    if (fd == -1)
-    {
-      perror("The Map could not be found.");
-      exit(-1);
-    }
-    content = malloc(100 * sizeof(char *));
-
-    while (get_next_line(fd,&line))
-    {
-      if (*line == 0)
-        free(line);
-      else if (line != '\0')
-        content[i++] = line;
-      else
-      {
-        perror("Error:");
-        exit(1);
-      }
-    }
-    content[i] = line;
-    i++;
-    content[i] = NULL;
-    return (content);
-  }
-  char *get_texture(char **content, int ab)
-  {
-    int i;
-    int a;
-    char *text;
-
-    a = 0;
-    if (content[ab][0] == 'S' && content[ab][1] == ' ')
-    i = 2;
-    else
-    i = 3;
-  
-    while (content[ab][a] != '\0')
-    a++;
-    text = ft_substr(content[ab],i,a);
-     i = ft_strlen(text);
-     if (i == 2 || i == 3)
-     {
-       perror("Missing Texture");
-       exit (1);
-     }
-
-   return(text);
-  }
-  
-  int getarray(char **content, int ab, int aa)
-  {
-    int hor;
-    int ver;
-    int i;
-    int fhor;
-
-    if (aa == 1)
-    return (1);
-    g_data.mapstart = ab;
-    i = 0;
-    hor = 0;
-    ver = ab;
-    while (content[ver] != NULL)
-      ver++;
-    ver = ver - ab;
-    g_data.ver = ver;
-    g_data.map = malloc((ver + 1)  * sizeof(char *));
-    g_data.map[ver] = NULL;
-    fhor = ab;
-    while (content[fhor] != NULL)
-    {
-      while (content[fhor][i] != '\0')
-        i++;
-      if (i > g_data.hor)
-        g_data.hor = i;
-
-        i = 0;
-        fhor++;
-    }
-    i = 0;
-    while (i < ver)
-    {
-     g_data.map[i++] = calloc((g_data.hor + 1),sizeof(char));
-    }
-    return (1);
-  }
-  
-  
-  void int_map(char **content)
-      {
-      int a;
-      int i;
-      int b;
-
-      a = g_data.mapstart;
-      b = 0;
-      i = 0;
-      while (content[a] != NULL)
-      {
-        while (content[a][i] != '\0')
-        {
-          g_data.map[b][i] = content[a][i];
-          i++;
-        }
-        a++;
-        b++;
-        i = 0;
-      }
-    }
-
-  void get_settings()
-  {
-    char **content;
-    int ab;
-    int aa;
-    int ia;
-    
-    ia = 0;
-    aa = 0;
-    ab = 0;
-
-      content = get_line();
-      while (content[ab] != NULL)
-      {
-        if (content[ab][0] == 'R')
-        get_resolution(content, ab);
-        else if (content[ab][0] == 'N' && content[ab][1] == 'O')
-          g_data.NO = get_texture(content, ab);
-        else if (content[ab][0] == 'S' && content[ab][1] == 'O')
-          g_data.SO = get_texture(content, ab);
-        else if (content[ab][0] == 'W' && content[ab][1] == 'E')
-          g_data.WE = get_texture(content, ab);
-        else if (content[ab][0] == 'E' && content[ab][1] == 'A')
-          g_data.EA = get_texture(content, ab);
-        else if (content[ab][0] == 'S')
-          g_data.S = get_texture(content, ab);
-          else if (content[ab][0] == 'F')
-          g_data.Fcolor = get_color(content,ab);
-          else if (content[ab][0] == 'C')
-          g_data.Ccolor = get_color(content,ab);
-        else if (content[ab][0] == '1' || content[ab][0] == ' ')
-        {
-         aa = getarray(content, ab, aa);
-         ia++;
-        }
-        ab++;
-      }
-      int_map(content);
-      free(content);
-
-      // int abs = 0;
-      // while (g_data.map[abs] != NULL)
-      // {
-      //   printf("%s\n",g_data.map[abs]);
-      //   abs++;
-      // }
-
-
-  }
-
-
-
-
 void playerSettings()
 {
   g_player.radius = 3;
@@ -379,10 +184,10 @@ void playerSettings()
   g_player.rotationSpeed = 3;
 
   if (g_data.reso_one > 2000)
-  {
     g_data.reso_one = 1600;
+  if (g_data.reso_two > 1000)
     g_data.reso_two = 900;
-  }
+
 }
 
 void init_texture()
@@ -390,14 +195,11 @@ void init_texture()
   int i;
 
   i = 0;
-
-
     open_txt(g_data.SO);
     open_txt(g_data.NO);
     open_txt(g_data.WE);
     open_txt(g_data.EA);
     open_txt(g_data.S);
-
 g_txt.ptr[0] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.WE,&g_txt.width[0],&g_txt.height[0]);
 g_txt.ptr[1] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.EA,&g_txt.width[1],&g_txt.height[1]);
 g_txt.ptr[2] = mlx_xpm_file_to_image(g_mlx.mlx_ptr,g_data.NO,&g_txt.width[2],&g_txt.height[2]);
@@ -437,7 +239,6 @@ void	draw_floor(int id)
 	int i;
 
   i = 0;
-
 	while (i < g_ray[id].top)
 	{
 		my_mlx_pixel_put(&g_mg, id, i, g_data.Ccolor);
@@ -538,75 +339,6 @@ void CastAllRays()
 	}
 }
 
-int keyPress(int key)
-{
-
-if (key == 13) //UP
-      g_player.walkDirection = 1;
-
-if (key == 2)
-{
-      g_player.directionLR = 90;
-      g_player.walkDirection = 1;
-}
-
-if (key == 0)
-{
-  g_player.directionLR = 270;
-  g_player.walkDirection = 1;
-}
-
-if (key == 1) 
-      g_player.walkDirection = -1;
-
-if (key == 123) //L
-      g_player.turnDirection = -1;
-
-if (key == 124) //R
-      g_player.turnDirection = 1;
-
-if (key == 53)
-      {
-        mlx_destroy_window(g_mlx.mlx_ptr,g_mlx.win_ptr);
-        exit(1);
-      } 
-      return (0);
-}
-
-int keyRelease(int key)
-{
-  if (key == 13) //UP
-      g_player.walkDirection = 0;
-
-    if (key == 1) //D
-      g_player.walkDirection = 0;
-
-    if (key == 2)
-    {
-      g_player.directionLR = 0;
-      g_player.walkDirection = 0;
-    }
-
-    if (key == 0)
-    {
-      g_player.directionLR = 0;
-      g_player.walkDirection = 0;
-    }
-
-    if (key == 123) //L
-      g_player.turnDirection = 0;
-
-    if (key == 124) //R
-      g_player.turnDirection = 0;
-      return (0);
-}
-
-int red()
-{
-  free(g_data.map);
-  exit(-1);
-}
-
  int update()
   {
     double fakex;
@@ -614,27 +346,18 @@ int red()
 
     mlx_hook(g_mlx.win_ptr,2,0,keyPress,0);
     mlx_hook(g_mlx.win_ptr,3,0,keyRelease,0);
-
-
-     mlx_clear_window(g_mlx.mlx_ptr,g_mlx.win_ptr);
-
-
+    mlx_clear_window(g_mlx.mlx_ptr,g_mlx.win_ptr);
     g_player.rotationAngle += g_player.turnDirection * g_player.rotationSpeed;//* (M_PI/180);
     g_player.rotationAngle = fmod(g_player.rotationAngle,360); // Unable to exceed 360 on RotationAngle
     g_player.moveStep = g_player.walkDirection * g_player.moveSpeed;
     fakex = g_player.x + cos((g_player.rotationAngle + g_player.directionLR) * (M_PI/180)) * (g_player.moveStep * 8);
     fakey = g_player.y + sin((g_player.rotationAngle + g_player.directionLR) * (M_PI/180)) * (g_player.moveStep * 8);
-
-
-    
     if (is_wall1(fakex, fakey) != 1 && is_wall(fakex, fakey) != 2)
     {
       g_player.x += cos((g_player.rotationAngle + g_player.directionLR) * (M_PI/180)) * (g_player.moveStep);
       g_player.y += sin((g_player.rotationAngle + g_player.directionLR) * (M_PI/180)) * (g_player.moveStep);
-    }
-    
+    } 
     CastAllRays();
-
     mlx_put_image_to_window(g_mlx.mlx_ptr, g_mlx.win_ptr, g_mg.img, 0, 0);
     if (g_player.saved == 1)
     {
@@ -646,63 +369,6 @@ int red()
     g_mg.addr = mlx_get_data_addr(g_mg.img, &g_mg.bits_per_pixel, &g_mg.line_length,&g_mg.endian);
     return(0);
   }
-
-
-  void  arg_check(char *s1)
-  {
-    int i;
-    char **s2;
-    // char *s3;
-    int a;
-
-    a = 0;
-    i = 0;
-    // s3 = "cub";
-
-    while (s1[i] != '\0')
-    {
-      if (s1[i] == '.' && s1[i + 1] != '\0' && s1[i + 1] != '.')
-      {
-        a = 1;
-        s2 = ft_split(s1,'.');           
-      }
-      i++;
-    }
-    if (a == 0)
-    {
-      perror("Please insert the correct map that ends with .cub");
-      exit(1);
-    }
-    i = 0;
-    while (s2[1][i] != '\0')
-    {
-      if (s2[1][i] != "cub"[i])
-      {
-        perror("Please Insert the correct map using .cub");
-        exit(1);
-      }
-      i++;
-     }
-    g_data.mapName = s1;
-  }
-
-void arg_save_check(char *save)
-{
-  int i;
-
-  i = 0;
-  while ("--save"[i] != '\0')
-  {
-    if (save[i] != "--save"[i])
-    {
-      perror("Wrong flag");
-      exit(1);
-    }
-    i++;
-  }
-  g_player.saved = 1;
-}
-
 
   int main(int argc, char **argv)
   {
@@ -721,6 +387,8 @@ void arg_save_check(char *save)
   
     all_errors();
     check_map();
+
+    printf("%s\n",g_data.map[46]);
 
 	  mlx_loop_hook(g_mlx.mlx_ptr,update,(void *)0);
     mlx_hook(g_mlx.win_ptr, 17, 0,red, (void *)0);
