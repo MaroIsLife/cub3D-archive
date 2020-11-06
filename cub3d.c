@@ -94,6 +94,24 @@ void sqr(int Y, int X, int color)
     }
 }
 
+
+void player_int(int i, int j)
+{
+  if (g_player.found == 1)
+         {
+           perror("Duplicate Players");
+           exit (1);
+         }
+         if (g_data.map[i][j] == 'N')
+         g_player.pos = 'N';
+         else if (g_data.map[i][j] == 'W')
+         g_player.pos = 'W';
+         else if (g_data.map[i][j] == 'S')
+         g_player.pos = 'S';
+         else if (g_data.map[i][j] == 'E')
+         g_player.pos = 'E';          
+}
+
 void check_map()
 {
 
@@ -112,11 +130,8 @@ void check_map()
       tile_j = ((double)j + 0.5) * TILE_SIZE;
        if (g_data.map[i][j] == 'N' | g_data.map[i][j] == 'W' || g_data.map[i][j] == 'S' || g_data.map[i][j] == 'E')
        {
-         if (g_player.found == 1)
-         {
-           perror("Duplicate Players");
-           exit (1);
-         }
+         player_int(i,j);
+        
          if (g_data.map[i][j] == '2')
          g_nsprite++;
          g_player.found = 1;
@@ -183,13 +198,12 @@ void playerSettings()
   g_player.moveSpeed = 8;
   g_player.rotationSpeed = 3;
 
-  if (g_data.reso_one > 2000)
-    g_data.reso_one = 1600;
-  if (g_data.reso_two > 1000)
-    g_data.reso_two = 900;
+  if (g_data.reso_one > 2560)
+    g_data.reso_one = 2560;
+  if (g_data.reso_two > 1440)
+    g_data.reso_two = 1440;
 
 }
-
 void init_texture()
 {
   int i;
@@ -385,10 +399,10 @@ void CastAllRays()
     g_mg.img = mlx_new_image(g_mlx.mlx_ptr, g_data.reso_one, g_data.reso_two);
     g_mg.addr = mlx_get_data_addr(g_mg.img, &g_mg.bits_per_pixel, &g_mg.line_length,&g_mg.endian);
   
-    all_errors();
     check_map();
+    all_errors();
 
-    printf("%s\n",g_data.map[46]);
+    printf("%c\n",g_player.pos);
 
 	  mlx_loop_hook(g_mlx.mlx_ptr,update,(void *)0);
     mlx_hook(g_mlx.win_ptr, 17, 0,red, (void *)0);

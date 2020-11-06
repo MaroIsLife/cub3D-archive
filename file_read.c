@@ -45,13 +45,25 @@ int getarray(char **content, int ab, int aa)
     int i;
     int a;
     char *text;
+    int b;
 
+  
     a = 0;
     if (content[ab][0] == 'S' && content[ab][1] == ' ')
     i = 2;
     else
     i = 3;
-  
+
+    if (i == 2)
+    b = 1;
+    else
+    b = 2;
+
+if (content[ab][b] != ' ')
+    {
+      perror("Error\nMissing Space");
+      exit(1);
+    } 
     while (content[ab][a] != '\0')
     a++;
     text = ft_substr(content[ab],i,a);
@@ -69,15 +81,30 @@ int getarray(char **content, int ab, int aa)
 void get_settings_texture(char **content,int ab)
 {
      if (content[ab][0] == 'N' && content[ab][1] == 'O')
+     {
           g_data.NO = get_texture(content, ab);
+          g_check.NO++;
+     }
         else if (content[ab][0] == 'S' && content[ab][1] == 'O')
+        {
           g_data.SO = get_texture(content, ab);
+          g_check.SO++;
+        }
         else if (content[ab][0] == 'W' && content[ab][1] == 'E')
+        {
           g_data.WE = get_texture(content, ab);
+          g_check.WE++;
+        }
         else if (content[ab][0] == 'E' && content[ab][1] == 'A')
+        {
           g_data.EA = get_texture(content, ab);
+          g_check.EA++;
+        }
         else if (content[ab][0] == 'S')
+        {
           g_data.S = get_texture(content, ab);
+          g_check.S++;
+        }
 }
 
  void get_settings()
@@ -94,9 +121,15 @@ void get_settings_texture(char **content,int ab)
       if (content[ab][0] == 'R')
         get_resolution(content, ab);
           else if (content[ab][0] == 'F')
-          g_data.Fcolor = get_color(content,ab);
+          {
+            g_data.Fcolor = get_color(content,ab);
+            g_check.F++;
+          }
           else if (content[ab][0] == 'C')
-          g_data.Ccolor = get_color(content,ab);
+          {
+            g_data.Ccolor = get_color(content,ab);
+            g_check.C++;
+          }
         else if (content[ab][0] == '1' || content[ab][0] == ' ')
          aa = getarray(content, ab, aa);
         get_settings_texture(content, ab);

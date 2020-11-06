@@ -6,11 +6,11 @@ void  arg_check2(char *s1, char **s2)
     int i;
 
     i = 0;
-    while (s2[1][i] != '\0')
+    while ("cub"[i] != '\0')
     {
       if (s2[1][i] != "cub"[i])
       {
-        perror("Please Insert the correct map using .cub");
+        perror("Error\nPlease Insert the correct map using .cub");
         exit(1);
       }
       i++;
@@ -46,7 +46,7 @@ void  arg_check(char *s1)
     }
     if (a == 0)
     {
-      perror("Please insert the correct map that ends with .cub");
+      perror("Error\nPlease insert the correct map that ends with .cub");
       exit(1);
     }
     arg_check2(s1,s2);
@@ -61,7 +61,7 @@ void arg_save_check(char *save)
   {
     if (save[i] != "--save"[i])
     {
-      perror("Wrong flag");
+      perror("Error\nWrong flag");
       exit(1);
     }
     i++;

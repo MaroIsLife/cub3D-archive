@@ -8,6 +8,13 @@ void get_resolution(char **content, int ab)
     int b;
     char *r_one;
     char *r_two;
+
+    if (content[ab][1] != ' ')
+    {
+      perror("Error\nMissing Space");
+      exit(1);
+    }
+    g_check.R++;
     i = 2;
     a = 0;
     while (content[ab][i++] != ' ')
@@ -34,10 +41,10 @@ void get_resolution(char **content, int ab)
     fd = open(g_data.mapName,O_RDONLY);
     if (fd == -1)
     {
-      perror("The Map could not be found.");
-      exit(-1);
+      perror("Error\nThe Map could not be found.");
+      exit(1);
     }
-    content = malloc(100 * sizeof(char *));
+    content = malloc(150 * sizeof(char *));
 
     while (get_next_line(fd,&line))
     {
@@ -47,7 +54,7 @@ void get_resolution(char **content, int ab)
         content[i++] = line;
       else
       {
-        perror("Error\n");
+        perror("Error\nGetNextLine");
         exit(1);
       }
     }

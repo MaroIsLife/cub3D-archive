@@ -60,6 +60,7 @@ typedef struct s_player {
   float moveStep;
   int found;
   int saved;
+  char pos;
 }	t_player;
 
 typedef struct s_color {
@@ -170,6 +171,17 @@ typedef struct  s_mg {
 	
 }               t_mg;
 
+typedef struct  s_check {
+	int R;
+	int C;
+	int F;
+	int WE;
+	int NO;
+	int EA;
+	int SO;
+	int S;
+}               t_check;
+
 typedef struct	s_rgb{
 	int		r;
 	int		g;
@@ -189,6 +201,7 @@ int		g_nsprite;
 t_sptexture g_sptexture;
 t_var g_var;
 int g_rgbcounter;
+t_check g_check;
 
 
 
@@ -253,4 +266,5 @@ unsigned char *get_header();
 	void get_colorG(char **content, int b,int i,int ab);
 	void get_colorB_error(char **content, int b,int i,int ab);
 		  void int_map(char **content);
+		  void get_color_B_error2(char **content, int ab);
 #endif 

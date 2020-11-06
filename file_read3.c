@@ -44,14 +44,21 @@ void get_colorG(char **content, int b,int i,int ab)
 void get_colorB_error(char **content, int b,int i,int ab)
 {
     char *s;
-
-
-
+  
     s = ft_substr(content[ab],b,i);
     g_color.b = ft_atoi(s);
     free(s);
 
-    if (g_color.b < 0 || g_color.g < 0 || g_color.r < 0)
+  get_color_B_error2(content,ab);
+}
+void get_color_B_error2(char **content, int ab)
+{
+  int a;
+  int c;
+
+  c = 0;
+  a = 2;
+     if (g_color.b < 0 || g_color.g < 0 || g_color.r < 0)
   {
     perror("Negative number");
     exit (-1);
@@ -60,7 +67,23 @@ void get_colorB_error(char **content, int b,int i,int ab)
   {
     perror("Max number");
     exit (-1);
-  }   
+  }
+  while (content[ab][a] != '\0')
+  {
+    if (content[ab][a] == ',')
+    c++;
+    if ((content[ab][a] > 65 && content[ab][a] < 122) || (content[ab][a] == 32 || c > 2))
+    {
+      perror("Error\n Character/Space or Extra ',' Detected");
+      exit(1);   
+    }
+    a++;
+  }
+  if (content[ab][1] != ' ')
+    {
+      perror("Error\nMissing Space");
+      exit(1);
+    }
 }
 
 
