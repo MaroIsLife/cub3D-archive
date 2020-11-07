@@ -61,6 +61,11 @@ void			draw_bmp(unsigned char *buffer)
     int fd;
 
     fd = open("./saved.bmp", O_WRONLY | O_APPEND | O_CREAT, 777);
+    if (fd == -1)
+    {
+        perror("Error\nCannot save");
+        exit(1);
+    }
     write(fd, get_header(), 54);
     write(fd,(char *)buffer,g_header.imagesize);
     close(fd);

@@ -11,6 +11,7 @@ int getarray(char **content, int ab, int aa)
     if (aa == 1)
     return (1);
     g_data.mapstart = ab;
+    g_check.settings++;
     i = 0;
     hor = 0;
     ver = ab;
@@ -70,7 +71,7 @@ if (content[ab][b] != ' ')
      i = ft_strlen(text);
      if (i == 2 || i == 3)
      {
-       perror("Missing Texture");
+       perror("Error\nMissing Texture");
        exit (1);
      }
 
@@ -84,26 +85,31 @@ void get_settings_texture(char **content,int ab)
      {
           g_data.NO = get_texture(content, ab);
           g_check.NO++;
+          g_check.settings++;
      }
         else if (content[ab][0] == 'S' && content[ab][1] == 'O')
         {
           g_data.SO = get_texture(content, ab);
           g_check.SO++;
+          g_check.settings++;
         }
         else if (content[ab][0] == 'W' && content[ab][1] == 'E')
         {
           g_data.WE = get_texture(content, ab);
           g_check.WE++;
+          g_check.settings++;
         }
         else if (content[ab][0] == 'E' && content[ab][1] == 'A')
         {
           g_data.EA = get_texture(content, ab);
           g_check.EA++;
+          g_check.settings++;
         }
         else if (content[ab][0] == 'S')
         {
           g_data.S = get_texture(content, ab);
           g_check.S++;
+          g_check.settings++;
         }
 }
 
@@ -124,11 +130,13 @@ void get_settings_texture(char **content,int ab)
           {
             g_data.Fcolor = get_color(content,ab);
             g_check.F++;
+            g_check.settings++;
           }
           else if (content[ab][0] == 'C')
           {
             g_data.Ccolor = get_color(content,ab);
             g_check.C++;
+            g_check.settings++;
           }
         else if (content[ab][0] == '1' || content[ab][0] == ' ')
          aa = getarray(content, ab, aa);

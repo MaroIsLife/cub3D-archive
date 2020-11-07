@@ -180,6 +180,7 @@ typedef struct  s_check {
 	int EA;
 	int SO;
 	int S;
+	int settings;
 }               t_check;
 
 typedef struct	s_rgb{

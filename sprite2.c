@@ -52,7 +52,7 @@ void	draw_sprite(int id)
 	while (++i < g_sprite[id].size - 1)
 	{
 		if (g_sprite[id].x_ofst + i < 0 ||
-				g_sprite[id].x_ofst + i > g_data.reso_one)
+				g_sprite[id].x_ofst + i > g_data.reso_one || g_sprite[id].x_ofst + i > g_data.reso_two)
 			continue;
 		if (g_sprite[id].dst > g_ray[(int)g_sprite[id].x_ofst + i].distance)
 			continue;
@@ -72,7 +72,6 @@ void render_sprite(int id)
     float angle;
 
     	angle = atan2(g_sprite[id].y - g_player.y, g_sprite[id].x - g_player.x);
-
         while (angle - to_rad(g_player.rotationAngle) > M_PI)
 		angle -= 2 * M_PI;
 	while (angle - to_rad(g_player.rotationAngle) < -M_PI)

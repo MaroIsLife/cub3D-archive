@@ -203,6 +203,12 @@ void playerSettings()
   if (g_data.reso_two > 1440)
     g_data.reso_two = 1440;
 
+    if (g_data.reso_one <= 0 || g_data.reso_two <= 0)
+    {
+      perror("Error\n Resolution");
+      exit(1);
+    }
+
 }
 void init_texture()
 {
@@ -366,7 +372,7 @@ void CastAllRays()
     g_player.moveStep = g_player.walkDirection * g_player.moveSpeed;
     fakex = g_player.x + cos((g_player.rotationAngle + g_player.directionLR) * (M_PI/180)) * (g_player.moveStep * 8);
     fakey = g_player.y + sin((g_player.rotationAngle + g_player.directionLR) * (M_PI/180)) * (g_player.moveStep * 8);
-    if (is_wall1(fakex, fakey) != 1 && is_wall(fakex, fakey) != 2)
+    if (is_wall1(fakex, fakey) != 1)
     {
       g_player.x += cos((g_player.rotationAngle + g_player.directionLR) * (M_PI/180)) * (g_player.moveStep);
       g_player.y += sin((g_player.rotationAngle + g_player.directionLR) * (M_PI/180)) * (g_player.moveStep);
@@ -402,7 +408,7 @@ void CastAllRays()
     check_map();
     all_errors();
 
-    printf("%c\n",g_player.pos);
+    printf("%d\n",g_data.reso_two);
 
 	  mlx_loop_hook(g_mlx.mlx_ptr,update,(void *)0);
     mlx_hook(g_mlx.win_ptr, 17, 0,red, (void *)0);

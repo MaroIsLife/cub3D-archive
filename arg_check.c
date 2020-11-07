@@ -8,7 +8,7 @@ void  arg_check2(char *s1, char **s2)
     i = 0;
     while ("cub"[i] != '\0')
     {
-      if (s2[1][i] != "cub"[i])
+      if (s2[1][i] != "cub"[i] || ft_strlen(s2[1]) != 3)
       {
         perror("Error\nPlease Insert the correct map using .cub");
         exit(1);
@@ -59,7 +59,7 @@ void arg_save_check(char *save)
   i = 0;
   while ("--save"[i] != '\0')
   {
-    if (save[i] != "--save"[i])
+    if (save[i] != "--save"[i] || ft_strlen(save) != 6)
     {
       perror("Error\nWrong flag");
       exit(1);

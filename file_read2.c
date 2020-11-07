@@ -1,5 +1,19 @@
 #include "cub3d.h"
 
+void get_resoError(char **content,int ab)
+{
+  int i;
+  int b;
+
+  i = 0;
+  b = 0;
+   if (content[ab][1] != ' ')
+    {
+      perror("Error\nMissing Space");
+      exit(1);
+    }
+}
+
 
 void get_resolution(char **content, int ab)
   {
@@ -9,27 +23,24 @@ void get_resolution(char **content, int ab)
     char *r_one;
     char *r_two;
 
-    if (content[ab][1] != ' ')
-    {
-      perror("Error\nMissing Space");
-      exit(1);
-    }
+    get_resoError(content,ab);
     g_check.R++;
+    g_check.settings++;
     i = 2;
     a = 0;
     while (content[ab][i++] != ' ')
       a++;
-    r_one = ft_substr(content[0],2,a);
+    r_one = ft_substr(content[ab],2,a);
     a = 0;
     b = i;
-    while(content[0][i++] != '\0')
+    while(content[ab][i++] != '\0')
         a++;
     r_two = ft_substr(content[0],b,a);
     g_data.reso_one = ft_atoi(r_one);
     g_data.reso_two = ft_atoi(r_two);
     free(r_one);
     free(r_two);
-  }
+  } 
 
   char **get_line()
   {
