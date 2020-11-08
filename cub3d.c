@@ -9,65 +9,6 @@
     *(unsigned int*)dst = color;
 }
 
-int     get_rgb(int r, int g, int b)
-{
-    return (b + g * 256 + r * 65536);
-}
-
-// int get_color(char **content, int ab)
-// {
-//   int i;
-//   int a;
-//   int b;
-//   char *s;
-
-//   i = 0;
-//   a = 0;
-//   while (content[ab][a] < 48 || content[ab][a] > 57)
-//     a++;
-
-//   b = a;
-//   while (content[ab][a] != ',')
-//   {
-//     i++;
-//     a++;
-//   }
-
-//    s = ft_substr(content[ab],b,i);
-//    g_color.r = ft_atoi(s);
-//    free(s);
-
-//   b = a + 1;
-//   a++;
-//   i = 0;
-//   while (content[ab][a] != ',')
-//   {
-//     i++;
-//     a++;
-//   }
-//   s = ft_substr(content[ab],b,i);
-//   g_color.g = ft_atoi(s);
-//   free(s);
-//   b = a + 1;
-//   a++;
-//   i = 0;
-//   while (content[ab][a] != '\0')
-//   {
-//     i++;
-//     a++;
-//   }
-//   s = ft_substr(content[ab],b,i);
-//   g_color.b = ft_atoi(s);
-//   free(s);
-//   if (g_color.b < 0 || g_color.g < 0 || g_color.r < 0)
-//   {
-//     perror("Negative number");
-//     exit (-1);
-//   }
-
-//     return (g_color.b + g_color.g * 256 + g_color.r * 65536);
-// }
-
 
 
 void sqr(int Y, int X, int color)
@@ -167,7 +108,8 @@ void check_map()
 
 int is_wall1(float x, float y)
 {
-  if ((int)x >= g_data.hor * TILE_SIZE || (int)x <= 0 || //Hor
+  if ((int)x >= g_data.hor * TILE_SIZE || (int)x <= 0 || //Horcp redbrick.xpm redbrick.xpma 
+
       (int)y >= g_data.ver * TILE_SIZE || (int)y <= 0 ) // Ver
       return (1);
       
@@ -408,7 +350,6 @@ void CastAllRays()
     check_map();
     all_errors();
 
-    printf("%d\n",g_data.reso_two);
 
 	  mlx_loop_hook(g_mlx.mlx_ptr,update,(void *)0);
     mlx_hook(g_mlx.win_ptr, 17, 0,red, (void *)0);

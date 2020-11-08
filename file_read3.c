@@ -73,7 +73,7 @@ void get_color_B_error2(char **content, int ab)
   {
     if (content[ab][a] == ',')
     c++;
-    if ((content[ab][a] > 65 && content[ab][a] < 122) || (content[ab][a] == 32 || content[ab][a] == '-'))
+    if ((content[ab][a] > 65 && content[ab][a] < 122) || content[ab][a] == '-')
     {
       perror("Error\n Negative number or Undefined character");
       exit(1);   

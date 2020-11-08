@@ -212,7 +212,7 @@ void    my_mlx_pixel_put(t_mg *data, int x, int y, int color);
   char	**ft_split(const char *s, char c);
   void error_one();
   void error_two();
-  void error_three();
+//   void error_three();
   void error_four();
   void error_first_last();
   void error_up_down();
@@ -268,4 +268,5 @@ unsigned char *get_header();
 	void get_colorB_error(char **content, int b,int i,int ab);
 		  void int_map(char **content);
 		  void get_color_B_error2(char **content, int ab);
+char			*ft_strtrim(char const *s1, char const *set);
 #endif 

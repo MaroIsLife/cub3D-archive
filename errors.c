@@ -4,7 +4,7 @@ void all_errors()
   error_other();
   error_one();
   error_two();
-  error_three();
+  // error_three();
   error_four();
   error_up_down();
   error_first_last();
@@ -73,37 +73,37 @@ void error_first_last()
  
 }
 
-void error_three()
-{
+// void error_three()
+// {
 
-int a;
-int i;
+// int a;
+// int i;
 
 
-  a = 0;
-  i = 0;
-  while (g_data.map[i] != NULL)
-  {
-    while (g_data.map[i][a] != '\0')
-      a++;
+//   a = 0;
+//   i = 0;
+//   // while (g_data.map[i] != NULL)
+//   // {
+//   //   while (g_data.map[i][a] != '\0')
+//   //     a++;
 
-    a--;
-    if (g_data.map[i][a] == 32)
-    {
-      while(g_data.map[i][a] == 32)
-      a--;
-    }
-    if (g_data.map[i][a] != '1')
-    {
-      if (g_data.map[i][a] == '\0')
-        break ;
-      perror("Error\nLast Line doesn't end with 1");
-      exit(1);
-    }
-    i++;
-    a = 0;
-  }
-}
+//   //   a--;
+//   //   if (g_data.map[i][a] == 32)
+//   //   {
+//   //     while (g_data.map[i][a] == 32)
+//   //     a--;
+//   //   }
+//   //   if (g_data.map[i][a] != '1')
+//   //   {
+//   //     if (g_data.map[i][a] == '\0')
+//   //       break ;
+//   //     perror("Error\nLast Line doesn't end with 1");
+//   //     exit(1);
+//   //   }
+//   //   i++;
+//   //   a = 0;
+//   // }
+// }
 
 
  void error_four()

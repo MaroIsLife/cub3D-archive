@@ -40,14 +40,53 @@ int getarray(char **content, int ab, int aa)
     return (1);
   }
 
+void get_texture_error(char *text)
+{
+  char **text2;
+  int i;
+  int check;
+
+i = 1;
+check = 0;
+  while (text[i] != '\0')
+  {
+    if (text[i] == '.')
+    {
+      check = 1;
+    }
+    i++;
+  }
+  if (check == 1)
+    text2 = ft_split(text,'.');
+  else
+    text2 = NULL;
+    i = 0;
+    while ("xpm"[i] != '\0' && check == 1)
+    {
+      if (text2[1][i] != "xpm"[i] || ft_strlen(text2[1]) != 3)
+      {
+        perror("Error\nUse XPM");
+        exit(1);
+      }
+      i++;
+     }
+     if (check == 1)
+     {
+      free(text2[0]);
+      free(text2[1]);
+      free(text2);
+     }
+}
+
+
 
  char *get_texture(char **content, int ab)
   {
     int i;
     int a;
     char *text;
+    char *text1;
     int b;
-
   
     a = 0;
     if (content[ab][0] == 'S' && content[ab][1] == ' ')
@@ -68,16 +107,17 @@ if (content[ab][b] != ' ')
     while (content[ab][a] != '\0')
     a++;
     text = ft_substr(content[ab],i,a);
-     i = ft_strlen(text);
-     if (i == 2 || i == 3)
+    text1 = ft_strtrim(text," ");
+    i = ft_strlen(text1);
+     if (i < 4)
      {
        perror("Error\nMissing Texture");
        exit (1);
      }
-
-   return(text);
+     get_texture_error(text1);
+     free(text);
+     return (text1);
   }
-
 
 void get_settings_texture(char **content,int ab)
 {
@@ -113,6 +153,30 @@ void get_settings_texture(char **content,int ab)
         }
 }
 
+char **trim(char **content)
+{
+  int i;
+  int a;
+
+  i = 0;
+  a = 0;
+  while (content[i] != NULL)
+  {
+    if (content[i][0] == ' ')
+    {
+      while (content[i][a] == ' ')
+      a++;
+      if (content[i][a] == '1')
+      break ;
+    }
+    free(content[i]);
+    content[i] = ft_strtrim(content[i]," ");
+    i++;
+  }
+  i = 0;
+  return (content);
+}
+
  void get_settings()
   {
     char **content;
@@ -122,6 +186,8 @@ void get_settings_texture(char **content,int ab)
     aa = 0;
     ab = 0;
     content = get_line();
+    content = trim(content);
+
     while (content[ab] != NULL)
     {
       if (content[ab][0] == 'R')
