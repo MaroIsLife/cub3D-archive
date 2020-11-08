@@ -3,11 +3,11 @@ void all_errors()
 {
   error_other();
   error_one();
+  error_six();
   error_two();
-  // error_three();
+  error_three();
   error_four();
-  error_up_down();
-  error_first_last();
+  error_five();
 }
 void error_one()
 {
@@ -42,7 +42,7 @@ void error_one()
 
   }
 
-void error_first_last()
+void error_three()
 {
   int i;
   int a;
@@ -68,9 +68,6 @@ void error_first_last()
    i++;
    a = 0;
   }
-  a = 0;
-  i = 0;
- 
 }
 
 // void error_three()
@@ -115,7 +112,6 @@ void error_first_last()
   a = 0;
   b = 0;
   j = 0;
-
   while (g_data.map[b + 1] != NULL)
   {
     while (g_data.map[b][a] != '\0')
@@ -123,9 +119,6 @@ void error_first_last()
 
     while (g_data.map[b + 1][j] != '\0')
     j++;
-
-    if (a > j)
-    {
       while (a > j && g_data.map[b][j] != '\0')
       {
         if (g_data.map[b][j] == '0' || g_data.map[b][j] == g_player.pos)
@@ -134,7 +127,6 @@ void error_first_last()
           exit(-1);
         }
         j++;
-      }
     }
     a = 0;
     j = 0;
@@ -161,8 +153,6 @@ void error_first_last()
     while (g_data.map[b + 1][j] != '\0')
     j++;
 
-    if (j > a)
-    {
       while (j > a && g_data.map[b + 1][a] != '\0')
       {
         if (g_data.map[b + 1][a] == '0' || g_data.map[b + 1][a] == g_player.pos)
@@ -172,22 +162,51 @@ void error_first_last()
         }
         a++;
       }
-    }
     a = 0;
     j = 0;
     b++;
   }
 }
 
-void error_up_down()
+void error_six()
 {
   int i;
-  int j;
+  int a;
+
+  i = 0;
+  a = 0;
+
+  while (g_data.map[i] != NULL)
+  {
+    while (g_data.map[i][a] != '\0')
+    {
+      if ((g_data.map[i][a] == '0' && g_data.map[i][a + 1] == 32) || (g_data.map[i][a] == '2' && g_data.map[i][a + 1] == 32)
+      || (g_data.map[i][a] == g_player.pos && g_data.map[i][a - 1] == 32))
+      {
+        perror("Error\n space after 0 or 2 ");
+        exit(-1);
+      }
+      else if ((g_data.map[i][a] == '0' && g_data.map[i][a - 1] == 32) || (g_data.map[i][a] == '2' && g_data.map[i][a - 1] == 32)
+    || (g_data.map[i][a] == g_player.pos && g_data.map[i][a - 1] == 32))
+      {
+        perror("Error\n space before 0 or 2");
+        exit(-1);
+      }
+      a++;
+    }
+    i++;
+    a = 0;
+  }
+
+}
+
+void error_five()
+{
+  int i;
   int a;
   int b;
 
   a = 0;
-  j = 0;
   i = 0;
   b = 0;
   while (g_data.map[i] != NULL)
@@ -210,30 +229,6 @@ void error_up_down()
     a = 0;
     i++;
   }
-  i = 0;
-  while (g_data.map[i] != NULL)
-  {
-    while (g_data.map[i][a] != '\0')
-    {
-      if ((g_data.map[i][a] == '0' && g_data.map[i][a + 1] == 32) || (g_data.map[i][a] == '2' && g_data.map[i][a + 1] == 32)
-      || (g_data.map[i][a] == g_player.pos && g_data.map[i][a - 1] == 32))
-      {
-        perror("Error\n space after 0 or 2 ");
-        exit(-1);
-      }
-      else if ((g_data.map[i][a] == '0' && g_data.map[i][a - 1] == 32) || (g_data.map[i][a] == '2' && g_data.map[i][a - 1] == 32)
-    || (g_data.map[i][a] == g_player.pos && g_data.map[i][a - 1] == 32))
-      {
-        perror("Error\n space before 0 or 2");
-        exit(-1);
-      }
-      a++;
-
-    }
-    i++;
-    a = 0;
-  }
-
 }
 
 

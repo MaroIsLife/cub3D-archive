@@ -13,8 +13,6 @@ void int_data()
     g_header.biplanes = 1;
 }
 
-
-
 unsigned char *get_header()
 {
     unsigned char *header;

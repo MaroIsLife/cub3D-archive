@@ -40,118 +40,8 @@ int getarray(char **content, int ab, int aa)
     return (1);
   }
 
-void get_texture_error(char *text)
-{
-  char **text2;
-  int i;
-  int check;
-
-i = 1;
-check = 0;
-  while (text[i] != '\0')
-  {
-    if (text[i] == '.')
-    {
-      check = 1;
-    }
-    i++;
-  }
-  if (check == 1)
-    text2 = ft_split(text,'.');
-  else
-    text2 = NULL;
-    i = 0;
-    while ("xpm"[i] != '\0' && check == 1)
-    {
-      if (text2[1][i] != "xpm"[i] || ft_strlen(text2[1]) != 3)
-      {
-        perror("Error\nUse XPM");
-        exit(1);
-      }
-      i++;
-     }
-     if (check == 1)
-     {
-      free(text2[0]);
-      free(text2[1]);
-      free(text2);
-     }
-}
 
 
-
- char *get_texture(char **content, int ab)
-  {
-    int i;
-    int a;
-    char *text;
-    char *text1;
-    int b;
-  
-    a = 0;
-    if (content[ab][0] == 'S' && content[ab][1] == ' ')
-    i = 2;
-    else
-    i = 3;
-
-    if (i == 2)
-    b = 1;
-    else
-    b = 2;
-
-if (content[ab][b] != ' ')
-    {
-      perror("Error\nMissing Space");
-      exit(1);
-    } 
-    while (content[ab][a] != '\0')
-    a++;
-    text = ft_substr(content[ab],i,a);
-    text1 = ft_strtrim(text," ");
-    i = ft_strlen(text1);
-     if (i < 4)
-     {
-       perror("Error\nMissing Texture");
-       exit (1);
-     }
-     get_texture_error(text1);
-     free(text);
-     return (text1);
-  }
-
-void get_settings_texture(char **content,int ab)
-{
-     if (content[ab][0] == 'N' && content[ab][1] == 'O')
-     {
-          g_data.NO = get_texture(content, ab);
-          g_check.NO++;
-          g_check.settings++;
-     }
-        else if (content[ab][0] == 'S' && content[ab][1] == 'O')
-        {
-          g_data.SO = get_texture(content, ab);
-          g_check.SO++;
-          g_check.settings++;
-        }
-        else if (content[ab][0] == 'W' && content[ab][1] == 'E')
-        {
-          g_data.WE = get_texture(content, ab);
-          g_check.WE++;
-          g_check.settings++;
-        }
-        else if (content[ab][0] == 'E' && content[ab][1] == 'A')
-        {
-          g_data.EA = get_texture(content, ab);
-          g_check.EA++;
-          g_check.settings++;
-        }
-        else if (content[ab][0] == 'S')
-        {
-          g_data.S = get_texture(content, ab);
-          g_check.S++;
-          g_check.settings++;
-        }
-}
 
 char **trim(char **content)
 {
@@ -177,18 +67,15 @@ char **trim(char **content)
   return (content);
 }
 
- void get_settings()
-  {
-    char **content;
-    int ab;
-    int aa;
-    
-    aa = 0;
-    ab = 0;
-    content = get_line();
-    content = trim(content);
+char **get_settings_check(char **content)
+{
+  int ab;
+  int aa;
 
-    while (content[ab] != NULL)
+  ab = 0;
+  aa = 0;
+
+  while (content[ab] != NULL)
     {
       if (content[ab][0] == 'R')
         get_resolution(content, ab);
@@ -209,8 +96,19 @@ char **trim(char **content)
         get_settings_texture(content, ab);
         ab++;
       }
-      int_map(content);
-      ab = 0;
+  return (content);
+}
+
+ void get_settings()
+  {
+    char **content;
+    int ab;
+    
+    ab = 0;
+    content = get_line();
+    content = trim(content);
+    content = get_settings_check(content);
+    int_map(content);
       while (content[ab] != NULL)
       {
         free(content[ab]);

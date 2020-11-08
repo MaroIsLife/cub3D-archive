@@ -1,61 +1,33 @@
 #include "cub3d.h"
 
-void get_resoError(char **content,int ab)
-{
-  int i;
-  int b;
 
-  i = 1;
-  b = 0;
-   if (content[ab][1] != ' ')
-    {
-      perror("Error\nMissing Space");
-      exit(1);
-    }
-    while (content[ab][i] != '\0')
-    {
-      if (content[ab][i] >= 58 && content[ab][i] <= 126)
+
+  void int_map(char **content)
       {
-        perror("Error\n Wrong character In resolution");
+      int a;
+      int i;
+      int b;
+      
+      if (g_check.settings != 9)
+      {
+        perror("Error\n Missing Settings");
         exit(1);
       }
-      i++;
-    }
-}
-
-
-void get_resolution(char **content, int ab)
-  {
-    int i;
-    int a;
-    int b;
-    char *r_one;
-    char *r_two;
-
-    get_resoError(content,ab);
-    g_check.R++;
-    g_check.settings++;
-    i = 1;
-    a = 0;
-    while (content[ab][i] == ' ')
-      i++;
-      b = i;
-      while (content[ab][b] != ' ')
+      a = g_data.mapstart;
+      b = 0;
+      i = 0;
+      while (content[a] != NULL)
       {
+        while (content[a][i] != '\0')
+        {
+          g_data.map[b][i] = content[a][i];
+          i++;
+        }
+        a++;
         b++;
-        a++;
+        i = 0;
       }
-    r_one = ft_substr(content[ab],i,a);
-    a = 0;
-    b = i;
-    while(content[ab][i++] != '\0')
-        a++;
-    r_two = ft_substr(content[ab],b,a);
-    g_data.reso_one = ft_atoi(r_one);
-    g_data.reso_two = ft_atoi(r_two);
-    free(r_one);
-    free(r_two);
-  } 
+    }
 
   char **get_line()
   {
@@ -71,11 +43,8 @@ void get_resolution(char **content, int ab)
       exit(1);
     }
     content = malloc(150 * sizeof(char *));
-
     while (get_next_line(fd,&line))
     {
-      // if (*line == 0)
-      //   free(line);
       if (line != '\0')
         content[i++] = line;
       else
