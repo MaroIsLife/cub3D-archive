@@ -1,235 +1,83 @@
-#include "cub3d.h"
-void all_errors()
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   errors.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mougnou <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/11/09 03:17:10 by mougnou           #+#    #+#             */
+/*   Updated: 2020/11/09 03:17:11 by mougnou          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#	include "cub3d.h"
+
+void	error_msg(void)
 {
-  error_other();
-  error_one();
-  error_six();
-  error_two();
-  error_three();
-  error_four();
-  error_five();
-}
-void error_one()
-{
-  int i;
-
-  i = 0;
-  while (g_data.map[0][i] != '\0')
-  {
-    if (g_data.map[0][i] != '1' && g_data.map[0][i] != 32)
-    {
-      perror("Error\nInvalid Map (First Line)");
-      exit(1);
-    }
-      i++;
-  }
-  i = 0;
-  while (g_data.map[g_data.ver - 1][i] != '\0')
-  {
-    if (g_data.map[g_data.ver - 1][i] != '1' && g_data.map[g_data.ver - 1][i] != 32)
-    {
-      perror("Error\nInvalid Map (Last Line)");
-      exit(1);
-    }
-    i++;
-  }
-  if (g_check.R > 1 || g_check.NO > 1 || g_check.SO > 1 || g_check.WE > 1 
-  || g_check.EA > 1 || g_check.S > 1 || g_check.F > 1 || g_check.C > 1 )
-  {
-    perror("Error\nDuplicate Settings");
-    exit(1);
-  }
-
-  }
-
-void error_three()
-{
-  int i;
-  int a;
-
-  i = 0;
-  a = 0;
-
-
-  while (g_data.map[i] != NULL)
- {
-   if (g_data.map[i][a] == 32)
-   {
-      while (g_data.map[i][a] == 32)
-      a++;
-   }
-   if (g_data.map[i][a] != '1')
-   {
-     if (g_data.map[i][a] == '\0')
-        break ;
-     perror("Error\nFirst Col doesn't start with 1");
-     exit(-1);
-   }
-   i++;
-   a = 0;
-  }
+	perror("Error\n Invalid Map");
+	exit(1);
 }
 
-// void error_three()
-// {
-
-// int a;
-// int i;
-
-
-//   a = 0;
-//   i = 0;
-//   // while (g_data.map[i] != NULL)
-//   // {
-//   //   while (g_data.map[i][a] != '\0')
-//   //     a++;
-
-//   //   a--;
-//   //   if (g_data.map[i][a] == 32)
-//   //   {
-//   //     while (g_data.map[i][a] == 32)
-//   //     a--;
-//   //   }
-//   //   if (g_data.map[i][a] != '1')
-//   //   {
-//   //     if (g_data.map[i][a] == '\0')
-//   //       break ;
-//   //     perror("Error\nLast Line doesn't end with 1");
-//   //     exit(1);
-//   //   }
-//   //   i++;
-//   //   a = 0;
-//   // }
-// }
-
-
- void error_four()
+void	error_one(void)
 {
-  int a;
-  int j;
-  int b;
+	int i;
 
-  a = 0;
-  b = 0;
-  j = 0;
-  while (g_data.map[b + 1] != NULL)
-  {
-    while (g_data.map[b][a] != '\0')
-    a++;
-
-    while (g_data.map[b + 1][j] != '\0')
-    j++;
-      while (a > j && g_data.map[b][j] != '\0')
-      {
-        if (g_data.map[b][j] == '0' || g_data.map[b][j] == g_player.pos)
-        {
-          perror("Error\nFound 0 outbounds space under 0");
-          exit(-1);
-        }
-        j++;
-    }
-    a = 0;
-    j = 0;
-    b++;
-  }
+	i = 0;
+	while (g_data.map[0][i] != '\0')
+	{
+		if (g_data.map[0][i] != '1' && g_data.map[0][i] != 32)
+			error_msg();
+		i++;
+	}
+	i = 0;
+	while (g_data.map[g_data.ver - 1][i] != '\0')
+	{
+		if (g_data.map[g_data.ver - 1][i] != '1'
+		&& g_data.map[g_data.ver - 1][i] != 32)
+			error_msg();
+		i++;
+	}
+	if (g_check.r > 1 || g_check.no > 1 || g_check.so > 1 || g_check.we > 1
+	|| g_check.ea > 1 || g_check.s > 1 || g_check.f > 1 || g_check.c > 1)
+	{
+		perror("Error\nDuplicate Settings");
+		exit(1);
+	}
 }
 
-
- void error_two()
+void	error_three(void)
 {
-  int a;
-  int j;
-  int b;
+	int i;
+	int a;
 
-  a = 0;
-  b = 0;
-  j = 0;
-
-  while (g_data.map[b + 1] != NULL)
-  {
-    while (g_data.map[b][a] != '\0')
-    a++;
-
-    while (g_data.map[b + 1][j] != '\0')
-    j++;
-
-      while (j > a && g_data.map[b + 1][a] != '\0')
-      {
-        if (g_data.map[b + 1][a] == '0' || g_data.map[b + 1][a] == g_player.pos)
-        {
-          perror("Error\nFound 0 or Player   outbounds");
-          exit(-1);
-        }
-        a++;
-      }
-    a = 0;
-    j = 0;
-    b++;
-  }
+	i = 0;
+	a = 0;
+	while (g_data.map[i] != NULL)
+	{
+		if (g_data.map[i][a] == 32)
+		{
+			while (g_data.map[i][a] == 32)
+				a++;
+		}
+		if (g_data.map[i][a] != '1')
+		{
+			if (g_data.map[i][a] == '\0')
+				break ;
+			perror("Error\nFirst Col doesn't start with 1");
+			exit(-1);
+		}
+		i++;
+		a = 0;
+	}
 }
 
-void error_six()
+void	all_errors(void)
 {
-  int i;
-  int a;
-
-  i = 0;
-  a = 0;
-
-  while (g_data.map[i] != NULL)
-  {
-    while (g_data.map[i][a] != '\0')
-    {
-      if ((g_data.map[i][a] == '0' && g_data.map[i][a + 1] == 32) || (g_data.map[i][a] == '2' && g_data.map[i][a + 1] == 32)
-      || (g_data.map[i][a] == g_player.pos && g_data.map[i][a - 1] == 32))
-      {
-        perror("Error\n space after 0 or 2 ");
-        exit(-1);
-      }
-      else if ((g_data.map[i][a] == '0' && g_data.map[i][a - 1] == 32) || (g_data.map[i][a] == '2' && g_data.map[i][a - 1] == 32)
-    || (g_data.map[i][a] == g_player.pos && g_data.map[i][a - 1] == 32))
-      {
-        perror("Error\n space before 0 or 2");
-        exit(-1);
-      }
-      a++;
-    }
-    i++;
-    a = 0;
-  }
-
+	error_other();
+	error_one();
+	error_six();
+	error_two();
+	error_three();
+	error_four();
+	error_five();
 }
-
-void error_five()
-{
-  int i;
-  int a;
-  int b;
-
-  a = 0;
-  i = 0;
-  b = 0;
-  while (g_data.map[i] != NULL)
-  {
-    while (g_data.map[i][a] != '\0')
-    {
-      if ((g_data.map[i + 1] != NULL && g_data.map[i + 1][a] == 32) && (g_data.map[i][a] == '0' || g_data.map[i][a] == 'N'))
-      {
-        perror("Error\nan Open 0 or 2 inbound");
-        exit(1);
-      }
-      else if (g_data.map[i] != NULL && g_data.map[i - b][a] == 32 && (g_data.map[i][a] == '0' || g_data.map[i][a] == g_player.pos))
-      {
-        perror("Error\n space upside 0");
-        exit(1);
-      }
-      a++;
-    }
-    b = 1;
-    a = 0;
-    i++;
-  }
-}
-
-
-

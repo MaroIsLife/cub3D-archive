@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "cub3d.h"
+
 static	int		tester(char const s1, const char *set)
 {
 	int i;

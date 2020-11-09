@@ -10,8 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
-#define BUFFER_SIZE 128
+#	include "get_next_line.h"
+#	define BUFFER_SIZE 128
+
 int		ft_counter(char *s)
 {
 	int i;
@@ -34,7 +35,7 @@ int		get_next_line(int fd, char **line)
 	int			i;
 	char		*s;
 	static char	*str;
-	
+
 	*line = ft_strdup("");
 	while (1)
 	{
@@ -57,18 +58,3 @@ int		get_next_line(int fd, char **line)
 		str = NULL;
 	}
 }
-
-/*int main()
-{
-	int fd;
-	int r;
-	char *line;
-	fd = open("map.cub",O_RDONLY);
-	r = 0;
-	while (get_next_line(fd,&line))
-	{
-		printf("%s\n",line);
-		free(line);
-	}
-	return (0);
-}*/

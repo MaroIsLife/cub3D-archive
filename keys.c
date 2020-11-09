@@ -1,59 +1,69 @@
-# include "cub3d.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   keys.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mougnou <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/11/09 03:21:57 by mougnou           #+#    #+#             */
+/*   Updated: 2020/11/09 03:21:58 by mougnou          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-int keyPress(int key)
-{
-if (key == 13) //UP
-      g_player.walkDirection = 1;
-if (key == 2)
-{
-      g_player.directionLR = 90;
-      g_player.walkDirection = 1;
-}
-if (key == 0)
-{
-  g_player.directionLR = 270;
-  g_player.walkDirection = 1;
-}
-if (key == 1) 
-      g_player.walkDirection = -1;
+#	include "cub3d.h"
 
-if (key == 123) //L
-      g_player.turnDirection = -1;
-
-if (key == 124) //R
-      g_player.turnDirection = 1;
-if (key == 53)
-      {
-        mlx_destroy_window(g_mlx.mlx_ptr,g_mlx.win_ptr);
-        exit(1);
-      } 
-      return (0);
-}
-
-int keyRelease(int key)
+int		keypress(int key)
 {
-  if (key == 13) //UP
-      g_player.walkDirection = 0;
-    if (key == 1) //D
-      g_player.walkDirection = 0;
-    if (key == 2)
-    {
-      g_player.directionLR = 0;
-      g_player.walkDirection = 0;
-    }
-    if (key == 0)
-    {
-      g_player.directionLR = 0;
-      g_player.walkDirection = 0;
-    }
-    if (key == 123) //L
-      g_player.turnDirection = 0;
-    if (key == 124) //R
-      g_player.turnDirection = 0;
-      return (0);
+	if (key == 13)
+		g_player.walkdirection = 1;
+	if (key == 2)
+	{
+		g_player.directionlr = 90;
+		g_player.walkdirection = 1;
+	}
+	if (key == 0)
+	{
+		g_player.directionlr = 270;
+		g_player.walkdirection = 1;
+	}
+	if (key == 1)
+		g_player.walkdirection = -1;
+	if (key == 123)
+		g_player.turndirection = -1;
+	if (key == 124)
+		g_player.turndirection = 1;
+	if (key == 53)
+	{
+		mlx_destroy_window(g_mlx.mlx_ptr, g_mlx.win_ptr);
+		exit(1);
+	}
+	return (0);
 }
 
-int red()
+int		keyrelease(int key)
 {
-    exit(1);
+	if (key == 13)
+		g_player.walkdirection = 0;
+	if (key == 1)
+		g_player.walkdirection = 0;
+	if (key == 2)
+	{
+		g_player.directionlr = 0;
+		g_player.walkdirection = 0;
+	}
+	if (key == 0)
+	{
+		g_player.directionlr = 0;
+		g_player.walkdirection = 0;
+	}
+	if (key == 123)
+		g_player.turndirection = 0;
+	if (key == 124)
+		g_player.turndirection = 0;
+	return (0);
+}
+
+int		red(void)
+{
+	exit(1);
 }
