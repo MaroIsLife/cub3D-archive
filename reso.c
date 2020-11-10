@@ -22,14 +22,14 @@ void	get_resoerror(char **content, int ab)
 	b = 0;
 	if (content[ab][1] != ' ')
 	{
-		perror("Error\nMissing Space");
+		ft_putstr("Error\nMissing Space");
 		exit(1);
 	}
 	while (content[ab][i] != '\0')
 	{
 		if (content[ab][i] >= 58 && content[ab][i] <= 126)
 		{
-			perror("Error\n Wrong character In resolution");
+			ft_putstr("Error\n Wrong character In resolution");
 			exit(1);
 		}
 		i++;

@@ -44,12 +44,16 @@ void	update2(void)
 
 int		update(void)
 {
-	mlx_hook(g_mlx.win_ptr, 2, 0, keypress, 0);
-	mlx_hook(g_mlx.win_ptr, 3, 0, keyrelease, 0);
-	mlx_clear_window(g_mlx.mlx_ptr, g_mlx.win_ptr);
+	if (g_player.saved == 0)
+	{
+		mlx_hook(g_mlx.win_ptr, 2, 0, keypress, 0);
+		mlx_hook(g_mlx.win_ptr, 3, 0, keyrelease, 0);
+		mlx_clear_window(g_mlx.mlx_ptr, g_mlx.win_ptr);
+	}
 	update2();
 	castallrays();
-	mlx_put_image_to_window(g_mlx.mlx_ptr, g_mlx.win_ptr, g_mg.img, 0, 0);
+	if (g_player.saved == 0)
+		mlx_put_image_to_window(g_mlx.mlx_ptr, g_mlx.win_ptr, g_mg.img, 0, 0);
 	if (g_player.saved == 1)
 	{
 		save_bitmap();
@@ -72,8 +76,9 @@ int		main(int argc, char **argv)
 		get_settings();
 		playersettings();
 		g_mlx.mlx_ptr = mlx_init();
-		g_mlx.win_ptr = mlx_new_window(g_mlx.mlx_ptr, g_data.reso_one,
-		g_data.reso_two, "Cub3d");
+		if (g_player.saved == 0)
+			g_mlx.win_ptr = mlx_new_window(g_mlx.mlx_ptr, g_data.reso_one,
+			g_data.reso_two, "cub3D");
 		g_mg.img = mlx_new_image(g_mlx.mlx_ptr, g_data.reso_one,
 		g_data.reso_two);
 		g_mg.addr = mlx_get_data_addr(g_mg.img, &g_mg.bits_per_pixel,
@@ -81,12 +86,11 @@ int		main(int argc, char **argv)
 		check_map();
 		all_errors();
 		mlx_loop_hook(g_mlx.mlx_ptr, update, (void *)0);
-		mlx_hook(g_mlx.win_ptr, 17, 0, red, (void *)0);
+		if (g_player.saved == 0)
+			mlx_hook(g_mlx.win_ptr, 17, 0, red, (void *)0);
 		mlx_loop(g_mlx.mlx_ptr);
 	}
 	else
-	{
-		perror("Please insert the map's name.");
-	}
+		ft_putstr("Please insert the map's name.");
 	return (0);
 }

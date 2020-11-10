@@ -260,7 +260,6 @@ void			get_colorg(char **content, int b, int i, int ab);
 void			get_colorb_error(char **content, int b, int i, int ab);
 void			int_map(char **content);
 void			get_color_b_error2(char **content, int ab);
-char			*ft_strtrim(char const *s1, char const *set);
 void			castallrays(void);
 void			init_texture(void);
 void			draw_floor(int id);
@@ -271,4 +270,7 @@ void			playersettings(void);
 int				is_wall(float x, float y);
 int				is_wall1(float x, float y);
 void			error_msg(void);
+char			*ft_strtrim1(char const *s1, char const *set);
+void			ft_putstr(char *s);
+
 #endif

@@ -1,5 +1,16 @@
-#include "cub3d.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Sprite.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mougnou <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/11/09 03:55:46 by mougnou           #+#    #+#             */
+/*   Updated: 2020/11/09 03:55:46 by mougnou          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "cub3d.h"
 
 int		len(char *s)
 {
@@ -8,7 +19,6 @@ int		len(char *s)
 	i = 0;
 	while (s[i])
 		i++;
-
 	return (i);
 }
 
@@ -44,28 +54,27 @@ void	save_cordinate(int i, int j, int id)
 			(g_sprite[id].y - g_player.y));
 }
 
-void get_sprite_pos()
+void	get_sprite_pos(void)
 {
-    int i;
-    int j;
-    int id;
+	int i;
+	int j;
+	int id;
 
-    i = 0;
-    id = 0;
-
-    while (i < g_data.ver)	
-    {
-       j = 0;
-        while (j < len(g_data.map[i]))
-        {
-            if (g_data.map[i][j] == '2')
-            {
-                save_cordinate(i, j, id);
+	i = 0;
+	id = 0;
+	while (i < g_data.ver)
+	{
+		j = 0;
+		while (j < len(g_data.map[i]))
+		{
+			if (g_data.map[i][j] == '2')
+			{
+				save_cordinate(i, j, id);
 				id++;
-            }
-            j++;
-        }
-        i++;
-    }
-    sort();
+			}
+			j++;
+		}
+		i++;
+	}
+	sort();
 }

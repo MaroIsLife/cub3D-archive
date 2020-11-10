@@ -67,8 +67,7 @@ char	**trim(char **content)
 			if (content[i][a] == '1')
 				break ;
 		}
-		free(content[i]);
-		content[i] = ft_strtrim(content[i], " ");
+		content[i] = ft_strtrim1(content[i], " ");
 		i++;
 	}
 	i = 0;

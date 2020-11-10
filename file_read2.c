@@ -20,7 +20,7 @@ void	int_map(char **content)
 
 	if (g_check.settings != 9)
 	{
-		perror("Error\n Missing Settings");
+		ft_putstr("Error\n Missing Settings");
 		exit(1);
 	}
 	a = g_data.mapstart;
@@ -50,7 +50,7 @@ char	**get_line(void)
 	fd = open(g_data.mapname, O_RDONLY);
 	if (fd == -1)
 	{
-		perror("Error\nThe Map could not be found.");
+		ft_putstr("Error\nThe Map could not be found.");
 		exit(1);
 	}
 	content = malloc(150 * sizeof(char *));

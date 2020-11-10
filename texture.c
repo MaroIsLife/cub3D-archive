@@ -21,7 +21,7 @@ void	check_tex(char **text2, int check)
 	{
 		if (text2[1][i] != "xpm"[i] || ft_strlen(text2[1]) != 3)
 		{
-			perror("Error\nUse XPM");
+			ft_putstr("Error\nUse XPM");
 			exit(1);
 		}
 		i++;
@@ -44,13 +44,13 @@ void	get_texture_error(char *text)
 	check = 0;
 	while (text[i] != '\0')
 	{
-		if (text[i] == '.')
+		if (text[i] == '.' && text[i + 1] != '\0' && text[i + 1] == 'x')
 		{
 			check = 1;
 		}
 		i++;
 	}
-	if (check == 1)
+	if (check == 1 && text2[1] != NULL)
 		text2 = ft_split(text, '.');
 	else
 		text2 = NULL;
@@ -63,9 +63,8 @@ char	*get_texture2(char **content, int i, int a, int ab)
 	char *text;
 
 	text = ft_substr(content[ab], i, a);
-	text1 = ft_strtrim(text, " ");
+	text1 = ft_strtrim1(text, " ");
 	get_texture_error(text1);
-	free(text);
 	return (text1);
 }
 
@@ -88,7 +87,7 @@ char	*get_texture(char **content, int ab)
 		b = 2;
 	if (content[ab][b] != ' ')
 	{
-		perror("Error\nMissing Space");
+		ft_putstr("Error\nMissing Space");
 		exit(1);
 	}
 	while (content[ab][a] != '\0')

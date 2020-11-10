@@ -16,7 +16,7 @@ void	player_int(int i, int j)
 {
 	if (g_player.found == 1)
 	{
-		perror("Duplicate Players");
+		ft_putstr("Duplicate Players");
 		exit(1);
 	}
 	if (g_data.map[i][j] == 'N')
@@ -77,7 +77,7 @@ void	check_map(void)
 	}
 	if (g_player.found == 0)
 	{
-		perror("No Player found");
+		ft_putstr("No Player found");
 		exit(1);
 	}
 }

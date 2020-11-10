@@ -46,7 +46,7 @@ void	arg_check(char *s1)
 	i = 0;
 	while (s1[i] != '\0')
 	{
-		if (s1[i] == '.' && s1[i + 1] != '\0' && s1[i + 1] != '.')
+		if (s1[i] == '.' && s1[i + 1] != '\0' && s1[i + 1] == 'c')
 		{
 			a = 1;
 			s2 = ft_split(s1, '.');
@@ -58,7 +58,10 @@ void	arg_check(char *s1)
 		perror("Error\nPlease insert the correct map that ends with .cub");
 		exit(1);
 	}
-	arg_check2(s1, s2);
+	if (s2[1] != NULL)
+		arg_check2(s1, s2);
+	else
+		error_msg();
 }
 
 void	arg_save_check(char *save)

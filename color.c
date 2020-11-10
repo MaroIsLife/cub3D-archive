@@ -16,7 +16,7 @@ void	get_color_b_error3(char **content, int ab, int c)
 {
 	if (content[ab][1] != ' ' || c != 2)
 	{
-		perror("Error\n");
+		ft_putstr("Error\n");
 		exit(1);
 	}
 }
@@ -30,7 +30,7 @@ void	get_color_b_error2(char **content, int ab)
 	a = 2;
 	if (g_color.b > 255 || g_color.g > 255 || g_color.r > 255)
 	{
-		perror("Error\nMax number");
+		ft_putstr("Error\nMax number");
 		exit(-1);
 	}
 	while (content[ab][a] != '\0')
@@ -40,7 +40,7 @@ void	get_color_b_error2(char **content, int ab)
 		if ((content[ab][a] > 65 && content[ab][a] < 122) ||
 		content[ab][a] == '-')
 		{
-			perror("Error\n Negative number or Undefined character");
+			ft_putstr("Error\n Negative number or Undefined character");
 			exit(1);
 		}
 		a++;
@@ -60,7 +60,7 @@ int		count_color(char **content, int ab)
 		a++;
 	if (content[ab][a] < 48 || content[ab][a] > 57)
 	{
-		perror("Error\nEmpty Settings");
+		ft_putstr("Error\nEmpty Settings");
 		exit(1);
 	}
 	return (a);

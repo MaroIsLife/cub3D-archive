@@ -11,10 +11,11 @@
 /* ************************************************************************** */
 
 #	include "cub3d.h"
+#	include "errno.h"
 
 void	error_msg(void)
 {
-	perror("Error\n Invalid Map");
+	ft_putstr("Error\n");
 	exit(1);
 }
 
@@ -40,7 +41,7 @@ void	error_one(void)
 	if (g_check.r > 1 || g_check.no > 1 || g_check.so > 1 || g_check.we > 1
 	|| g_check.ea > 1 || g_check.s > 1 || g_check.f > 1 || g_check.c > 1)
 	{
-		perror("Error\nDuplicate Settings");
+		ft_putstr("Error\nDuplicate Settings");
 		exit(1);
 	}
 }
@@ -63,7 +64,7 @@ void	error_three(void)
 		{
 			if (g_data.map[i][a] == '\0')
 				break ;
-			perror("Error\nFirst Col doesn't start with 1");
+			ft_putstr("Error\nFirst Col doesn't start with 1");
 			exit(-1);
 		}
 		i++;

@@ -28,12 +28,9 @@ void	draw_bmp(unsigned char *buffer)
 {
 	int fd;
 
-	fd = open("./saved.bmp", O_WRONLY | O_APPEND | O_CREAT, 777);
+	fd = open("./saved.bmp", O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
 	if (fd == -1)
-	{
-		perror("Error\nCannot save");
-		exit(1);
-	}
+		error_msg();
 	write(fd, get_header(), 54);
 	write(fd, (char *)buffer, g_header.imagesize);
 	close(fd);

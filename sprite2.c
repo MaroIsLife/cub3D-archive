@@ -18,7 +18,7 @@ void	get_spriteimage(void)
 			&g_sptexture.width, &g_sptexture.height);
 	if (g_sptexture.img_sprite == NULL)
 	{
-		perror("Error\n in Sprite XPM");
+		ft_putstr("Error\n in Sprite XPM");
 		exit(1);
 	}
 }

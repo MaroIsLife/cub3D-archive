@@ -25,7 +25,7 @@ void	init_texture2(void)
 	if (g_txt.ptr[0] == NULL || g_txt.ptr[1] == NULL || g_txt.ptr[2] == NULL
 	|| g_txt.ptr[3] == NULL)
 	{
-		perror("Error In texture XPM File");
+		ft_putstr("Error In texture XPM File");
 		exit(1);
 	}
 }

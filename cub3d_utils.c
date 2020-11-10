@@ -50,7 +50,7 @@ void	playersettings(void)
 		g_data.reso_two = 1440;
 	if (g_data.reso_one <= 0 || g_data.reso_two <= 0)
 	{
-		perror("Error\n Resolution");
+		ft_putstr("Error\n Resolution");
 		exit(1);
 	}
 }
