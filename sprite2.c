@@ -76,10 +76,7 @@ void	render_sprite(int id)
 		angle += 2 * M_PI;
 	angle = angle - to_rad(g_player.rotationangle);
 	angle = to_deg(angle);
-	if (g_data.reso_two > g_data.reso_one)
-		g_sprite[id].size = (g_data.reso_two / g_sprite[id].dst) * TILE_SIZE;
-	else
-		g_sprite[id].size = (g_data.reso_one / g_sprite[id].dst) * TILE_SIZE;
+	g_sprite[id].size = (g_data.reso_one / g_sprite[id].dst) * TILE_SIZE;
 	g_sprite[id].y_ofst = (g_data.reso_two / 2) - (g_sprite[id].size / 2);
 	g_sprite[id].x_ofst = ((angle * g_data.reso_one) / 60) +
 		((g_data.reso_one / 2) - (g_sprite[id].size / 2));

@@ -26,10 +26,14 @@ void	check_tex(char **text2, int check)
 		}
 		i++;
 	}
+	i = 0;
 	if (check == 1)
 	{
-		free(text2[0]);
-		free(text2[1]);
+		while (text2[i] != NULL)
+		{
+			free(text2[i]);
+			i++;
+		}
 		free(text2);
 	}
 }
@@ -50,7 +54,7 @@ void	get_texture_error(char *text)
 		}
 		i++;
 	}
-	if (check == 1 && text2[1] != NULL)
+	if (check == 1)
 		text2 = ft_split(text, '.');
 	else
 		text2 = NULL;
@@ -85,11 +89,10 @@ char	*get_texture(char **content, int ab)
 		b = 1;
 	else
 		b = 2;
+	if (content[ab][1] == '\0')
+		error_msg();
 	if (content[ab][b] != ' ')
-	{
-		ft_putstr("Error\nMissing Space");
-		exit(1);
-	}
+		error_msg();
 	while (content[ab][a] != '\0')
 		a++;
 	text1 = get_texture2(content, i, a, ab);

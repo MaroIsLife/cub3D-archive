@@ -29,7 +29,8 @@ void	error_four(void)
 			j++;
 		while (a > j && g_data.map[b][j] != '\0')
 		{
-			if (g_data.map[b][j] == '0' || g_data.map[b][j] == g_player.pos)
+			if (g_data.map[b][j] == '0' || g_data.map[b][j] == g_player.pos
+			|| g_data.map[b][j] == '2')
 				error_msg();
 			j++;
 		}
@@ -57,7 +58,8 @@ void	error_two(void)
 		while (j > a && g_data.map[b + 1][a] != '\0')
 		{
 			if (g_data.map[b + 1][a] == '0' ||
-			g_data.map[b + 1][a] == g_player.pos)
+			g_data.map[b + 1][a] == g_player.pos
+			|| g_data.map[b + 1][a] == '2')
 				error_msg();
 			a++;
 		}
@@ -107,16 +109,36 @@ void	error_five(void)
 		while (g_data.map[i][a] != '\0')
 		{
 			if ((g_data.map[i + 1] != NULL && g_data.map[i + 1][a] == 32)
-			&& (g_data.map[i][a] == '0' || g_data.map[i][a] == 'N'))
+			&& (g_data.map[i][a] == '0' || g_data.map[i][a] == g_player.pos
+		|| g_data.map[i][a] == '2'))
 				error_msg();
 			else if (g_data.map[i] != NULL && g_data.map[i - b][a] == 32
 			&& (g_data.map[i][a] == '0'
-			|| g_data.map[i][a] == g_player.pos))
+			|| g_data.map[i][a] == g_player.pos || g_data.map[i][a] == '2'))
 				error_msg();
 			a++;
 		}
 		b = 1;
 		a = 0;
 		i++;
+	}
+}
+
+void	error_last(void)
+{
+	int i;
+	int a;
+
+	i = 0;
+	a = 0;
+	while (g_data.map[i] != NULL)
+	{
+		while (g_data.map[i][a] != '\0')
+			a++;
+		if (g_data.map[i][a - 1] == '0' || g_data.map[i][a - 1] == g_player.pos
+		|| g_data.map[i][a - 1] == '2')
+			error_msg();
+		i++;
+		a = 0;
 	}
 }

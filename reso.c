@@ -21,10 +21,7 @@ void	get_resoerror(char **content, int ab)
 	i = 1;
 	b = 0;
 	if (content[ab][1] != ' ')
-	{
-		ft_putstr("Error\nMissing Space");
-		exit(1);
-	}
+		error_msg();
 	while (content[ab][i] != '\0')
 	{
 		if (content[ab][i] >= 58 && content[ab][i] <= 126)
@@ -66,7 +63,6 @@ void	get_resolution(char **content, int ab)
 	}
 	r_one = ft_substr(content[ab], i, a);
 	a = 0;
-	b = i;
 	while (content[ab][i++] != '\0')
 		a++;
 	r_two = ft_substr(content[ab], b, a);

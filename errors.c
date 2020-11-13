@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #	include "cub3d.h"
-#	include "errno.h"
 
 void	error_msg(void)
 {
@@ -81,4 +80,5 @@ void	all_errors(void)
 	error_three();
 	error_four();
 	error_five();
+	error_last();
 }

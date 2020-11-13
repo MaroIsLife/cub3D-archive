@@ -56,7 +56,8 @@ int		count_color(char **content, int ab)
 	i = 0;
 	a = 0;
 	g_check.settings++;
-	while (content[ab][a] < 48 || content[ab][a] > 57)
+	while ((content[ab][a] < 48 || content[ab][a] > 57)
+	&& content[ab][a] != '\0')
 		a++;
 	if (content[ab][a] < 48 || content[ab][a] > 57)
 	{

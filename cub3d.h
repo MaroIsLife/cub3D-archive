@@ -272,5 +272,6 @@ int				is_wall1(float x, float y);
 void			error_msg(void);
 char			*ft_strtrim1(char const *s1, char const *set);
 void			ft_putstr(char *s);
+void			error_last(void);
 
 #endif
